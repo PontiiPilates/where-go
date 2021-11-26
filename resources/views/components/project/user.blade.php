@@ -1,17 +1,11 @@
-<div style="
-width: 100px;
-height: 100px;
-background-color: slateblue;
-"></div>
+<form action="">
+    <input type="text" name="name">
+    <input type="text" name="description">
+    <input type="text" name="phone">
+    <input type="text" name="email">
+    <input type="text" name="whatsapp">
+    <input type="text" name="telegram">
+    <input type="submit">
+</form>
 
-<h3>Contacts</h3>
-
-<ul>
-    <li>Wp</li>
-    <li>Wb</li>
-    <li>Vk</li>
-    <li>Mb</li>
-    <li>Ok</li>
-    <li>Fb</li>
-    <li>Ig</li>
-</ul>
+{{ $user }}
