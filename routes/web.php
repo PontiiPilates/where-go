@@ -29,31 +29,75 @@ require __DIR__ . '/auth.php';
 /**
  * Custome routes
  */
+
 use App\Http\Controllers\project\EventsListController;
 use App\Http\Controllers\project\FormEventController;
 use App\Http\Controllers\project\FormProfileController;
 use App\Http\Controllers\project\ProfileController;
 // use App\Http\Controllers\project\UserController;
 use App\Http\Controllers\project\DeleteEventController;
+use App\Http\Controllers\project\FormSecurityController;
+use App\Http\Controllers\project\PageEventController;
 
 // Поиск событий (главная)
-// Route::get('/', [EventsListController::class, 'getGeneral']);
 Route::match(['get', 'post'], '/', [EventsListController::class, 'getGeneral']);
 
 // Создание события
-Route::match(['get', 'post'], '/event/create', [FormEventController::class, 'create']);
+Route::match(['get', 'post'], '/create/event', [FormEventController::class, 'create']);
 
 // Правка события
-Route::match(['get', 'post'], '/event/edit/{id}', [FormEventController::class, 'edit']);
+Route::match(['get', 'post'], '/edit/event/{event_id}', [FormEventController::class, 'edit']);
 
-// Смотреть профиль пользователя
-Route::get('/profile/{user_id}', [ProfileController::class, 'get']);
+// Смотреть свой профиль или профиль пользователя
+// TODO: Нужно обязательно доставить идентификатор в урл профиля пользователя
+Route::get('/profile/{user_id?}', [ProfileController::class, 'get'])->name('profileView');
 
 // Правка профиля
 Route::match(['get', 'post'], '/edit/profile', [FormProfileController::class, 'edit'])->name('profile');
 
 // Удаление события
 Route::match(['get', 'post'], '/delete/event/{event_id}', [DeleteEventController::class, 'delete']);
+
+// Настройки безопасности
+Route::match(['get', 'post'], '/edit/security', [FormSecurityController::class, 'edit']);
+
+// Страница просмотра события
+Route::get('r/event/{event_id}', [PageEventController::class, 'get']);
+
+use App\Http\Controllers\project\PastEventsController;
+// Страница вывода прошедших событий
+Route::get('/past/{user_id}', [PastEventsController::class, 'get']);
+
+// use App\Http\Controllers\project\BookmarksController;
+// // Страница добавления в закладки
+// Route::get('/add/bookmarks/{event_id}', [BookmarksController::class, 'add']);
+// // Страница удаления из закладок
+// Route::get('/remove/bookmarks/{event_id}', [BookmarksController::class, 'remove']);
+// // Страница просмотра закладок
+// Route::get('/get/bookmarks/', [BookmarksController::class, 'get']);
+
+use App\Http\Controllers\project\FollowsController;
+use App\Http\Controllers\project\SitemapController;
+// use App\Http\Controllers\rocket\GeneralController;
+
+// Страница подписки на пользователя
+Route::get('/followed/{user_id}', [FollowsController::class, 'followed']);
+// Страница отписки от пользователя
+Route::get('/unfollowed/{user_id}', [FollowsController::class, 'unfollowed']);
+// Просмотр подписок
+Route::get('/follow', [FollowsController::class, 'follow']);
+// Просмотр подписавшихся
+Route::get('/followers/{user_id}', [FollowsController::class, 'followers']);
+
+// Подтверждение правообладания сайтом для Яндекс
+Route::get('/yandex_55160e05f8349cf0.html', function () {
+    return view('project.webmaster');
+});
+
+// Выдача Sitemap
+Route::get('/sitemap', [SitemapController::class, 'getSitemap']);
+
+
 
 // ! Организация пространства имен
 // 1. Функциональный идентификатор: view, create, edit, delete
@@ -68,21 +112,108 @@ Route::get('bookmarks', function () {
 
 // ? Страница успешного создания/обновления события
 Route::get('/event/success', function () {
-    return 'Событие успешно создано <br> <a href="/event/create">Вернуться</a>';
+    return 'Событие успешно создано <br> <a href="/">Вернуться</a>';
 })->name('eventSuccess');
 
 // ? Страница успешного удаления события
-Route::get('/success/delete/event', function() {
+Route::get('/success/delete/event', function () {
     return 'Событие успешно удалено <br> <a href="/">Вернуться</a>';
 })->name('deleteEvent');
+
+Route::get('/success', function () {
+    return 'Успешно!';
+})->name('success');
+
+Route::get('/error', function () {
+    return '
+    <strong>Что-то пошло не так.</strong>
+    <p>Пожалуйста попробуйте еще раз. Если ошибка повторится, то напишите об этом разработчику.</p>';
+})->name('error');
 
 
 /**
  * Development
  */
+
 use App\Http\Controllers\StartController;
 
-Route::get('d', [StartController::class, 'models']);
+Route::match(['get', 'post'], '/d/{id?}', [StartController::class, 'filters']);
+
+
+/**
+ * Rocket
+ */
+
+//  Это просто вёрстка, сплошная вёрстка всего
+Route::get('/l', function () {
+    return view('rocketViews.layout');
+});
+
+//  Подключение контроллера для главной страницы
+use App\Http\Controllers\rocket\GeneralController;
+// Главная страница
+Route::get('/g', [GeneralController::class, 'general']);
+
+// Подключение контроллера для обеспечения работы закладок
+use App\Http\Controllers\rocket\BookmraksController;
+// Закладки
+Route::get('bookmarks', [BookmraksController::class, 'bookmarks'])->middleware('auth');
+// Добавление в закладки
+Route::get('bookmarks/{id}/add', [BookmraksController::class, 'addBookmark'])->middleware('auth');
+// Удаление из закладок
+Route::get('bookmarks/{id}/remove', [BookmraksController::class, 'removeBookmark'])->middleware('auth');
+
+// Подключение контроллера для страницы пользователя
+use App\Http\Controllers\rocket\UserController;
+// Страница пользователя
+Route::get('user/{id}', [UserController::class, 'getUser']);
+
+// Подключение контроллера для избранных пользователей
+use App\Http\Controllers\rocket\FavouritesController;
+// Избранные пользователи
+Route::get('favourites', [FavouritesController::class, 'getFavourites']);
+// Добавление в избранные пользователи
+Route::get('favourites/{id}/add', [FavouritesController::class, 'addFavourites']);
+// Удаление из избранных пользователей
+Route::get('favourites/{id}/remove', [FavouritesController::class, 'removeFavourites']);
+
+
+// Подключение контроллера управляющего событиями
+use App\Http\Controllers\rocket\EventController;
+// Возвращает страницу события
+Route::get('event/{id}', [EventController::class, 'get'])->whereNumber('id'); // Явно указываю, что id - это число!
+// Добавляет событие
+Route::match(['get', 'post'], 'event/add', [EventController::class, 'add']);
+// Редактировать событие
+Route::match(['get', 'post'], 'event/{id}/edit', [EventController::class, 'edit']);
+// Удаляет событие
+Route::get('event/{id}/remove', [EventController::class, 'remove']);
+
+
+
+// Подключение контроллера для регистрации на событие
+use App\Http\Controllers\rocket\RunController;
+// Возвращает список событий, на которые идет пользователь
+Route::get('run', [RunController::class, 'getEvents']);
+// Зарегистрировать пользователя на событие
+Route::get('run/{event_id}/add', [RunController::class, 'add']);
+// Отменить регистрацию пользователя на событие
+Route::get('run/{event_id}/remove', [RunController::class, 'remove']);
+// Показать пользователей, которые идут на событие
+Route::get('run/{event_id}/users', [RunController::class, 'getUsers']);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // // TODO: наладить работу с базой данных: миграции и сидеры
 // // TODO: освоить модели и Eloquent ORM
@@ -100,21 +231,55 @@ Route::get('d', [StartController::class, 'models']);
 // // TODO: рассмотреть переименование user как профиль авторизованного пользователя в profile
 // TODO: создать таблицу городов
 // TODO: создать таблицу категорий
-// TODO: перевести события на 1 форму вместо двух
+// // TODO: перевести события на 1 форму вместо двух
 
 // // TODO: организовать вывод событий на странице профиля или нет если их нет
 // // TODO: организовать вывод событий на странице пользователя или нет если их нет
 // // TODO: организовать удаление события
-// ! TODO: организовать загрузку изображения события
-// ! TODO: организовать загрузку изображения пользователя
+// // TODO: организовать загрузку изображения события
+// // TODO: организовать загрузку изображения пользователя
 // // TODO: организовать фильтрацию событий на главной
 // ? TODO: для упрощения организации запросов, имя пользователя можно хранить в таблице events либо перейти на построитель запросов без Eloquent
 
-// TODO: организовать смену пароля, почты, никнейма - потом
+// // ! TODO: организовать смену пароля, почты
+// ! TODO: организовать сброс пароля
+
+// TODO: подумать на счет организации изменения никнейма - потм
 // TODO: организовать обратную связь для пользователя - потом
 // TODO: в форму создания события поместить ссылку: предложить категорию - потом
+// TODO: сверстать загрузку файла - потом
+// TODO: определиться, что считать главной, свою страницу или список событий
 
 // // TODO: подумать над пространством имен относительно всей системы профиля пользоватенля
+
+// // TODO: получить id пользователя
+// // TODO: затащить его в базу данных
+// // TODO: переформировать таблицу в базе данных
+// // TODO: различить сценарий создания и сценарий редактирования
+// // TODO: после успешного создания перенаправить пользователя на страницу что событие успешно создано
+
+// TODO: валидировать данные формы
+// // TODO: настроить прием, обработку и хранение файлов формы
+// // TODO: проверять на авторизованность, чтобы гарантировыанно в таблицу попал user id
+// // TODO: предоставлять доступ к созданию и редактированию форм если пользователь авторизирован @auth
+
+
+// TODO: Отвалидировать форму фильтр на главной страницы на предмет принятия дат
+// TODO: Сделать кнопку читать полностью на карточке события
+// TODO: Валидировать формы, чтобы они не пропускали html-код
+// TODO: Облагородить интерфейс формы редактирования профиля
+// TODO: Проверять путь /edit/profile на аутентификацию. Сделать это с помощью middleware
+
+
+// TODO: Создать форму выхода logout
+// TODO: Еще раз пробежаться по настройке вывода сообщений при аутентификации
+// TODO: Запретить редактирование профиля другого пользователя
+
+
+
+
+
+
 
 
 // ! Концепция пространства имен:
@@ -132,50 +297,4 @@ Route::get('d', [StartController::class, 'models']);
  */
 
 // TODO: 1 собственноеручное/с друзьями заполнение пространства событиями (сфу, городскими)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ! Изменение имени контроллера:
-// Изменение имени файла контроллера
-// Изменение имени класса контроллера в файле
-// Изменение имени класса контроллера в роутинге
-// Изменение имени подключаемого класса в роутинге
-
-
-// таблица в базе данных во множественном числе
-// файл модели в единственном числе
-// класс модели в единственном числе
-// имя подключаемого класса в контроллере
-
-// имя файла миграции
-// имя класса миграции
-// имя схемы в классе миграции
-
-// имя файла сидера во множественном числе
-// имя класса сидера во множественном числе
-// имя таблицы в классе сидера во множественном числе
-// имя подключаемого сидера в DatabaseSeeder
+// TODO: Очередную версию стоит начинать с разработки путей и понимания того, что на каждом будет происходить

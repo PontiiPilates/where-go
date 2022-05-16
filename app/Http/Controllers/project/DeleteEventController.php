@@ -15,7 +15,8 @@ class DeleteEventController extends Controller
         
 
         if($event->save()) {
-            return redirect()->route('deleteEvent');
+            // return redirect()->route('deleteEvent');
+            return redirect('/profile');
         }
     }
 }

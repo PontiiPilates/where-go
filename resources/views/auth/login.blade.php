@@ -1,72 +1,66 @@
-<x-guest-layout>
+<x-project.layout>
+    <div class="col-md-2 col-lg-4"></div>
 
-    <x-project.navigation>
-    </x-project.navigation>
+    <div class="col-md-8 col-lg-4">
 
+    {{-- <x-auth-card> --}}
 
-    <x-auth-card>
+    {{-- Validation Errors --}}
+    {{-- <x-auth-validation-errors class="mb-3" :errors="$errors" /> --}}
 
-        <x-slot name="logo">
-            <!-- <a href="/"> -->
-            <!-- <x-application-logo class="w-20 h-20 fill-current text-gray-500" /> -->
-            <!-- </a> -->
-        </x-slot>
+    {{-- Session Status --}}
+    <x-auth-session-status class="mb-3" :status="session('status')" />
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+    {{-- Form --}}
+    <form method="POST" action="{{ route('login') }}">
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        {{--
+            Не знаю как сейчас сделать вывод ошибок к каждому полю. Валидация происходит где-то глубже, чем в контроллере. На данный момент 
+        --}}
 
-        <form method="POST" action="{{ route('login') }}">
+        {{-- CSRF Token --}}
+        @csrf
 
-            @csrf
+        {{-- Remember Me --}}
+        <input id="remember_me" type="hidden" class="form-check-input" name="remember" value="on">
 
-            <!-- Email Address -->
-            <div class="mb-3">
-                <x-label for="email" :value="__('Email')" />
-                <x-input id="email" type="email" name="email" :value="old('email')" required autofocus />
-            </div>
-
-            <!-- Password -->
-            <div class="mb-3">
-                <x-label for="password" :value="__('Пароль')" />
-                <x-input id="password" type="password" name="password" required autocomplete="current-password" />
-            </div>
-
-            <!-- Remember Me -->
-            <div class="mb-3 form-check">
-                <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                <label for="remember_me" class="form-check-label">Запомнить меня</label>
-                <!-- <span class="ml-2 text-sm text-gray-600">{{ __('Huember me') }}</span> -->
-            </div>
-
-            <!-- <div class="mb-3 form-check">
-                <input name="free" type="checkbox" class="form-check-input" id="free">
-                <label class="form-check-label" for="free">Бесплатно</label>
-            </div> -->
-
-            <x-button class="mb-3">
-                {{ __('Войти') }}
-            </x-button>
-
-            <!-- <div class="">
-                @if (Route::has('password.request'))
-                <a class="" href="{{ route('password.request') }}">
-                    {{ __('Забыли пароль?') }}
-                </a>
-                @endif
-            </div> -->
-
-        </form>
-
-        <div class="">
-            <a class="" href="{{ route('register') }}">
-                {{ __('Нет профиля? Зарегистрируйтесь.') }}
-            </a>
-
+        {{-- Email --}}
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input name="email" type="email" class="form-control @if ($errors->any()) is-invalid @endif" id="email" value="{{ old('email') }}">
+            @error('email')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-    </x-auth-card>
+        {{-- Password --}}
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input name="password" type="password" class="form-control @if ($errors->any()) is-invalid @endif" id="password">
+            @error('password')
+            <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-</x-guest-layout>
+        {{-- Forgot Password --}}
+        <div class="mb-3">
+            <p class="text-end"><a href="/forgot-password">Забыли пароль?</a></p>
+        </div>
+
+        <div class="mb-3">
+            <x-button class="w-100">
+                {{ __('Войти') }}
+            </x-button>
+        </div>
+
+    </form>
+
+    <p>Нет аккаунта? <a class="" href="{{ route('register') }}">{{ __('Зарегистрируйтесь!') }}</a></p>
+
+    {{-- </x-auth-card> --}}
+    </div>
+
+    <div class="col-md-2 col-lg-4"></div>
+
+
+</x-project.layout>

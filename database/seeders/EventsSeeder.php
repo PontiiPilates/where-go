@@ -22,7 +22,8 @@ class EventsSeeder extends Seeder
             'description' => 'Будем пить чай.',
             'city' => 'Красноярск',
             'adress' => 'Ост. Турбаза',
-            'date_start' => '2021-11-24',
+            'date_start' => '2022-11-24',
+            'preview' => 'jep.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -33,7 +34,8 @@ class EventsSeeder extends Seeder
             'description' => 'Пещера Караульная, погода будет солнечная.',
             'city' => 'Красноярск',
             'adress' => 'Ост. Пос. Удачный',
-            'date_start' => '2021-11-25',
+            'date_start' => '2022-11-25',
+            'preview' => 'viebu.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -44,7 +46,8 @@ class EventsSeeder extends Seeder
             'description' => 'Ожидается метель, берите с собой удобные тапочки',
             'city' => 'Красноярск',
             'adress' => 'пер. Медицинский',
-            'date_start' => '2021-11-26',
+            'date_start' => '2022-11-26',
+            'preview' => 'space.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -55,7 +58,8 @@ class EventsSeeder extends Seeder
             'description' => 'Бесплатно научу плавать за час',
             'city' => 'Красноярск',
             'adress' => 'ул. А. Киренского, 26',
-            'date_start' => '2021-11-27',
+            'date_start' => '2022-11-27',
+            'preview' => 'givi.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -66,7 +70,8 @@ class EventsSeeder extends Seeder
             'description' => 'Проведу мастер-класс по рисованию акварелью. Научимся рисовать по мокрому.',
             'city' => 'Красноярск',
             'adress' => 'ул. Академгородок, 21, Детский центр: "Мондельброт"',
-            'date_start' => '2021-11-28',
+            'date_start' => '2022-11-28',
+            'preview' => 'gendalf.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -77,7 +82,8 @@ class EventsSeeder extends Seeder
             'description' => 'Берите с собой хачей, расскажу заодно и им (подпись: очень уверенный в себе человека)',
             'city' => 'Сахалин',
             'adress' => 'ул. Ардженикидзе 2ъ',
-            'date_start' => '2021-11-29',
+            'date_start' => '2022-11-29',
+            'preview' => 'inoplanet.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -88,7 +94,8 @@ class EventsSeeder extends Seeder
             'description' => 'Обязательно при себе иметь вазилин и мирасмистин',
             'city' => 'МКС',
             'adress' => 'Шлюз № 3',
-            'date_start' => '2021-11-30',
+            'date_start' => '2022-11-30',
+            'preview' => 'kongress.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -99,7 +106,8 @@ class EventsSeeder extends Seeder
             'description' => 'Этот пидор не желае выйти замуж, но общественное мнение настроено иначе. Кто же прав кто виноват, рассудит царь',
             'city' => 'Магнитогорск',
             'adress' => 'Трц Шлюховице',
-            'date_start' => '2021-12-01',
+            'date_start' => '2022-12-01',
+            'preview' => 'atata.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -110,7 +118,8 @@ class EventsSeeder extends Seeder
             'description' => 'Кот - гид проведет вас вдоль заборов садов, вдоль саженцев валерьянки, хорошо проведем время, помурлыкаем на солнышке, поедим китикет, покакаем в вырытую ямку',
             'city' => 'Мяу',
             'adress' => 'Мяу',
-            'date_start' => '2021-12-02',
+            'date_start' => '2022-12-02',
+            'preview' => 'cat.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -121,7 +130,8 @@ class EventsSeeder extends Seeder
             'description' => 'Покупка новой БМВ с салона. Просто, чтобы ездить с удовольствием.',
             'city' => 'Питербург',
             'adress' => 'ул. Пушкина 21',
-            'date_start' => '2021-12-03',
+            'date_start' => '2022-12-03',
+            'preview' => 'bmw.jpeg',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -25,22 +25,46 @@ class CreateProfilesTable extends Migration
             $table->text('city')->comment('город пребывания пользователя')->nullable();
 
             $table->text('phone')->comment('номер телефона')->nullable();
+            $table->text('phone_checked')->comment('номер телефона')->nullable();
 
-            $table->text('wp')->comment('ссылка на whatsapp')->nullable();
-            $table->text('wb')->comment('ссылка на viber')->nullable();
-            $table->text('tg')->comment('ссылка на telegram')->nullable();
-
-            $table->text('ig')->comment('ссылка на instagram')->nullable();
-            $table->text('fb')->comment('ссылка на facebook')->nullable();
-            $table->text('vk')->comment('ссылка на vkontakte')->nullable();
+            $table->text('facebook')->comment('ссылка на facebook')->nullable();
+            $table->text('facebook_checked')->comment('отметка о выборе')->nullable();
+            
             $table->text('ok')->comment('ссылка на odnoklassniki')->nullable();
-            $table->text('yt')->comment('ссылка на youtube')->nullable();
+            $table->text('ok_checked')->comment('отметка о выборе')->nullable();
+
+            $table->text('telegram')->comment('ссылка на telegram')->nullable();
+            $table->text('telegram_checked')->comment('отметка о выборе')->nullable();
+
+            $table->text('twitter')->comment('ссылка на youtube')->nullable();
+            $table->text('twitter_checked')->comment('отметка о выборе')->nullable();
+
+            $table->text('instagram')->comment('ссылка на instagram')->nullable();
+            $table->text('instagram_checked')->comment('отметка о выборе')->nullable();
+
+            $table->text('viber')->comment('ссылка на viber')->nullable();
+            $table->text('viber_checked')->comment('отметка о выборе')->nullable();
+            
+            $table->text('vk')->comment('ссылка на vkontakte')->nullable();
+            $table->text('vk_checked')->comment('отметка о выборе')->nullable();
+            
+            $table->text('whatsapp')->comment('ссылка на whatsapp')->nullable();
+            $table->text('whatsapp_checked')->comment('отметка о выборе')->nullable();
+
+            $table->text('youtube')->comment('ссылка на youtube')->nullable();
+            $table->text('youtube_checked')->comment('отметка о выборе')->nullable();           
 
             $table->text('bookmarks')->comment('содержит идентификаторы избранных событий')->nullable();
 
+            $table->text('favourites')->comment('содержит идентификаторы любимых пользователей')->nullable();
+
             $table->text('likes')->comment('содержит идентификаторы понравившихся событий')->nullable();
 
-            $table->text('goes')->comment('содержит идентификаторы событий, на которые произошла регистрация')->nullable();
+            $table->text('going')->comment('содержит идентификаторы событий, на которые произошла регистрация')->nullable();
+
+            // $table->text('witness')->comment('позволяет избранным пользователям быть распространителями событий')->nullable();
+            $table->integer('witness')->comment('позволяет избранным пользователям быть распространителями событий')->default(0);
+
 
             // Создает created_at и updated_at            
             $table->timestamps();

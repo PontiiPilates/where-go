@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\App;
 
 use App\Models\Event;
 
+use Illuminate\Support\Facades\Hash;
+
+use App\Models\Order;
+use App\Events\ActionCreate;
+
 class StartController extends Controller
 {
     public function models()
@@ -18,12 +23,12 @@ class StartController extends Controller
 
         // Event::where('city', 'Красноярск')->update(['date_end' => 123]);
 
-        $m = Event::find(2);
-        $m->delete();
+        // $m = Event::find(2);
+        // $m->delete();
 
-
-
-
+        $p = 123;
+        $p = Hash::make($p);
+        dd($p);
     }
 
     public function request(Request $r)
@@ -39,5 +44,23 @@ class StartController extends Controller
         // echo __('message.welcome', ['name' => 'xxx']);
 
         // return $val;
+    }
+
+    public function store(Request $r, $id)
+    {
+        // dd($id);
+
+        $order = Order::findOrFail($id);
+
+        if ($id == 1) {
+            ActionCreate::dispatch($order);
+        } else {
+            return 'nothink';
+        }
+    }
+
+    public function filters(Request $r)
+    {
+        return view('project.dev');
     }
 }

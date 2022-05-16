@@ -18,75 +18,163 @@ class ProfilesSeeder extends Seeder
     {
         DB::table('profiles')->insert([
             'user_id' => '1',
-            'avatar' => 'default.jpg',
-            'about' => 'Родился и побрился, а затем покрестился в Северо-Байкальске. В 2002 году переехал в Красноярск. С тех пор организую походы, вездеходы, проходы, переходы. Короче, все организую, что связано с корнем "ходы".',
+            'avatar' => 'zloileshii.jpeg',
+            'about' => 'В детстве просыпался под музыку из Санта-барбары. А сейчас думаю, что живешь именно так, как до этого хотел чувствовать свою жизнь.',
             'city' => 'Красноярск',
-            'phone' => '+7(391) 246-98-60',
-            'wp' => 'on',
-            'wb' => 'on',
-            'tg' => 'on',
-            'ig' => 'https://www.instagram.com/p/CWWBBYfMyww/?utm_medium=copy_link',
-            'fb' => 'https://www.facebook.com/daniilkhanin',
-            'vk' => 'https://vk.com/zloileshii',
-            'ok' => '0',
-            'yt' => 'https://www.youtube.com/channel/UCr2EXJtFMunvG0CmYE3Tj8A',
-            'bookmarks' => '0',
+
+            'phone' => '+79233341635',
+            'phone_checked' => 'checked',
+
+            'facebook' => '100006706128842',
+            'facebook_checked' => 'checked',
+
+            'ok' => NULL,
+            'ok_checked' => NULL,
+
+            'telegram' => 'zloileshii',
+            'telegram_checked' => 'checked',
+
+            'twitter' => 'zloileshii',
+            'twitter_checked' => 'checked',
+
+            'instagram' => 'zloileshii',
+            'instagram_checked' => 'checked',
+
+            'viber' => NULL,
+            'viber_checked' => NULL,
+
+            'vk' => 'zloileshii',
+            'vk_checked' => 'checked',
+
+            'whatsapp' => '+79233341635',
+            'whatsapp_checked' => 'checked',
+
+            'youtube' => 'UCy1lFhLaelvhk1i51Mv8Ing',
+            'youtube_checked' => 'checked',
+
+            'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'goes' => '0',
+            'going' => '0',
         ]);
         DB::table('profiles')->insert([
             'user_id' => '2',
-            'avatar' => 'default.jpg',
-            'about' => 'Во время разработки обнаружил решение, которое позволяет сократить количество форм. А именно - убрать форму создания ноды. Существует одна форма, в которую осуществляется вывод информации из базы данных. Эта форма лишь обновляет выгруженные в нее сведения. Но перед ее запуском, контроллер спрашивает базу данных, есть ли такая запист. Если ее нет, то создает. При первом запуске выводит в форму пустые данные.',
+            'avatar' => 'igor.jpeg',
+            'about' => 'Люблю ездить на вахту, участвовать в политической жизни, есть плов и шурпу, ходить по спектаклям и свой мерседес.',
             'city' => 'Ачинск',
-            'phone' => '+7(391) 246-22-22',
-            'wp' => 'on',
-            'wb' => 'on',
-            'tg' => 'on',
-            'ig' => 'https://www.instagram.com/p/CWWBBYfMyww/?utm_medium=copy_link',
-            'fb' => 'https://www.facebook.com/daniilkhanin',
-            'vk' => 'https://vk.com/zloileshii',
-            'ok' => '0',
-            'yt' => 'https://www.youtube.com/channel/UCr2EXJtFMunvG0CmYE3Tj8A',
-            'bookmarks' => '0',
+
+            'phone' => '+79069141150',
+            'phone_checked' => 'checked',
+
+            'facebook' => NULL,
+            'facebook_checked' => NULL,
+
+            'ok' => NULL,
+            'ok_checked' => NULL,
+
+            'telegram' => NULL,
+            'telegram_checked' => NULL,
+
+            'twitter' => NULL,
+            'twitter_checked' => NULL,
+
+            'instagram' => NULL,
+            'instagram_checked' => NULL,
+
+            'viber' => NULL,
+            'viber_checked' => NULL,
+
+            'vk' => 'wimkrsk',
+            'vk_checked' => 'checked',
+
+            'whatsapp' => '+79069141150',
+            'whatsapp_checked' => 'checked',
+
+            'youtube' => 'AsafievStas',
+            'youtube_checked' => 'checked',
+
+            'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'goes' => '0',
+            'going' => '0',
         ]);
         DB::table('profiles')->insert([
             'user_id' => '3',
-            'avatar' => 'default.jpg',
-            'about' => 'Умею мыслить абстрактно. Сильно абстрактно. И мне этого вполне достаточно.',
+            'avatar' => 'anna.jpeg',
+            'about' => 'Ненавижу девочек, которые рисуют круги вокруг свечей, устраивают танцы с бубнами и думают, что сатана - это сама милота, с которой не справедливо обошлись. А котов люблю.',
             'city' => 'Красноярск',
-            'phone' => '+7(913) 033-60-06',
-            'wp' => 'on',
-            'wb' => 'on',
-            'tg' => 'on',
-            'ig' => 'https://www.instagram.com/p/CWWBBYfMyww/?utm_medium=copy_link',
-            'fb' => 'https://www.facebook.com/daniilkhanin',
-            'vk' => '0',
-            'ok' => '0',
-            'yt' => '0',
-            'bookmarks' => '0',
+
+            'phone' => '+79130336006',
+            'phone_checked' => 'checked',
+
+            'facebook' => NULL,
+            'facebook_checked' => NULL,
+
+            'ok' => NULL,
+            'ok_checked' => NULL,
+
+            'telegram' => NULL,
+            'telegram_checked' => NULL,
+
+            'twitter' => NULL,
+            'twitter_checked' => NULL,
+
+            'instagram' => NULL,
+            'instagram_checked' => NULL,
+
+            'viber' => NULL,
+            'viber_checked' => NULL,
+
+            'vk' => NULL,
+            'vk_checked' => NULL,
+
+            'whatsapp' => '+79130336006',
+            'whatsapp_checked' => 'checked',
+
+            'youtube' => NULL,
+            'youtube_checked' => NULL,
+
+            'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'goes' => '0',
+            'going' => '0',
         ]);
         DB::table('profiles')->insert([
             'user_id' => '4',
-            'avatar' => 'default.jpg',
-            'about' => 'Играю на гитаре, танцую и пою. Всех приглашаю на своё шоу.',
+            'avatar' => 'max.jpeg',
+            'about' => 'Однажды я попробовал дурман и долго сидел в тёмном корридоре, пока Серёга смотрел ведьмака.',
             'city' => 'Красноярск',
-            'phone' => '+7(963) 955-01-49',
-            'wp' => 'on',
-            'wb' => 'on',
-            'tg' => 'on',
-            'ig' => '0',
-            'fb' => 'https://www.facebook.com/daniilkhanin',
-            'vk' => 'https://vk.com/spacemax24',
-            'ok' => '0',
-            'yt' => '0',
-            'bookmarks' => '0',
+
+            'phone' => '+79639550149',
+            'phone_checked' => 'checked',
+
+            'facebook' => NULL,
+            'facebook_checked' => NULL,
+
+            'ok' => NULL,
+            'ok_checked' => NULL,
+
+            'telegram' => 'spacehere24',
+            'telegram_checked' => 'checked',
+
+            'twitter' => NULL,
+            'twitter_checked' => NULL,
+
+            'instagram' => 'spacehere24',
+            'instagram_checked' => 'checked',
+
+            'viber' => NULL,
+            'viber_checked' => NULL,
+
+            'vk' => 'spacemax24',
+            'vk_checked' => 'checked',
+
+            'whatsapp' => '+79639550149',
+            'whatsapp_checked' => 'checked',
+
+            'youtube' => NULL,
+            'youtube_checked' => NULL,
+
+            'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'goes' => '0',
+            'going' => '0',
         ]);
     }
 }

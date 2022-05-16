@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 // use App\Models\Event;
 use Illuminate\Support\Facades\DB;
 
-// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
+
+
+// Подключение модели данных профиля для измлечения массива с идентификаторами закладок
+use App\Models\Profile;
 
 class EventsListController extends Controller
 {
@@ -18,6 +22,9 @@ class EventsListController extends Controller
 
         $date_start = $r->date_start;
         $date_end = $r->date_end;
+        $category = $r->category;
+        $city = $r->city;
+        $current_date = date('Y-m-d');
 
         // $auth = Auth::id();
         // echo '<pre>';
@@ -27,54 +34,122 @@ class EventsListController extends Controller
         // var_dump($date_end);
         // echo '</pre>';
 
-        if ($date_start and $date_end) {
-            // print 'Сейчас битвин выполняется';
+        // Управление количеством записей при пагинации
+        $limit = 30;
+
+        if ($date_start and $date_end and !$category and !$city) {
+            // print 'Ds + De';
             $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
                 ->where('status', 1)
                 ->whereBetween('date_start', [$date_start, $date_end])
                 ->join('users', 'events.user_id', '=', 'users.id')
                 ->select('events.*', 'users.name')
-                ->get();
-        } elseif ($date_start) {
-            // print 'Сейчас вэре выполняется';
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+            // ->get();
+        } elseif ($date_start and $date_end and $category and !$city) {
+            // print 'Ds + De + Cat';
             $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('status', 1)
+                ->where('category', $category)
+                ->whereBetween('date_start', [$date_start, $date_end])
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+            // ->get();
+        } elseif ($date_start and !$date_end and !$category and !$city) {
+            // print 'Ds';
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
                 ->where('status', 1)
                 ->where('date_start', '>=', $date_start)
                 ->join('users', 'events.user_id', '=', 'users.id')
                 ->select('events.*', 'users.name')
-                ->get();
-        } else {
-            // print 'Сейчас всё выполняется';
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+            // ->get();
+        } elseif ($date_start and $category and !$date_end and !$city) {
+            // print 'Ds + Cat';
             $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('status', 1)
+                ->where('category', $category)
+                ->where('date_start', '>=', $date_start)
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+            // ->get();
+        } elseif ($city and $date_start and !$date_end and !$category) {
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('city', '=', $city)
                 ->where('status', 1)
                 ->join('users', 'events.user_id', '=', 'users.id')
                 ->select('events.*', 'users.name')
-                ->get();
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+        } elseif ($city and $date_start and $date_end and !$category) {
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('city', '=', $city)
+                ->where('status', 1)
+                ->whereBetween('date_start', [$date_start, $date_end])
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+        } elseif ($city and $date_start and $date_end and $category) {
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('city', '=', $city)
+                ->where('status', 1)
+                ->where('category', $category)
+                ->whereBetween('date_start', [$date_start, $date_end])
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+        } elseif ($city and $date_start and !$date_end and $category) {
+            // print 'Ci + DS + Ca';
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('city', '=', $city)
+                ->where('status', 1)
+                ->where('category', $category)
+                // ->whereBetween('date_start', [$date_start, $date_end])
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+        } else {
+            // print 'None';
+            $events = DB::table('events')
+                ->where('date_start', '>=', $current_date) // не показываем прошедшие события
+                ->where('status', 1)
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->select('events.*', 'users.name')
+                ->orderBy('date_start')
+                ->simplePaginate($limit);
+            // ->get();
         }
 
 
 
+        // Если пользователь авторизован то:
+        if (Auth::id()) {
 
-        // dd($auth);
+            // Получение данных из модели данных авторизованного пользователя
+            $profile = Profile::find(Auth::id());
 
-        // Так было в первый вариант
-        // $events = Event::all();
+            // Получение массива закладок пользователя
+            $bookmarks = unserialize($profile->bookmarks);
 
-        // А так стало во сторой версии
-
-
-
-
-        // $d = Event::find(2);
-
-        // dd($d);
-
-
-        // foreach (Event::all() as $item) {
-        //     print $item->title . '<br>';
-        // }
-
-
+            return view('project.general', ['events' => $events, 'bookmarks' => $bookmarks]);
+        }
 
         return view('project.general', ['events' => $events]);
     }

@@ -1,58 +1,85 @@
-<x-guest-layout>
+<x-project.layout>
 
-    <x-project.navigation>
-    </x-project.navigation>
+    <div class="col-md-2 col-lg-4"></div>
 
-    <!-- <x-auth-card> -->
-        <!-- <x-slot name="logo"> -->
-            <!-- <a href="/"> -->
-                <!-- <x-application-logo class="w-20 h-20 fill-current text-gray-500" /> -->
-            <!-- </a> -->
-        <!-- </x-slot> -->
+    <div class="col-md-8 col-lg-4">
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        {{-- <x-auth-card> --}}
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+        {{-- Validation Errors --}}
+        {{-- Не хочу пользоваться стандартным выводом сообщений об ошибках, поскольку они выводятся пачкой без пометки соответствующих полей
+        <div class="mb-3">
+            <x-auth-validation-errors class="mb-3" :errors="$errors" />
+        </div>
+        --}}
 
-            <!-- Name -->
-            <div class="mb-3">
-                <x-label for="name" :value="__('Имя')" />
-                <x-input id="name" class="" type="text" name="name" :value="old('name')" required autofocus />
-            </div>
-
-            <!-- Email Address -->
+        {{-- Email --}}
+        {{-- Также на всякий случай оставляю стандартное унифицированное поле, вдруг получится передать ошибку в его класс
             <div class="mb-3">
                 <x-label for="email" :value="__('Email')" />
                 <x-input id="email" class="" type="email" name="email" :value="old('email')" required />
             </div>
+        --}}
 
-            <!-- Password -->
+        {{-- Session Status --}}
+        <x-auth-session-status class="mb-3" :status="session('status')" />
+
+        {{-- Form --}}
+        <form method="POST" action="{{ route('register') }}">
+
+            {{-- CSRF Token --}}
+            @csrf
+
+            {{-- Name --}}
             <div class="mb-3">
-                <x-label for="password" :value="__('Пароль')" />
-                <x-input id="password" class="" type="password" name="password" required autocomplete="new-password" />
+                <label for="name" class="form-label">{{ __('Как к вам обращаться?')}}</label>
+                <input name="name" type="text" class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}" placeholder="Геральд из Ривии">
+                @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <!-- Confirm Password -->
+            {{-- Email --}}
             <div class="mb-3">
-                <x-label for="password_confirmation" :value="__('Подтверждение пароля')" />
-                <x-input id="password_confirmation" class="" type="password" name="password_confirmation" required />
+                <label for="email" class="form-label">Email</label>
+                <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}">
+                @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <x-button class="mb-3">
-                {{ __('Регистрация') }}
-            </x-button>
+            {{-- Password --}}
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password">
+                @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Password Confirmation --}}
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Подтверждение пароля</label>
+                <input name="password_confirmation" type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation">
+                @error('password_confirmation')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Button --}}
+            <div class="mb-3">
+                <x-button class="w-100">
+                    {{ __('Регистрация') }}
+                </x-button>
+            </div>
 
         </form>
 
-        <div class="">
-            <a class="" href="{{ route('login') }}">
-                {{ __('Уже зарегистрированы? Войдите.') }}
-            </a>
+        <p>Уже зарегистрированы? <a class="" href="{{ route('login') }}">{{ __('Войдите!') }}</a></p>
 
-        </div>
+        {{-- </x-auth-card> --}}
+    </div>
 
-    </x-auth-card>
-    
-</x-guest-layout>
+    <div class="col-md-2 col-lg-4"></div>
+
+</x-project.layout>

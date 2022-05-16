@@ -35,10 +35,19 @@ class CreateEventsTable extends Migration
 
             $table->text('preview')->comment('имя превью события')->nullable();
 
-            $table->integer('cost')->comment('стоимость события')->nullable();
-            $table->text('free')->comment('бесплатность события')->nullable();
+            // $table->text('free')->comment('стоимость участия в событии - бесплатно')->nullable();
+            // $table->text('donate')->comment('стоимость участия в событии - за донат')->nullable();
+            // $table->text('price')->comment('стоимость участия в событии - за деньги')->nullable();
+            $table->text('price_type')->comment('форма участия в событии')->nullable();
+            $table->integer('cost')->comment('фактическая стоимость участия в событии')->nullable();
+            
+            $table->text('goes')->comment('содержит идентификаторы пользователей, которые зарегистрировались на событие')->nullable();
+
+            $table->integer('witness')->comment('отметка о том, что создатель является свидетелем, а не автором события')->default(0);
 
             $table->integer('status')->comment('статус публикации события')->default(1);
+
+            $table->integer('counter')->comment('счетчик просмотров')->default(1);
 
             $table->timestamp('created_at')->comment('дата и время создания записи');
             $table->timestamp('updated_at')->comment('дата и время обновления записи');
