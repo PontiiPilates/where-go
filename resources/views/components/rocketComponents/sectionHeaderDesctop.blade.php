@@ -17,18 +17,18 @@
                  <div class="btn-group">
                      @auth
                      <button type="button" class="btn btn-light border rounded d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                         <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                         <img src="/public/img/avatars/{{ $stdAvatar ?? 'default.jpg' }}" alt="" width="32" height="32" class="rounded-circle me-2">
                          <strong>
                              {{ Auth::user()->name }}
                          </strong>
                      </button>
-                     @endauth
                      <ul class="dropdown-menu">
-                         <li><a class="dropdown-item" href="#">Профиль</a></li>
-                         <li><a class="dropdown-item" href="#">Настройки</a></li>
+                         <li><a class="dropdown-item" href="/user/{{ $userId }}">Профиль</a></li>
+                         <li><a class="dropdown-item" href="/user/{{ $userId }}/edit">Настройки</a></li>
                          <hr class="dropdown-divider">
-                         <li><a class="dropdown-item" href="#">Выйти</a></li>
+                         <li><a class="dropdown-item" href="/user/logout">Выйти</a></li>
                      </ul>
+                     @endauth
                  </div>
              </div>
              <!-- /Профиль -->

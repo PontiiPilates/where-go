@@ -10,7 +10,10 @@
 <body>
 
     <!-- Header desctop -->
-    <x-rocketComponents.sectionHeaderDesctop></x-rocketComponents.sectionHeaderDesctop>
+    <x-rocketComponents.sectionHeaderDesctop
+    :stdAvatar="$stdAvatar"
+    :userId="$userId">
+    </x-rocketComponents.sectionHeaderDesctop>
     <!-- /Header desctop -->
 
     <!-- Header mobile -->
@@ -40,9 +43,7 @@
 
 
                     {{--
-                    <!-- Настройки профиля -->
-                    <x-rocketComponents.sectionProfileSettings></x-rocketComponents.sectionProfileSettings>
-                    <!-- /Настройки профиля -->
+
                     
 
                     

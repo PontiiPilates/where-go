@@ -163,11 +163,6 @@ Route::get('bookmarks/{id}/add', [BookmraksController::class, 'addBookmark'])->m
 // Удаление из закладок
 Route::get('bookmarks/{id}/remove', [BookmraksController::class, 'removeBookmark'])->middleware('auth');
 
-// Подключение контроллера для страницы пользователя
-use App\Http\Controllers\rocket\UserController;
-// Страница пользователя
-Route::get('user/{id}', [UserController::class, 'getUser']);
-
 // Подключение контроллера для избранных пользователей
 use App\Http\Controllers\rocket\FavouritesController;
 // Избранные пользователи
@@ -201,6 +196,13 @@ Route::get('run/{event_id}/add', [RunController::class, 'add']);
 Route::get('run/{event_id}/remove', [RunController::class, 'remove']);
 // Показать пользователей, которые идут на событие
 Route::get('run/{event_id}/users', [RunController::class, 'getUsers']);
+
+// Подключение контроллера для управления авторизованным пользователем
+use App\Http\Controllers\rocket\UserController;
+// Страница пользователя
+Route::get('user/{id}', [UserController::class, 'getUser']);
+// Страница управления данными пользователя
+Route::match(['get', 'post'], 'user/{id}/edit', [UserController::class, 'edit']);
 
 
 

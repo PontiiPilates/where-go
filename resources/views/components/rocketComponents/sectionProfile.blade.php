@@ -7,13 +7,7 @@
                  <ul class="list-inline mb-0">
 
                      <!-- Компонент: иконки контактов -->
-                     <x-rocketComponents.componentContacts
-                        :phoneChecked="$phoneChecked"
-                        :phone="$phone"
-                        :telegramChecked="$telegramChecked"
-                        :telegram="$telegram"
-                        :whatsappChecked="$whatsappChecked"
-                        :whatsapp="$whatsapp">
+                     <x-rocketComponents.componentContacts :phoneChecked="$phoneChecked" :phone="$phone" :telegramChecked="$telegramChecked" :telegram="$telegram" :whatsappChecked="$whatsappChecked" :whatsapp="$whatsapp">
                      </x-rocketComponents.componentContacts>
                      <!-- /Компонент: иконки контактов -->
 
@@ -40,10 +34,17 @@
      <div class="d-lg-block d-flex justify-content-between gap-3">
 
          @if( Auth::id() == $userId)
-         <button class="btn btn-light border tools-bw-btn flex-fill">Редактировать</button>
+         <a href="/user/{{ $userId }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
          <!-- Поделиться -->
-         <button class="share-link btn btn-light border ms-lg-3" data-bs-trigger="click" data-bs-toggle="tooltip" data-bs-placement="left" title="Ссылка скопирована" data-bs-original-title="Ссылка скопирована" data-main-uri="https://where-go.ru/user/{{ $userId }}">
-             <i class="bi bi-reply-fill"></i>
+         <button
+            class="share-link btn btn-light border ms-lg-3"
+            data-bs-trigger="click"
+            data-bs-toggle="tooltip"
+            data-bs-placement="left"
+            title="Ссылка скопирована"
+            data-bs-original-title="Ссылка скопирована"
+            data-main-uri="https://where-go.ru/user/{{ $userId }}">
+                <i class="bi bi-reply-fill"></i>
          </button>
          <!-- /Поделиться -->
          @else
