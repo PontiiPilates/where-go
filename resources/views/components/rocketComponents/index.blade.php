@@ -43,24 +43,10 @@
 
 
                     {{--
-
-                    
-
-                    
-                    
-                    
-
-
-
-                    
-
                     
                     <!-- Фильтр для мобильных устройств -->
                     <x-rocketComponents.sectionFilterMobile></x-rocketComponents.sectionFilterMobile>
                     <!-- /Фильтр для мобильных устройств -->
-                    
-                    
-                    
                     
                     <!-- Модальное окно созданного события -->
                     <x-rocketComponents.modalWindowEventDone></x-rocketComponents.modalWindowEventDone>

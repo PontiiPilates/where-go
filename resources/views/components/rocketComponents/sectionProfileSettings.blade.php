@@ -12,57 +12,173 @@
 </ul>
 <!-- /Меню профиля -->
 
-
-
 <!-- Настройки профиля -->
 <div class="tab-content mb-5" id="pills-tabContent">
 
-    <!-- Форма редактирования профилья -->
+    <!-- Форма редактирования профиля -->
     <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-        <form>
-            <img src="/public/img/previews/2021_12_25__04_24_30__wsapy.jpeg" class="rounded w-50 mb-3" alt="image">
+        <form action="" method="post" enctype="multipart/form-data">
+
+            @csrf
+
+            <!-- Изображение -->
+            <img src="/public/img/avatars/{{ $profile->avatar ?? 'default.jpg' }}" class="rounded w-50 mb-3" alt="image">
+            <!-- /Изображение -->
+
+            <!-- Загрузка изображения -->
             <div class="mb-3">
-                <label for="create-preview" class="form-label">Изображение</label>
-                <input name="create_preview" type="file" class="form-control" id="create-preview">
+                <label for="avatar" class="form-label">Изображение</label>
+                <input name="avatar" type="file" class="form-control @error('avatar') is-invalid @enderror" id="avatar">
+                @error('avatar')
+                <div id="avatar" class="invalid-feedback">Загружаемое изображение должно быть в формате .jpg или .png</div>
+                @enderror
             </div>
+            <!-- /Загрузка изображения -->
+
+            <!-- О себе -->
+            @php
+            // Если есть введенное значение перед перезагрузкой страницы
+            if ( old('about') ) {
+            $profile->about = old('about');
+            }
+            @endphp
             <div class="mb-3">
-                <label for="create-description" class="form-label">О себе</label>
-                <textarea name="create_description" class="form-control " id="create-description" cols="30" rows="5"></textarea>
+                <label for="about" class="form-label">О себе</label>
+                <textarea name="about" class="form-control @error('about') is-invalid @enderror" id="about" cols="30" rows="5">{{ $profile->about ?? '' }}</textarea>
+                @error('about')
+                <div id="about" class="invalid-feedback">Расскажите о себе</div>
+                @enderror
             </div>
+            <!-- /О себе -->
+
+            <!-- Выбо города -->
+            @php
+            // Просто массив значений
+            $cityes = array(
+            'Не имеет значения',
+            'Ачинск',
+            'Артемовск',
+            'Боготол',
+            'Бородино',
+            'Енисейск',
+            'Железногорск',
+            'Дивногорск',
+            'Дудинка',
+            'Заозерный',
+            'Зеленогорск',
+            'Игарка',
+            'Иланский',
+            'Канск',
+            'Кодинск',
+            'Красноярск',
+            'Лесосибирск',
+            'Минусинск',
+            'Назарово',
+            'Норильск',
+            'Сосновоборск',
+            'Ужур',
+            'Уяр',
+            'Шарыпово',
+            );
+            @endphp
+
+            @php
+            $selected = '';
+            // Если событие редактируется и $city существует
+            if( $profile->city ) {
+            $selected = $profile->city;
+            }
+            // Если перед отправкой формы было установлено значение
+            if( old('city') ) {
+            $selected = old('city');
+            }
+            @endphp
+
             <div class="mb-3">
-                <label for="create-city" class="form-label">Город</label>
-                <select name="create_city" id="create-city" class="form-select" aria-label="Default select example">
-                    <option selected>Красноярск</option>
-                    <option value="1">Абакан</option>
-                    <option value="2">Дивногорск</option>
-                    <option value="3">Магнитогорск</option>
+                <label for="city" class="form-label">Город</label>
+                <select name="city" id="city" class="form-select @error('city') is-invalid @enderror">
+                    {{-- Вывод списка городов --}}
+                    @foreach($cityes as $city)
+
+                    {{-- Если $selected совпадает со значением из списка, то отображать его как selected --}}
+                    @if( $selected == $city )
+                    <option selected value="{{ $city }}">{{ $city }}</option>
+                    {{-- Иначе просто option --}}
+                    @else
+                    <option value="{{ $city }}">{{ $city }}</option>
+                    @endif
+
+                    @endforeach
                 </select>
+                @error('city')
+                <div id="city" class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+            <!-- /Выбор города -->
+
+            <!-- Номер телефона -->
             <label for="phone" class="form-label">Номер телефона</label>
             <div class="input-group mb-3">
                 <div class="input-group-text">
-                    <input name="phone_checked" class="form-check-input mt-0 " type="checkbox" value="1" checked="">
+                    @php
+                    $checked = '';
+                    if( $profile->phone_checked) {
+                    $checked = 'checked';
+                    }
+                    @endphp
+                    <input name="phone_checked" class="form-check-input mt-0 " type="checkbox" value="1" {{ $checked }}>
                 </div>
-                <input name="phone" type="tel" class="form-control " id="phone" value="" placeholder="+79999999999" pattern="(\+7)[0-9]{10}">
+                <input name="phone" type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" value="{{ $profile->phone ?? '' }}" placeholder="+79999999999" pattern="(\+7)[0-9]{10}">
+                @error('phone')
+                <div id="phone" class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+            <!-- /Номер телефона -->
+
+            <!-- Телеграм -->
             <label for="telegram" class="form-label">Telegram</label>
             <div class="input-group mb-3">
                 <div class="input-group-text">
-                    <input name="telegram_checked" class="form-check-input mt-0 " type="checkbox" value="1" checked="">
+                    @php
+                    $checked = '';
+                    if( $profile->telegram_checked) {
+                    $checked = 'checked';
+                    }
+                    @endphp
+                    <input name="telegram_checked" class="form-check-input mt-0 " type="checkbox" value="1" {{ $checked }}>
                 </div>
-                <input name="telegram" type="text" class="form-control " id="telegram" value="" placeholder="userName">
+                <input name="telegram" type="text" class="form-control @error('telegram') is-invalid @enderror" id="telegram" value="{{ $profile->telegram ?? '' }}" placeholder="userName">
+                @error('telegram')
+                <div id="telegram" class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+            <!-- /Телеграм -->
+
+            <!-- Вконтакте -->
             <label for="vk" class="form-label">Vkontakte</label>
             <div class="input-group mb-4">
                 <div class="input-group-text">
-                    <input name="vk_checked" class="form-check-input mt-0 " type="checkbox" value="1" checked="">
+                    @php
+                    $checked = '';
+                    if( $profile->vk_checked) {
+                    $checked = 'checked';
+                    }
+                    @endphp
+                    <input name="vk_checked" class="form-check-input mt-0 " type="checkbox" value="1" {{ $checked }}>
                 </div>
-                <input name="vk" type="text" class="form-control " id="vk" value="" placeholder="userName">
+                <input name="vk" type="text" class="form-control @error('vk') is-invalid @enderror" id="vk" value="{{ $profile->vk ?? '' }}" placeholder="userName">
+                @error('vk')
+                <div id="vk" class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+            <!-- /Вконтакте -->
+
             <div class="d-lg-block d-flex">
-                <button type="submit" class="btn btn-warning flex-fill tools-bw-btn">Сохранить</button>
+                <button name="form_name" value="profile" type="submit" class="btn btn-warning flex-fill tools-bw-btn">Сохранить</button>
             </div>
+
         </form>
+        {{-- dd($profile) --}}
     </div>
     <!-- /Форма редактирования профиля -->
 
@@ -84,7 +200,7 @@
                 <input name="password" type="password" class="form-control " id="password">
             </div>
             <div class="d-lg-block d-flex">
-                <button type="submit" class="btn btn-warning flex-fill tools-bw-btn">Изменить пароль</button>
+                <button name="form_name" value="sequrity" type="submit" class="btn btn-warning flex-fill tools-bw-btn">Изменить пароль</button>
             </div>
         </form>
     </div>
@@ -100,7 +216,7 @@
                 <input name="current_password" type="password" class="form-control " id="current_password">
             </div>
             <div class="d-lg-block d-flex">
-                <button type="submit" class="btn btn-warning flex-fill tools-bw-btn">Изменить Email</button>
+                <button type="fom_name" value="email" class="btn btn-warning flex-fill tools-bw-btn">Изменить Email</button>
             </div>
         </form>
     </div>

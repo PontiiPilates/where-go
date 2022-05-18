@@ -5,7 +5,8 @@
 >
 
   <!-- Настройки профиля -->
-    <x-rocketComponents.sectionProfileSettings>
+    <x-rocketComponents.sectionProfileSettings
+    :profile="$profile">
     </x-rocketComponents.sectionProfileSettings>
   <!-- /Настройки профиля -->
 

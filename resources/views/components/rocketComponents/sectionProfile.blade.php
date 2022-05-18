@@ -7,7 +7,13 @@
                  <ul class="list-inline mb-0">
 
                      <!-- Компонент: иконки контактов -->
-                     <x-rocketComponents.componentContacts :phoneChecked="$phoneChecked" :phone="$phone" :telegramChecked="$telegramChecked" :telegram="$telegram" :whatsappChecked="$whatsappChecked" :whatsapp="$whatsapp">
+                     <x-rocketComponents.componentContacts
+                        :phoneChecked="$phoneChecked"
+                        :phone="$phone"
+                        :telegramChecked="$telegramChecked"
+                        :telegram="$telegram"
+                        :whatsappChecked="$whatsappChecked"
+                        :whatsapp="$whatsapp">
                      </x-rocketComponents.componentContacts>
                      <!-- /Компонент: иконки контактов -->
 

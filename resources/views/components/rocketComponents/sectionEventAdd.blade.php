@@ -1,5 +1,9 @@
  <!-- Форма создания события -->
- <form class="mb-5" action="" method="POST" enctype="multipart/form-data">
+ <form
+    class="mb-5"
+    action=""
+    method="POST"
+    enctype="multipart/form-data">
 
      @csrf
 
