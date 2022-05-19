@@ -1,13 +1,24 @@
+{{-- Очень ебаный костыль --}}
+@php
+$active = 'profile';
+if ( isset(Request::query()['password']) ) {
+$active = 'password';
+}
+if ( isset(Request::query()['email']) ) {
+$active = 'email';
+}
+@endphp
+
 <!-- Меню профиля -->
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     <li class="nav-item" role="presentation">
-        <button class="nav-link text-reset me-2 active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Профиль</button>
+        <button class="nav-link text-reset me-2 @if($active == 'profile') active @endif" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Профиль</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link text-reset me-2" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Пароль</button>
+        <button class="nav-link text-reset me-2 @if($active == 'password') active @endif" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Пароль</button>
     </li>
     <li class="nav-item" role="presentation">
-        <button class="nav-link text-reset" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Почта</button>
+        <button class="nav-link text-reset @if($active == 'email') active @endif" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Почта</button>
     </li>
 </ul>
 <!-- /Меню профиля -->
@@ -16,7 +27,7 @@
 <div class="tab-content mb-5" id="pills-tabContent">
 
     <!-- Форма редактирования профиля -->
-    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+    <div class="tab-pane fade @if($active == 'profile') show active @endif" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
         <form action="" method="post" enctype="multipart/form-data">
 
             @csrf
@@ -182,22 +193,32 @@
     </div>
     <!-- /Форма редактирования профиля -->
 
-
-
     <!-- Форма смены пароля -->
-    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-        <form>
+    <div class="tab-pane fade @if($active == 'password') show active @endif" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+        <form action="" method="post">
+
+            @csrf
+
             <div class="mb-3">
                 <label for="current_password" class="form-label">Текущий пароль</label>
-                <input name="current_password" type="password" class="form-control " id="current_password">
+                <input name="current_password" type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password">
+                @error('current_password')
+                <div id="current_password" class="invalid-feedback">Не верный пароль</div>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="password_confirmation" class="form-label">Новый пароль</label>
-                <input name="password_confirmation" type="password" class="form-control " id="password_confirmation">
+                <input name="password_confirmation" type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation">
+                @error('password_confirmation')
+                <div id="password_confirmation" class="invalid-feedback">Пароль слишком прост</div>
+                @enderror
             </div>
             <div class="mb-4">
                 <label for="password" class="form-label">Подтверждение пароля</label>
-                <input name="password" type="password" class="form-control " id="password">
+                <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password">
+                @error('password')
+                <div id="password" class="invalid-feedback">Пароли не совпадают</div>
+                @enderror
             </div>
             <div class="d-lg-block d-flex">
                 <button name="form_name" value="sequrity" type="submit" class="btn btn-warning flex-fill tools-bw-btn">Изменить пароль</button>
@@ -206,17 +227,21 @@
     </div>
     <!-- /Форма смены пароля -->
 
-
-
     <!-- Форма смены почты -->
-    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-        <form>
+    <div class="tab-pane fade @if($active == 'email') show active @endif" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+        <form action="" method="post">
+
+            @csrf
+
             <div class="mb-4">
-                <label for="current_password" class="form-label">Email</label>
-                <input name="current_password" type="password" class="form-control " id="current_password">
+                <label for="email" class="form-label">Email</label>
+                <input name="email" type="text" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ $email ?? '' }}">
+                @error('email')
+                <div id="email" class="invalid-feedback">Адрес электронной почты должен быть введен полностью</div>
+                @enderror
             </div>
             <div class="d-lg-block d-flex">
-                <button type="fom_name" value="email" class="btn btn-warning flex-fill tools-bw-btn">Изменить Email</button>
+                <button name="form_name" type="submit" value="email" class="btn btn-warning flex-fill tools-bw-btn">Изменить Email</button>
             </div>
         </form>
     </div>

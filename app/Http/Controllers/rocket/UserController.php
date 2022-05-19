@@ -14,8 +14,14 @@ use Illuminate\Support\Facades\Validator;
 // Подключение модели таблицы Profile
 use App\Models\Profile;
 
+// Подключение модели таблицы Users
+use App\Models\User;
+
 // Подулючение класса Image для обработки изображений
 use App\Models\library\Images;
+
+// Подулючение класса Hash для изменения пароля
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -51,9 +57,6 @@ class UserController extends Controller
             'stdVarFavourites' => $stdVarFavourites,
             'user_id' => $user_id,
             'std_avatar' => $std_avatar,
-
-
-
         ]);
     }
 
@@ -62,6 +65,7 @@ class UserController extends Controller
      * @param int $user_id идентификатор авторизованного пользователя
      * @param object $r  данные отправленные из формы
      * @return mixed в зависимости от ситуации, метод отправляет данные в представление либо перенаправляет на страницу авторизованного пользователя
+     * TODO: стоит лучше продумать архитектуру настроек. Возможно их следует разнести по страницам "Редактировать профиль" и "Настройки (на одной странице разные формы)"
      */
     public function edit(Request $r, $user_id)
     {
@@ -69,14 +73,17 @@ class UserController extends Controller
         $stdVarFavourites = Base::getQueries('favourites_user');
         // Снабжение контроллера процедурными данными
         $profile = Profile::find($user_id);
+        // Снабжение контроллера процедурными данными
+        $user = User::find($user_id);
         // Получение имени аватара авторизованного пользователя
         $std_avatar = $profile->avatar;
+        $email = $user->email;
 
         // Если произошла отправка формы
         if ($r->isMethod('post')) {
 
+            // * Если отправка произошла с формы редактирования профиля
             if ($r->form_name == 'profile') {
-                // dd($r->all());
 
                 // Определение правил валидации
                 $validator = Validator::make($r->all(), [
@@ -124,6 +131,66 @@ class UserController extends Controller
                     }
                 }
             }
+
+            // * Если отправка произошла с формы изменения пароля
+            if ($r->form_name == 'sequrity') {
+
+                // Определение правил валидации
+                $validator = Validator::make($r->all(), [
+                    'current_password'          => 'current_password|min:3',            // проверяет введенный пароль на соответствие текущему
+                    'password_confirmation'     => 'min:3',                             // валидация введенного пароля
+                    'password'                  => 'confirmed|min:3',                   // проверка введенного пароля на соответсвие введенному ранее
+                ]);
+
+                // Если есть ошибки валидации
+                if ($validator->fails()) {
+
+                    // Вернуть пользователя обратно на форму
+                    return redirect("/user/$user_id/edit?password=active")
+                        ->withErrors($validator)
+                        ->withInput();
+
+                    // Если нет ошибок валидации
+                } else {
+
+                    // Изменение пароля
+                    $user->password = Hash::make($r->password_confirmation);
+
+                    // Сохранение
+                    if ($user->save()) {
+                        return redirect('logout');
+                    }
+                }
+            }
+
+            // * Если отправка произошла с формы изменения почты
+            if ($r->form_name == 'email') {
+
+                // Определение правил валидации
+                $validator = Validator::make($r->all(), [
+                    'email'         => 'email:rfc,dns',             // валидирует email, в том числе на соответствие доменных зон
+                ]);
+
+                // Если есть ошибки валидации
+                if ($validator->fails()) {
+
+                    // Вернуть пользователя обратно на форму
+                    return redirect("/user/$user_id/edit?email=active")
+                        ->withErrors($validator)
+                        ->withInput();
+
+                    // Если нет ошибок валидации
+                } else {
+
+                    // Изменение пароля
+                    $user->email = $r->email;
+
+                    // Сохранение
+                    if ($user->save()) {
+                        return redirect('logout');
+                    }
+                }
+            }
         }
 
         // Передача данных на представление
@@ -134,6 +201,7 @@ class UserController extends Controller
                 'std_avatar' => $std_avatar,
                 'user_id' => $user_id,
                 'profile' => $profile,
+                'email' => $email,
             ]
         );
     }
