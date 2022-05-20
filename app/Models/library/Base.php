@@ -44,9 +44,18 @@ class Base extends Model
         // Получение модели профиля для извлечения данных
         $profile = Profile::find($user_id);
 
-        // Извлечение массива с данными
-        $data = $profile->$column;
-        $data = unserialize($data);
+        // ! Предохранитель
+        // Случилось так, что запись в таблице profiles не была создана, поэтому можно выполнить проверку перед дальнейшим выполнением
+        if ($profile) {
+            // Извлечение массива с данными
+            $data = $profile->$column;
+            $data = unserialize($data);
+        } else {
+            $data = array();
+        }
+
+        // dd($profile);
+        
 
         // ! Если в таблице поле указано NULL, то при первой итерации значение переменной будет false, а view нужен array
         if (!$data) {
@@ -357,7 +366,13 @@ class Base extends Model
                     ->select('profiles.*', 'users.name')
                     ->get();
                 // Оптимизация данных
-                $data = $data->all()[0];
+
+                // ! Опять костыль, связанный с тем, что данных по запросу может и не быть.
+                if ($data->all()) {
+                    $data = $data->all()[0];
+                } else {
+                    $data = array();
+                }
                 break;
         }
 

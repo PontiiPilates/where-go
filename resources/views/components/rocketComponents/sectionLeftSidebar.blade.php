@@ -84,13 +84,10 @@
         <div class="pt-3">
             <ul class="list-inline lh-1">
                 <li class="list-inline-item align-middle">
-                    <a href="#" class="text-decoration-none text-secondary"><small>Связаться с разработчиком |</small></a>
+                    <a href="#" class="text-decoration-none text-secondary"><small>Как тут заработать?</small></a>
                 </li>
                 <li class="list-inline-item align-middle">
-                    <a href="#" class="text-decoration-none text-secondary"><small>Помощь |</small></a>
-                </li>
-                <li class="list-inline-item align-middle">
-                    <a href="#" class="text-decoration-none text-secondary"><small>Инвесторам |</small></a>
+                    <a href="#" class="text-decoration-none text-secondary"><small>Связаться с разработчиком</small></a>
                 </li>
             </ul>
         </div>

@@ -8,23 +8,23 @@
 </head>
 
 <body>
+    <div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
+        <div class="tools-bw-c">
 
-    <!-- Форма авторизации -->
-    <x-rocketComponents.emptyAuthorization></x-rocketComponents.emptyAuthorization>
-    <!-- /Форма авторизации -->
+            {{ $slot }}
 
-    <!-- Форма регистрации -->
-    <x-rocketComponents.emptyRegistration></x-rocketComponents.emptyRegistration>
-    <!-- /Форма регистрации -->
+            {{--
+                <!-- Форма восстановления пароля -->
+                <x-rocketComponents.emptyForgot></x-rocketComponents.emptyForgot>
+                <!-- /Форма восстановления пароля -->
 
-    <!-- Форма восстановления пароля -->
-    <x-rocketComponents.emptyForgot></x-rocketComponents.emptyForgot>
-    <!-- /Форма восстановления пароля -->
+                <!-- 404 -->
+                <x-rocketComponents.empty404></x-rocketComponents.empty404>
+                <!-- /404 -->
+            --}}
 
-    <!-- 404 -->
-    <x-rocketComponents.empty404></x-rocketComponents.empty404>
-    <!-- /404 -->
-
+        </div>
+    </div>
 </body>
 
 </html>

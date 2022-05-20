@@ -40,7 +40,7 @@ use App\Http\Controllers\project\FormSecurityController;
 use App\Http\Controllers\project\PageEventController;
 
 // Поиск событий (главная)
-Route::match(['get', 'post'], '/', [EventsListController::class, 'getGeneral']);
+// Route::match(['get', 'post'], '/', [EventsListController::class, 'getGeneral']);
 
 // Создание события
 Route::match(['get', 'post'], '/create/event', [FormEventController::class, 'create']);
@@ -152,7 +152,7 @@ Route::get('/l', function () {
 //  Подключение контроллера для главной страницы
 use App\Http\Controllers\rocket\GeneralController;
 // Главная страница
-Route::get('/g', [GeneralController::class, 'general']);
+Route::get('/', [GeneralController::class, 'general']);
 
 // Подключение контроллера для обеспечения работы закладок
 use App\Http\Controllers\rocket\BookmraksController;

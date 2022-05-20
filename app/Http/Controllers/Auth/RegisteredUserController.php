@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+// + Подключение модели Profile для взаимодействия с таблицей profiles
+use App\Models\Profile;
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -49,7 +52,23 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // return redirect(RouteServiceProvider::HOME);
-        return redirect('/edit/profile');
+        // + Получение идентификатора авторизованного пользователя
+        $user_id = Auth::id();
+
+        // + Создание экземпляра класса Profile
+        $profile = new Profile;
+
+        // + Добавление идентификатора зарегистрировавшегося пользователя в экземпляр класса
+        $profile->user_id = Auth::id();
+        // + Стандартного аватара
+        $profile->avatar = 'default.jpg';
+
+        // + Сохранение модели в таблицу
+        $profile->save();
+
+        // - return redirect(RouteServiceProvider::HOME);
+
+        // + Переход на страницу зарегистрировавшегося пользователя
+        return redirect("/user/$user_id");
     }
 }

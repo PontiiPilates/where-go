@@ -26,7 +26,12 @@
                          <li><a class="dropdown-item" href="/user/{{ $userId }}">Профиль</a></li>
                          <li><a class="dropdown-item" href="/user/{{ $userId }}/edit">Настройки</a></li>
                          <hr class="dropdown-divider">
-                         <li><a class="dropdown-item" href="/user/logout">Выйти</a></li>
+                         <li>
+                             <form method="POST" action="{{ route('logout') }}">
+                                 @csrf
+                                 <button class="dropdown-item" onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Выйти') }}</button>
+                             </form>
+                         </li>
                      </ul>
                      @endauth
                  </div>

@@ -34,6 +34,32 @@ class GeneralController extends Controller
             $stdVarFavourites = Base::getQueries('favourites_user');
         }
 
-        return view('rocketViews.general', ['events' => $events, 'bookmarks' => $bookmarks, 'stdVarFavourites' => $stdVarFavourites]);
+        // ! Снабжение стандартными данными
+        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
+        // Получение данных пользователя
+        $user = Base::getQueries('user', Auth::id());
+        // Получение имени аватара авторизованного пользователя
+        if ($user) {
+            $std_avatar = $user->avatar;
+        } else {
+            $std_avatar = '';
+        }
+
+
+        if (Auth::id()) {
+            $user_id = Auth::id(); 
+        } else {
+            $user_id = 0; 
+        }
+
+
+
+        return view('rocketViews.general', [
+            'events' => $events,
+            'bookmarks' => $bookmarks,
+            'stdVarFavourites' => $stdVarFavourites,
+            'stdAvatar' => $std_avatar,
+            'userId' => $user_id,
+        ]);
     }
 }

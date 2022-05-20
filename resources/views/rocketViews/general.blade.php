@@ -1,4 +1,7 @@
-<x-rocketComponents.index :stdVarFavourites="$stdVarFavourites">
+<x-rocketComponents.index
+:stdVarFavourites="$stdVarFavourites"
+:stdAvatar="$stdAvatar"
+:userId="$userId">
 
   <!-- Компонент: вывод списка событий -->
   <x-rocketComponents.componentEventList
