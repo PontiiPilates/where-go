@@ -1,11 +1,15 @@
-<p class="mb-3">Еще нет аккаунта? <a href="{{ route('register') }}">{{ __('Зарегистрируйтесь!') }}</a></p>
+<p class="mb-3">
+    {{ __('Еще нет аккаунта?') }} <a href="{{ route('register') }}">{{ __('Зарегистрируйтесь!') }}</a>
+</p>
 
 <!-- Форма авторизации -->
 <form method="POST" action="{{ route('login') }}">
 
+    <!-- Токен -->
     @csrf
+    <!-- /Токен -->
 
-    <!-- Почта -->
+    <!-- Email -->
     <div class="mb-3">
         <label for="email" class="form-label">{{ __('Email') }}</label>
         <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}">
@@ -13,7 +17,7 @@
         <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <!-- /Почта -->
+    <!-- /Email -->
 
     <!-- Пароль -->
     <div class="mb-3">
@@ -29,13 +33,9 @@
         <a href="{{ route('password.email') }}">{{ __('Забыли пароль?') }}</a>
     </p>
 
-    <!-- Отправка формы -->
     <div>
-        <button type="submit" class="btn btn-warning w-100">
-            {{ __('Войти') }}
-        </button>
+        <button type="submit" class="btn btn-warning w-100">{{ __('Войти') }}</button>
     </div>
-    <!-- /Отправка формы -->
 
 </form>
 <!-- /Форма авторизации -->

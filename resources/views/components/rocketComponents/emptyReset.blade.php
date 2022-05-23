@@ -1,28 +1,18 @@
-<p class="mb-3">
-    {{ __('Уже есть аккаунт?') }} <a href="{{ route('login') }}">{{ __('Войдите!') }}</a>
-</p>
-
-<!-- Форма регистрации -->
-<form method="POST" action="{{ route('register') }}">
+<!-- Форма сброса пароля -->
+<form method="POST" action="{{ route('password.update') }}">
 
     <!-- Токен -->
     @csrf
     <!-- /Токен -->
 
-    <!-- Имя пользователя -->
-    <div class="mb-3">
-        <label for="name" class="form-label">{{ __('Как обращаться к вам?') }}</label>
-        <input name="name" type="name" class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}">
-        @error('name')
-        <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-    <!-- /Имя пользователя -->
+    <!-- Токен -->
+    <input type="hidden" name="token" value="{{ $request->route('token') }}">
+    <!-- /Токен -->
 
     <!-- Email -->
-    <div class="mb-3">
-        <label for="email" class="form-label">{{ __('Email') }}</label>
-        <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}">
+    <div class="mb-5">
+        <label for="email" class="form-label ">{{ __('Email') }}</label>
+        <input name="email" type="email" class="form-control @error('email') is-invalid @endif" id="email" value="{{ old('email', $request->email) }}">
         @error('email')
         <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -50,8 +40,8 @@
     <!-- /Подтверждение пароля -->
 
     <div>
-        <button type="submit" class="btn btn-warning w-100">{{ __('Регистрация') }}</button>
+        <button type="submit" class="btn btn-warning w-100">{{ __('Сбросить пароль') }}</button>
     </div>
 
 </form>
-<!-- /Форма регистрации -->
+<!-- /Форма сброса пароля -->

@@ -1,7 +1,7 @@
 <x-rocketComponents.outdex>
 
-    <!-- Форма авторизации -->
+    <!-- Форма регистрации -->
     <x-rocketComponents.emptyRegister></x-rocketComponents.emptyRegister>
-    <!-- /Форма авторизации -->
+    <!-- /Форма регистрации -->
 
 </x-rocketViews.outdex>

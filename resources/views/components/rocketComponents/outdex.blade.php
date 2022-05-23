@@ -14,10 +14,6 @@
             {{ $slot }}
 
             {{--
-                <!-- Форма восстановления пароля -->
-                <x-rocketComponents.emptyForgot></x-rocketComponents.emptyForgot>
-                <!-- /Форма восстановления пароля -->
-
                 <!-- 404 -->
                 <x-rocketComponents.empty404></x-rocketComponents.empty404>
                 <!-- /404 -->
