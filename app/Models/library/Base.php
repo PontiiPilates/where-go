@@ -42,7 +42,7 @@ class Base extends Model
         $user_id = Auth::id();
 
         // Получение модели профиля для извлечения данных
-        $profile = Profile::find($user_id);
+        $profile = Profile::firstWhere('user_id', $user_id);
 
         // ! Предохранитель
         // Случилось так, что запись в таблице profiles не была создана, поэтому можно выполнить проверку перед дальнейшим выполнением
@@ -55,7 +55,7 @@ class Base extends Model
         }
 
         // dd($profile);
-        
+
 
         // ! Если в таблице поле указано NULL, то при первой итерации значение переменной будет false, а view нужен array
         if (!$data) {
@@ -75,10 +75,12 @@ class Base extends Model
     static function addIds($event_id, $column)
     {
         // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::find(Auth::id());
+        $profile = Profile::firstWhere('user_id', Auth::id());
+        // dd(Auth::id());
 
         // Получение массива с закладками авторизованного поьзователя
         $data = self::getIds($column);
+
 
         // Добавление нового элемента в массив идентификаторов
         $data[] = $event_id;
@@ -100,7 +102,7 @@ class Base extends Model
     static function removeIds($event_id, $column)
     {
         // Получение модели профиля для извлечения закладок
-        $profile = Profile::find(Auth::id());
+        $profile = Profile::firstWhere('user_id', Auth::id());
 
         // Получение массива с закладками авторизованного поьзователя
         $data = self::getIds($column);
@@ -128,7 +130,7 @@ class Base extends Model
     static function addRun($event_id, $profile_column, $event_column)
     {
         // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::find(Auth::id());
+        $profile = Profile::firstWhere('user_id', Auth::id());
 
         // Получение идентификаторов событий, на которые зарегистрировался пользователь
         $profile_ids = $profile->$profile_column;
@@ -174,7 +176,8 @@ class Base extends Model
     static function removeRun($event_id, $profile_column, $event_column)
     {
         // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::find(Auth::id());
+        $profile = Profile::firstWhere('user_id', Auth::id());
+
 
         // Получение идентификаторов событий, на которые зарегистрировался пользователь
         $profile_ids = $profile->$profile_column;
@@ -429,5 +432,94 @@ class Base extends Model
     static function getUserSet($user_id)
     {
         return Base::getQueries('favourites_user');
+    }
+
+    /**
+     * * Возвращает список событий в зависимости от выбранного фильтра
+     * @param $direction string
+     * @param $city string
+     * @param $category string
+     * @param $date_start string
+     * @return $events object
+     */
+    static function getFiltrated($direction, $city, $category, $date_start)
+    {
+        switch ($direction) {
+            case 'city';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.city', $city)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'category';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', $category)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'date';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'city_category';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', $category)
+                    ->where('events.city', $city)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'city_date';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.city', $city)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'category_date';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', $category)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+            case 'city_category_date';
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', $category)
+                    ->where('events.city', $city)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate(30);
+                break;
+        }
     }
 }

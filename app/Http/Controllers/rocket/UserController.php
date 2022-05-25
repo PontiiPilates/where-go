@@ -23,6 +23,9 @@ use App\Models\library\Images;
 // Подулючение класса Hash для изменения пароля
 use Illuminate\Support\Facades\Hash;
 
+// Подключение класса Auth для возможности получения данных о статусе пользователя
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
     /**
@@ -33,6 +36,8 @@ class UserController extends Controller
         // Получение данных пользователя
         $user = Base::getQueries('user', $user_id);
 
+        // dd($user);
+
         // Получение списка событий
         $events = Base::getQueries('user_events', $user_id);
 
@@ -41,12 +46,19 @@ class UserController extends Controller
 
         // Получение списка идентификаторов избранных пользователей
         $favourites = Base::getIds('favourites');
+        // dd($favourites);
+
+
+
 
         // Получение данных избранных пользователей
         $stdVarFavourites = Base::getQueries('favourites_user');
 
+        // Получение данных пользователя
+        $self = Base::getQueries('user', Auth::id());
+
         // Получение имени аватара авторизованного пользователя
-        $std_avatar = $user->avatar;
+        $std_avatar = $self->avatar;
 
         // Передача данных на представление
         return view('rocketViews.user', [
@@ -72,7 +84,7 @@ class UserController extends Controller
         // Снабжение стандартными данными (подписки)
         $stdVarFavourites = Base::getQueries('favourites_user');
         // Снабжение контроллера процедурными данными
-        $profile = Profile::find($user_id);
+        $profile = Profile::firstWhere('user_id', $user_id);
         // Снабжение контроллера процедурными данными
         $user = User::find($user_id);
         // Получение имени аватара авторизованного пользователя

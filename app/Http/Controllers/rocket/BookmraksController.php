@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 // Подключение библиотеки собственных методов (функции)
 use App\Models\library\Base;
 
+use Illuminate\Support\Facades\Auth;
+
+
 class BookmraksController extends Controller
 {
     /**
@@ -24,7 +27,23 @@ class BookmraksController extends Controller
         // Получение списка идентификаторов событий, которые пользователь добавил в закладки
         $bookmarks = Base::getIds('bookmarks');
 
-        return view('rocketViews.bookmarks', ['stdVarFavourites' => $stdVarFavourites, 'events' => $events, 'bookmarks' => $bookmarks]);
+        $auth_id = Auth::id();
+
+        $std_avatar = '';
+        if ($auth_id) {
+            // * Получение данных пользователя
+            $user = Base::getQueries('user', $auth_id);
+            // * Получение имени аватара авторизованного пользователя
+            $std_avatar = $user->avatar;
+        }
+
+        return view('rocketViews.bookmarks', [
+            'stdVarFavourites' => $stdVarFavourites,
+            'events' => $events,
+            'bookmarks' => $bookmarks,
+            'std_avatar' => $std_avatar,
+            'user_id' => $auth_id,
+        ]);
     }
 
     /**

@@ -16,9 +16,9 @@ class RunController extends Controller
     {
 
         // Получение данных избранных пользователей
-        
+
         // return view('rocketViews.userList', ['events' => $events]);
-        
+
         // Получение списка событий
         $events = Base::getQueries('run_events');
         // $events = Base::getQueries('all_events');
@@ -33,7 +33,24 @@ class RunController extends Controller
             $stdVarFavourites = Base::getQueries('favourites_user');
         }
 
-        return view('rocketViews.general', ['events' => $events, 'bookmarks' => $bookmarks, 'stdVarFavourites' => $stdVarFavourites]);
+        // * Снабжение контроллера стандартными данными авторизованного пользователя (идентификатор авторизованного пользователя)
+        $auth_id = Auth::id();
+
+        $std_avatar = '';
+        if ($auth_id) {
+            // * Получение данных пользователя
+            $user = Base::getQueries('user', $auth_id);
+            // * Получение имени аватара авторизованного пользователя
+            $std_avatar = $user->avatar;
+        }
+
+        return view('rocketViews.general', [
+            'events' => $events,
+            'bookmarks' => $bookmarks,
+            'stdVarFavourites' => $stdVarFavourites,
+            'stdAvatar' => $std_avatar,
+            'userId' => $auth_id,
+        ]);
     }
     public function add($event_id)
     {

@@ -31,8 +31,6 @@ yarn-error.log
 /vendor
 .editorconfig
 .env
-.env_fromLocalhost
-.env_fromServer
 .gitattributes
 resources/views/components/project
 resources/views/project

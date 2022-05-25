@@ -6,7 +6,7 @@
 
   <!-- Профиль -->
     <x-rocketComponents.sectionProfile
-    :userId="$user->id"
+    :userId="$user->user_id"
     :name="$user->name"
     :avatar="$user->avatar"
 

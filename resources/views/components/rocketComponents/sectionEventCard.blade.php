@@ -1,4 +1,5 @@
-{{-- Блок управления состоянием закладок, располагается в самом начале, поскольку является общим для двух элементов в компоненте --}}
+{{-- Блок управления состоянием закладок, располагается в самом начале, поскольку является общим для двух элементов в
+компоненте --}}
 {{-- А также он повторяется и поэтому может находиться сразу в компоненте --}}
 @php
 
@@ -17,6 +18,8 @@ $bookmark_class = 'bi-bookmark-check-fill';
 <div class="card mb-3 main-light-shadow border-white postiton-relative">
     <div class="row p-1 g-3">
 
+        {{-- Если есть изображение --}}
+        @if($preview)
         <!-- Левая колонка / верхняя строка -->
         <div class="col col-lg-6" style="min-width: 300px;">
 
@@ -25,7 +28,12 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
                 <!-- Автор -->
                 <a href="/user/{{ $creatorId }}" class="d-flex align-items-center text-decoration-none text-reset">
-                    <img src="/public/img/avatars/{{ $avatar }}" alt="image-profile" width="45" height="45" class="rounded-circle me-2">
+
+                    @if($avatar)
+                    <img src="/public/img/avatars/{{ $avatar }}" alt="image-profile" width="45" height="45"
+                        class="rounded-circle me-2">
+                    @endif
+
                     <strong>{{ $username }}</strong>
                 </a>
                 <!-- /Автор -->
@@ -48,9 +56,10 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
         </div>
         <!-- /Левая колонка / верхняя строка -->
+        @endif
 
         <!-- Правая колонка / нижняя строка -->
-        <div class="col col-lg-6" style="min-width: 300px;">
+        <div class="col @if( $preview ) col-lg-6 @endif" style="min-width: 300px;">
             <div class="card-body position-relative h-100 p-0 pb-3">
 
                 <!-- Блок для десктопной версии -->
@@ -58,8 +67,14 @@ $bookmark_class = 'bi-bookmark-check-fill';
                 <div class="d-none d-sm-block position-relative">
 
                     <!-- Автор -->
-                    <a href="/user/{{ $creatorId }}" class="d-flex align-items-center text-decoration-none mb-3 text-reset">
-                        <img src="/public/img/avatars/{{ $avatar }}" alt="image-profile" width="45" height="45" class="rounded-circle me-2">
+                    <a href="/user/{{ $creatorId }}"
+                        class="d-flex align-items-center text-decoration-none mb-3 text-reset">
+
+                        @if($avatar)
+                        <img src="/public/img/avatars/{{ $avatar }}" alt="image-profile" width="45" height="45"
+                            class="rounded-circle me-2">
+                        @endif
+
                         <strong>{{ $username }}</strong>
                     </a>
                     <!-- /Автор -->
@@ -128,11 +143,8 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
                 <!-- Поделиться -->
                 <div class="position-absolute bottom-0 end-0">
-                    <button class="share-link card-icon"
-                        data-bs-trigger="click"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="left"
-                        data-bs-original-title="Ссылка скопирована"
+                    <button class="share-link card-icon" data-bs-trigger="click" data-bs-toggle="tooltip"
+                        data-bs-placement="left" data-bs-original-title="Ссылка скопирована"
                         data-main-uri="https://where-go.ru/event/{{ $id }}">
                         <i class="bi bi-reply-fill"></i>
                     </button>
@@ -145,21 +157,20 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
     </div>
 
-    @if($dateStart + 86400 < time())
-        <!-- Фон прошедшего события -->
+    @if($dateStart + 86400 < time()) <!-- Фон прошедшего события -->
         <div class="position-absolute top-0 bottom-0 start-0 end-0 bg-white opacity-75"></div>
         <!-- /Фон прошедшего события -->
 
         <!-- Обозначение прошедшего события -->
         <a href="/event/{{ $id }}" class="text-reset text-decoration-none">
-            <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2" style="height: 120px; width: 120px;">
+            <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2"
+                style="height: 120px; width: 120px;">
                 <div><i class="bi bi-hourglass-bottom"></i></div>
                 <div class="text-center">Событие окончено</div>
             </div>
         </a>
         <!-- /Обозначение прошедшего события -->
-    @endif
+        @endif
 
 </div>
 <!-- /Карточка -->
-

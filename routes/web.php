@@ -178,7 +178,7 @@ use App\Http\Controllers\rocket\EventController;
 // Возвращает страницу события
 Route::get('event/{id}', [EventController::class, 'get'])->whereNumber('id'); // Явно указываю, что id - это число!
 // Добавляет событие
-Route::match(['get', 'post'], 'event/add', [EventController::class, 'add']);
+Route::match(['get', 'post'], 'event/add', [EventController::class, 'add'])->middleware('auth');
 // Редактировать событие
 Route::match(['get', 'post'], 'event/{id}/edit', [EventController::class, 'edit']);
 // Удаляет событие
@@ -189,7 +189,7 @@ Route::get('event/{id}/remove', [EventController::class, 'remove']);
 // Подключение контроллера для регистрации на событие
 use App\Http\Controllers\rocket\RunController;
 // Возвращает список событий, на которые идет пользователь
-Route::get('run', [RunController::class, 'getEvents']);
+Route::get('run', [RunController::class, 'getEvents'])->middleware('auth');
 // Зарегистрировать пользователя на событие
 Route::get('run/{event_id}/add', [RunController::class, 'add']);
 // Отменить регистрацию пользователя на событие

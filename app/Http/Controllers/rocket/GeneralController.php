@@ -11,15 +11,17 @@ use App\Models\library\Base;
 // Подключение класса Auth для возможности получения данных о статусе пользователя
 use Illuminate\Support\Facades\Auth;
 
+// Подключение DB для создания произвольных запросов к базе данных
+use Illuminate\Support\Facades\DB;
+
 class GeneralController extends Controller
 {
     /**
      * ? Передает во view данные для рендеринга главной страницы
      */
-    public function general()
+    public function general(Request $r)
     {
-        // Получение списка событий
-        $events = Base::getQueries('all_events');
+
 
         // Переменная для неавторизованного пользователя
         $stdVarFavourites = array();
@@ -47,10 +49,50 @@ class GeneralController extends Controller
 
 
         if (Auth::id()) {
-            $user_id = Auth::id(); 
+            $user_id = Auth::id();
         } else {
-            $user_id = 0; 
+            $user_id = 0;
         }
+
+        /**
+         * * Организация фильтрации событий
+         */
+
+        // Если произошла отправка отправка формы "Фильтр"
+        if ($r->filter === 'true') {
+
+            $city = $r->city;
+            $category = $r->category;
+            $date_start = $r->date_start;
+            
+            // Вывод по городу
+            // Вывод по категории
+            // Вывод по дате
+
+            // Вывод по городу и категории
+            // Вывод по городу и дате
+            // Вывод по категории и дате
+
+            // Вывод по городу категории и дате
+
+            $events = DB::table('events')
+                ->where('status', 1)
+
+                // ->where('events.category', $category)
+                // ->where('events.city', $city)
+                ->where('date_start', '>=', $date_start)
+
+                ->join('users', 'events.user_id', '=', 'users.id')
+                ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                ->select('events.*', 'users.name', 'profiles.avatar')
+                ->orderBy('date_start')
+                ->simplePaginate(30);
+        } else {
+            // Иначе просто вывод списка событий
+            $events = Base::getQueries('all_events');
+        }
+
+
 
 
 

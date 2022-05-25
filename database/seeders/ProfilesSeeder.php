@@ -54,7 +54,7 @@ class ProfilesSeeder extends Seeder
 
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'going' => '0',
+            'going' => NULL,
         ]);
         DB::table('profiles')->insert([
             'user_id' => '2',
@@ -94,7 +94,7 @@ class ProfilesSeeder extends Seeder
 
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'going' => '0',
+            'going' => NULL,
         ]);
         DB::table('profiles')->insert([
             'user_id' => '3',
@@ -134,7 +134,7 @@ class ProfilesSeeder extends Seeder
 
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'going' => '0',
+            'going' => NULL,
         ]);
         DB::table('profiles')->insert([
             'user_id' => '4',
@@ -174,7 +174,7 @@ class ProfilesSeeder extends Seeder
 
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'going' => '0',
+            'going' => NULL,
         ]);
     }
 }

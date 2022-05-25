@@ -39,6 +39,15 @@ class EventController extends Controller
         // * Снабжение контроллера стандартными данными авторизованного пользователя (закладки)
         $stdVarBookmarks = Base::getIds('bookmarks');
 
+        $std_avatar = '';
+        if ($auth_id) {
+            // * Получение данных пользователя
+            $user = Base::getQueries('user', $auth_id);
+            // * Получение имени аватара авторизованного пользователя
+            $std_avatar = $user->avatar;
+        }
+
+
         // Получение данных одного события
         $event = Base::getQueries('one_event', $event_id);
 
@@ -53,13 +62,16 @@ class EventController extends Controller
             $run_users_ids = array();
         }
 
+
+
         return view('rocketViews.eventPage', [
             'stdVarBookmarks' => $stdVarBookmarks,
             'stdVarFavourites' => $stdVarFavourites,
             'event' => $event,
             'count' => $count,
             'user_id' => $auth_id,
-            'run_users_ids' => $run_users_ids
+            'run_users_ids' => $run_users_ids,
+            'std_avatar' => $std_avatar,
         ]);
     }
 
@@ -174,6 +186,14 @@ class EventController extends Controller
         // * Снабжение контроллера данными редактируемого события
         $event = Event::find($event_id);
 
+        $std_avatar = '';
+        if ($auth_id) {
+            // * Получение данных пользователя
+            $user = Base::getQueries('user', $auth_id);
+            // * Получение имени аватара авторизованного пользователя
+            $std_avatar = $user->avatar;
+        }
+
         // Если произошла отправка формы
         if ($r->isMethod('post')) {
 
@@ -241,7 +261,9 @@ class EventController extends Controller
         return view('rocketViews.eventEdit', [
             'stdVarFavourites' => $stdVarFavourites,
             'event' => $event,
-            'user_witness' => $user_witness
+            'user_witness' => $user_witness,
+            'std_avatar' => $std_avatar,
+            'user_id' => $auth_id,
         ]);
     }
 

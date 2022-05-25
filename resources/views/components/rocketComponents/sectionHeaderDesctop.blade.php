@@ -28,12 +28,18 @@
                          <hr class="dropdown-divider">
                          <li>
                              <form method="POST" action="{{ route('logout') }}">
-                                 @csrf
-                                 <button class="dropdown-item" onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Выйти') }}</button>
-                             </form>
-                         </li>
-                     </ul>
-                     @endauth
+                                @csrf
+                                <button class="dropdown-item" onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Выйти') }}</button>
+                            </form>
+                        </li>
+                    </ul>
+                    @endauth
+                    @guest
+                    <a href="/login" class="btn btn-light border rounded d-flex align-items-center">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        <strong>{{ __('Войдите') }}</strong>
+                    </a>
+                     @endguest
                  </div>
              </div>
              <!-- /Профиль -->

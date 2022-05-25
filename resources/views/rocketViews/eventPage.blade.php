@@ -1,5 +1,7 @@
 <x-rocketComponents.index
-  :stdVarFavourites="$stdVarFavourites">
+  :stdVarFavourites="$stdVarFavourites"
+  :stdAvatar="$std_avatar"
+  :userId="$user_id">
 
   <!-- Страница события -->
   <x-rocketComponents.sectionPageEvent
@@ -8,6 +10,7 @@
   :count="$count"
   :userId="$user_id"
   :runUsersIds="$run_users_ids">
+  
 </x-rocketComponents.sectionPageEvent>
   <!-- /Страница события -->
 
