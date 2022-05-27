@@ -21,6 +21,8 @@ use App\Models\Event;
 // Подключение библиотеки собственных методов (помощники)
 use App\Models\library\Tools;
 
+use function PHPUnit\Framework\isType;
+
 // TODO: Нужно подумать как организовать отображение закладок в событиях. Дело в том, что карточка события требует для этого массива закладок для сличения идентификаторов. При нахождении совпадения, карточка подставляет управляющему элементу класс для придания ему соответствующего состояния. Таким образом в контроллере приходится передавать еще и массив идентификаторов закладок для каждой страницы, на которой есть карточка события. Это привело к неудобной связке getBookmarksIds, addBookmark, removeBookmark и контроллеров отвечающих за вывод событий. На первое время этого должно быть достаточно. Но нужно подумать над тем, как это организовать более архитектурно эргономично.
 
 // TODO: Несколько представлений используют одну и ту же конструкцию для вывода событий. Нужно избавиться от копипаста, заменив это каким-то другим решением. Опять же, сейчас это работает, но нужно подумать о более качественном использовании кода. В этом участвуют general.blade.php, bookmarks.blade.php.
@@ -312,7 +314,7 @@ class Base extends Model
 
             case 'favourites_user';
                 // ? Получение идентификаторов избранных пользователей
-                $user_ids = self::getIds('favourites');
+                $user_ids = self::getFavourites();
                 // ! Предохранитель на случай, если массив окажется пустым. Возможно лучше сделать в таблице хотя бы один нулевой элемент.
                 if (!$user_ids) {
                     $user_ids = array(0);
@@ -434,18 +436,63 @@ class Base extends Model
         return Base::getQueries('favourites_user');
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * * Возвращает список событий в зависимости от выбранного фильтра
+     * * Написано хорошо, переделывать не нужно
      * @param $direction string
      * @param $city string
      * @param $category string
      * @param $date_start string
      * @return $events object
      */
-    static function getFiltrated($direction, $city, $category, $date_start)
+
+    static function getEvents($direction, $city, $category, $date_start)
     {
+        // Ограничение количества выводимых элементов
+        $limit = 30;
+
         switch ($direction) {
-            case 'city';
+
+            case 'filtrated_city';
+                // По городу
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
@@ -453,9 +500,11 @@ class Base extends Model
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
-                    ->simplePaginate(30);
+                    ->simplePaginate($limit);
                 break;
-            case 'category';
+
+            case 'filtrated_category';
+                // По категории
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.category', $category)
@@ -463,9 +512,11 @@ class Base extends Model
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
-                    ->simplePaginate(30);
+                    ->simplePaginate($limit);
                 break;
-            case 'date';
+
+            case 'filtrated_date';
+                // По дате
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('date_start', '>=', $date_start)
@@ -473,53 +524,205 @@ class Base extends Model
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
-                    ->simplePaginate(30);
+                    ->simplePaginate($limit);
                 break;
-            case 'city_category';
-                $events = DB::table('events')
-                    ->where('status', 1)
-                    ->where('events.category', $category)
-                    ->where('events.city', $city)
-                    ->join('users', 'events.user_id', '=', 'users.id')
-                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
-                    ->select('events.*', 'users.name', 'profiles.avatar')
-                    ->orderBy('date_start')
-                    ->simplePaginate(30);
-                break;
-            case 'city_date';
+
+            case 'filtrated_city_category';
+                // По городу и категории
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
-                    ->where('date_start', '>=', $date_start)
+                    ->where('events.category', $category)
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
-                    ->simplePaginate(30);
+                    ->simplePaginate($limit);
                 break;
-            case 'category_date';
+
+            case 'filtrated_city_date';
+                // По городу и дате
                 $events = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.category', $category)
-                    ->where('date_start', '>=', $date_start)
-                    ->join('users', 'events.user_id', '=', 'users.id')
-                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
-                    ->select('events.*', 'users.name', 'profiles.avatar')
-                    ->orderBy('date_start')
-                    ->simplePaginate(30);
-                break;
-            case 'city_category_date';
-                $events = DB::table('events')
-                    ->where('status', 1)
-                    ->where('events.category', $category)
                     ->where('events.city', $city)
                     ->where('date_start', '>=', $date_start)
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
-                    ->simplePaginate(30);
+                    ->simplePaginate($limit);
+                break;
+
+            case 'filtrated_category_date';
+                // По категории и дате
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', $category)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'filtrated_city_category_date';
+                // По городу, категории и дате
+                $events = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.city', $city)
+                    ->where('events.category', $category)
+                    ->where('date_start', '>=', $date_start)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
                 break;
         }
+
+        return $events;
     }
+
+    /**
+     * * Соглашение о терминологии
+     * 
+     * * auth - авторизованный пользователь
+     * * user - другой пользователь
+     * * guest - гость
+     * 
+     * * subscribe - подписка
+     * * favourite - избранный пользователь
+     * * follover - подписчик
+     * 
+     * * Написано хорошо, переделывать не нужно
+     */
+
+    /**
+     * * Подписаться на пользователя
+     * TODO: Если в строке запроса указать $user_id не существующего пользователя, то скрипт не сможет обратиться к этой строке в базе данных. Нужно пропатчить.
+     */
+
+    static function addSubscribe($user_id)
+    {
+        // Приведение идентификатора пользователя к типу
+        $user_id = (int) $user_id;
+
+        // Получение идентификатора авторизованного пользователя
+        $auth_id = Auth::id();
+
+        // Получение данных авторизованного пользователя
+        $auth = Profile::firstWhere('user_id', $auth_id);
+
+        // Получение данных избранного пользователя
+        $user = Profile::firstWhere('user_id', $user_id);
+
+        // Получение идентификаторов избранных пользователей у авторизованного пользователя
+        $favourites = $auth->favourites;
+        $favourites = unserialize($favourites);
+
+        // Получение идентификаторов подписчиков у избранного пользователя
+        $follovers = $user->follovers;
+        $follovers = unserialize($follovers);
+
+        // Добавление идентификатора избранного пользователя авторизованному пользователю
+        $favourites[] = $user_id;
+
+        // Добавление избранному пользователю идентификатора авторизованного пользователя
+        $follovers[] = $auth_id;
+
+        // Применение новых данных к модели авторизованного пользователя
+        $favourites = serialize($favourites);
+        $auth->favourites = $favourites;
+
+        // Применение новых данных к модели избранного пользователя
+        $follovers = serialize($follovers);
+        $user->follovers = $follovers;
+
+        // Сохранение данных
+        if ($auth->save() && $user->save()) {
+            return 'added';
+        }
+    }
+
+    /**
+     * * Удалить подписку
+     */
+
+    static function removeSubscribe($user_id)
+    {
+        // Приведение идентификатора пользователя к типу
+        $user_id = (int) $user_id;
+
+        // Получение идентификатора авторизованного пользователя
+        $auth_id = Auth::id();
+
+        // Получение данных авторизованного пользователя
+        $auth = Profile::firstWhere('user_id', $auth_id);
+
+        // Получение данных избранного пользователя
+        $user = Profile::firstWhere('user_id', $user_id);
+
+        // Получение идентификаторов избранных пользователей у авторизованного пользователя
+        $favourites = $auth->favourites;
+        $favourites = unserialize($favourites);
+
+        // Получение идентификаторов подписчиков у избранного пользователя
+        $follovers = $user->follovers;
+        $follovers = unserialize($follovers);
+
+        // Удаление идентификатора избранного пользователя из данных авторизованного пользователя
+        foreach ($favourites as $k => $v) {
+            if ($v == $user_id) {
+                unset($favourites[$k]);
+            }
+        }
+
+        // Добавление избранному пользователю идентификатора авторизованного пользователя
+        foreach ($follovers as $k => $v) {
+            if ($v == $auth_id) {
+                unset($follovers[$k]);
+            }
+        }
+
+        // Применение новых данных к модели авторизованного пользователя
+        $favourites = serialize($favourites);
+        $auth->favourites = $favourites;
+
+        // Применение новых данных к модели избранного пользователя
+        $follovers = serialize($follovers);
+        $user->follovers = $follovers;
+
+        // Сохранение данных
+        if ($auth->save() && $user->save()) {
+            return 'removed';
+        }
+    }
+
+    /**
+     * * Получить идентификаторы избранных пользователей
+     */
+
+    static function getFavourites()
+    {
+        // Получение идентификатора авторизованного пользователя
+        $auth_id = Auth::id();
+
+        // Получение данных авторизованного пользователя
+        $auth = Profile::firstWhere('user_id', $auth_id);
+
+        // Получение идентификаторов избранных пользователей у авторизованного пользователя
+        $favourites = $auth->favourites;
+        $favourites = unserialize($favourites);
+
+        return $favourites;
+    }
+
+
+    // static function getCountFollovers($user_id)
+    // {
+    //     $profile = Profile::firstWhere('user_id', $user_id);
+    //     // $follovers = $profile->
+
+    // }
 }

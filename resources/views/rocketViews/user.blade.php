@@ -25,8 +25,8 @@
     :instagram="$user->instagram"
     :instagramChecked="$user->instagram_checked"
 
-    :eventsCount="25"
-    :folloversCount="46"
+    :eventsCount="$events_count"
+    :folloversCount="$follovers_count"
 
     :about="$user->about"
 

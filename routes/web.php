@@ -168,9 +168,9 @@ use App\Http\Controllers\rocket\FavouritesController;
 // Избранные пользователи
 Route::get('favourites', [FavouritesController::class, 'getFavourites']);
 // Добавление в избранные пользователи
-Route::get('favourites/{id}/add', [FavouritesController::class, 'addFavourites']);
+Route::get('favourites/{user_id}/add', [FavouritesController::class, 'addFavourites']);
 // Удаление из избранных пользователей
-Route::get('favourites/{id}/remove', [FavouritesController::class, 'removeFavourites']);
+Route::get('favourites/{user_id}/remove', [FavouritesController::class, 'removeFavourites']);
 
 
 // Подключение контроллера управляющего событиями

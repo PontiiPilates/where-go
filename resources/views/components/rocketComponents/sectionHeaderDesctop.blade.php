@@ -5,7 +5,7 @@
 
              <!-- Лого и слоган -->
              <div class="col" style="padding-left: 16px;">
-                 <a href="#" class="navbar-brand lh-1">
+                 <a href="/" class="navbar-brand lh-1">
                      <strong>Найди событие по душе</strong><br>
                      <small>или создай своё</small>
                  </a>
@@ -23,7 +23,7 @@
                          </strong>
                      </button>
                      <ul class="dropdown-menu">
-                         <li><a class="dropdown-item" href="/user/{{ $userId }}">Профиль</a></li>
+                         <li><a class="dropdown-item" href="/user/{{ $userId }}">Мой профиль</a></li>
                          <li><a class="dropdown-item" href="/user/{{ $userId }}/edit">Настройки</a></li>
                          <hr class="dropdown-divider">
                          <li>

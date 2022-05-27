@@ -34,6 +34,7 @@ class GeneralController extends Controller
         if (Auth::id()) {
             $bookmarks = Base::getIds('bookmarks');
             $stdVarFavourites = Base::getQueries('favourites_user');
+            // $stdVarFavourites = Base::getFavourites();
         }
 
         // ! Снабжение стандартными данными
@@ -56,39 +57,36 @@ class GeneralController extends Controller
 
         /**
          * * Организация фильтрации событий
+         * * Написано хорошо, переделывать не нужно
          */
 
-        // Если произошла отправка отправка формы "Фильтр"
-        if ($r->filter === 'true') {
+        $city = $r->city;
+        $category = $r->category;
+        $date_start = $r->date_start;
 
-            $city = $r->city;
-            $category = $r->category;
-            $date_start = $r->date_start;
-            
-            // Вывод по городу
-            // Вывод по категории
-            // Вывод по дате
-
-            // Вывод по городу и категории
-            // Вывод по городу и дате
-            // Вывод по категории и дате
-
-            // Вывод по городу категории и дате
-
-            $events = DB::table('events')
-                ->where('status', 1)
-
-                // ->where('events.category', $category)
-                // ->where('events.city', $city)
-                ->where('date_start', '>=', $date_start)
-
-                ->join('users', 'events.user_id', '=', 'users.id')
-                ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
-                ->select('events.*', 'users.name', 'profiles.avatar')
-                ->orderBy('date_start')
-                ->simplePaginate(30);
+        if ($city && !$category && !$date_start) {
+            // Если есть город        
+            $events = Base::getEvents('filtrated_city', $city, $category, $date_start);
+        } elseif ($category && !$city && !$date_start) {
+            // Если есть категория
+            $events = Base::getEvents('filtrated_category', $city, $category, $date_start);
+        } elseif ($date_start && !$city && !$category) {
+            // Если есть дата
+            $events = Base::getEvents('filtrated_date', $city, $category, $date_start);
+        } elseif ($city && $category && !$date_start) {
+            // Если есть город и категория
+            $events = Base::getEvents('filtrated_city_category', $city, $category, $date_start);
+        } elseif ($city && $date_start && !$category) {
+            // Если есть город и дата
+            $events = Base::getEvents('filtrated_city_date', $city, $category, $date_start);
+        } elseif ($category && $date_start && !$city) {
+            // Если есть категория и дата
+            $events = Base::getEvents('filtrated_category_date', $city, $category, $date_start);
+        } elseif ($city && $category && $date_start) {
+            // Если есть город, категория и дата
+            $events = Base::getEvents('filtrated_city_category_date', $city, $category, $date_start);
         } else {
-            // Иначе просто вывод списка событий
+            // Если ничего не выбрано
             $events = Base::getQueries('all_events');
         }
 

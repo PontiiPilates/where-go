@@ -157,10 +157,29 @@ class EventController extends Controller
             }
         }
 
+        // ! Снабжение стандартными данными
+        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
+        // Получение данных пользователя
+        $user = Base::getQueries('user', Auth::id());
+        // Получение имени аватара авторизованного пользователя
+        if ($user) {
+            $std_avatar = $user->avatar;
+        } else {
+            $std_avatar = '';
+        }
+
+        if (Auth::id()) {
+            $user_id = Auth::id();
+        } else {
+            $user_id = 0;
+        }
+
         // Передача данных во view
         return view('rocketViews.eventAdd', [
             'stdVarFavourites' => $stdVarFavourites,
-            'user_witness' => $user_witness
+            'user_witness' => $user_witness,
+            'stdAvatar' => $std_avatar,
+            'userId' => $user_id,
         ]);
     }
 

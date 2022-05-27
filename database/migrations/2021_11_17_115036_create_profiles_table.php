@@ -57,6 +57,7 @@ class CreateProfilesTable extends Migration
             $table->text('bookmarks')->comment('содержит идентификаторы избранных событий')->nullable();
 
             $table->text('favourites')->comment('содержит идентификаторы любимых пользователей')->nullable();
+            $table->text('follovers')->comment('содержит идентификаторы подписчиков')->nullable();
 
             $table->text('likes')->comment('содержит идентификаторы понравившихся событий')->nullable();
 

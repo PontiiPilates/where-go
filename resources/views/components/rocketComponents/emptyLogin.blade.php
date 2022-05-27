@@ -9,10 +9,15 @@
     @csrf
     <!-- /Токен -->
 
+    {{-- Запомнить меня --}}
+    <input id="remember_me" type="hidden" class="form-check-input" name="remember" value="on">
+    {{-- /Запомнить меня --}}
+
     <!-- Email -->
     <div class="mb-3">
         <label for="email" class="form-label">{{ __('Email') }}</label>
-        <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}">
+        <input name="email" type="email" class="form-control @error('email') is-invalid @enderror" id="email"
+            value="{{ old('email') }}">
         @error('email')
         <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -22,7 +27,8 @@
     <!-- Пароль -->
     <div class="mb-3">
         <label for="password" class="form-label">{{ __('Пароль') }}</label>
-        <input name="password" type="password" class="form-control @error('password') is-invalid @enderror" id="password">
+        <input name="password" type="password" class="form-control @error('password') is-invalid @enderror"
+            id="password">
         @error('password')
         <div class="invalid-feedback">{{ $message }}</div>
         @enderror

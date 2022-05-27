@@ -45,7 +45,7 @@ class UserController extends Controller
         $bookmarks = Base::getIds('bookmarks');
 
         // Получение списка идентификаторов избранных пользователей
-        $favourites = Base::getIds('favourites');
+        $favourites = Base::getFavourites();
         // dd($favourites);
 
 
@@ -60,6 +60,9 @@ class UserController extends Controller
         // Получение имени аватара авторизованного пользователя
         $std_avatar = $self->avatar;
 
+        $events_count = 'x';
+        $follovers_count = 'y';
+
         // Передача данных на представление
         return view('rocketViews.user', [
             'user' => $user,
@@ -69,6 +72,8 @@ class UserController extends Controller
             'stdVarFavourites' => $stdVarFavourites,
             'user_id' => $user_id,
             'std_avatar' => $std_avatar,
+            'events_count' => $events_count,
+            'follovers_count' => $follovers_count
         ]);
     }
 

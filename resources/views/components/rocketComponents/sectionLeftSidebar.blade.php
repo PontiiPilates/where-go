@@ -19,6 +19,8 @@
         <!-- Фильтр -->
         <div class="border-bottom pt-3 pb-3">
             <form method="get" action="">
+
+                {{-- Фильтр по городу --}}
                 <div class="mb-3">
                     @php
                     // Просто массив значений
@@ -52,10 +54,17 @@
                     <select name="city" id="city" class="form-select">
                         <option value="">Не имеет значения</option>
                         @foreach($cityes as $city)
+                        @if (Request::input('city') == $city)
+                        <option selected value="{{ $city }}">{{ $city }}</option>
+                        @else
                         <option value="{{ $city }}">{{ $city }}</option>
+                        @endif
                         @endforeach
                     </select>
                 </div>
+                {{-- /Фильтр по городу --}}
+
+                {{-- Фильтр по категории --}}
                 <div class="mb-3">
                     @php
                     $categories = array(
@@ -110,19 +119,29 @@
                     <select name="category" id="category" class="form-select">
                         <option value="">Не имеет значения</option>
                         @foreach($categories as $category)
+                        @if (Request::input('category') == $category)
+                        <option selected value="{{ $category }}">{{ $category }}</option>
+                        @else
                         <option value="{{ $category }}">{{ $category }}</option>
+                        @endif
                         @endforeach
                     </select>
                 </div>
+                {{-- /Фильтр по категории --}}
+
+                {{-- Фильтр по дате --}}
+                @php
+                $date_start = Request::input('date_start');
+                @endphp
                 <div class="mb-4">
-                    <label for="date-start" class="form-label">Искать от даты</label>
-                    <input name="date_start" id="date-start" class="form-control" type="date">
+                    <label for="date-start" class="form-label">
+                        {{ __('Искать от даты') }}
+                    </label>
+                    <input name="date_start" id="date-start" class="form-control" type="date" value="{{ $date_start }}">
                 </div>
-                <button
-                name="filter"
-                value="true"
-                type="submit"
-                class="btn btn-warning w-100 text-start">
+                {{-- Фильтр по дате --}}
+
+                <button name="filter" value="true" type="submit" class="btn btn-warning w-100 text-start">
                     <i class="bi bi-search me-2"></i>
                     {{ __('Искать') }}
                 </button>
@@ -130,8 +149,9 @@
         </div>
         <!-- /Фильтр -->
 
+        <!-- Подписки -->
+        @auth
         @php
-
         // Высота контейнера по умолчанию
         $height = 'auto';
         // Если количество подписок 5 и более ...
@@ -140,10 +160,8 @@
         // $height = '229px';
         $height = '109px';
         }
-
         @endphp
 
-        <!-- Подписки -->
         <div class="border-bottom pt-3 pb-3 d-flex flex-column gap-2" id="drop-list" style="height: {{ $height }}">
 
             @if(count($stdVarFavourites) == 0)
@@ -167,6 +185,7 @@
             @endforeach
 
         </div>
+        @endauth
         <!-- /Подписки -->
 
         <!-- Подвал -->
