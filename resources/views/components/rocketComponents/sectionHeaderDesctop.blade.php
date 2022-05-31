@@ -23,8 +23,8 @@
                          </strong>
                      </button>
                      <ul class="dropdown-menu">
-                         <li><a class="dropdown-item" href="/user/{{ $userId }}">Мой профиль</a></li>
-                         <li><a class="dropdown-item" href="/user/{{ $userId }}/edit">Настройки</a></li>
+                         <li><a class="dropdown-item" href="/user/{{ Auth::id() }}">Мой профиль</a></li>
+                         <li><a class="dropdown-item" href="/user/{{ Auth::id() }}/edit">Настройки</a></li>
                          <hr class="dropdown-divider">
                          <li>
                              <form method="POST" action="{{ route('logout') }}">

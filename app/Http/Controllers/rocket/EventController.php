@@ -62,7 +62,8 @@ class EventController extends Controller
             $run_users_ids = array();
         }
 
-
+        // Добавить просмотр события и вывести новое значение
+        $views_count = Base::addView($event_id);
 
         return view('rocketViews.eventPage', [
             'stdVarBookmarks' => $stdVarBookmarks,
@@ -72,6 +73,7 @@ class EventController extends Controller
             'user_id' => $auth_id,
             'run_users_ids' => $run_users_ids,
             'std_avatar' => $std_avatar,
+            'views_count' => $views_count,
         ]);
     }
 
@@ -139,6 +141,7 @@ class EventController extends Controller
                 $event->preview         = Images::image(575, 575, 'preview', '../public/img/previews/');    // загруженное изображение
                 $event->price_type      = $r->price_type;                                                   // форма оплаты за участие
                 $event->cost            = $r->cost;                                                         // стомсость участия
+                $event->goes            = 'a:0:{}';                                                         // зарегистрировавшиеся
                 $event->witness         = 0;                                                                // свидетель события
                 $event->status          = 1;                                                                // статус опубликованности события
 

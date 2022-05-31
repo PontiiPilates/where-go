@@ -48,9 +48,11 @@ class Base extends Model
 
         // ! Предохранитель
         // Случилось так, что запись в таблице profiles не была создана, поэтому можно выполнить проверку перед дальнейшим выполнением
+        
         if ($profile) {
             // Извлечение массива с данными
             $data = $profile->$column;
+            // dd($data);
             $data = unserialize($data);
         } else {
             $data = array();
@@ -718,11 +720,59 @@ class Base extends Model
         return $favourites;
     }
 
+    /**
+     * * Получить количество подписчиков
+     */
 
-    // static function getCountFollovers($user_id)
-    // {
-    //     $profile = Profile::firstWhere('user_id', $user_id);
-    //     // $follovers = $profile->
+    static function getCountFollovers($user_id)
+    {
+        // Получение модели профиля пользователя
+        $profile = Profile::firstWhere('user_id', $user_id);
 
-    // }
+        // Получение данных из колонки "Подписчики"
+        $follovers = $profile->follovers;
+
+        // Преобразование данных
+        $follovers = unserialize($follovers);
+
+        // Подсчёт элементов
+        $count = count($follovers);
+
+        // Передача данных
+        return $count;
+    }
+
+    /**
+     * * Получить количество событий, созданных пользователем
+     */
+
+    static function getCountEvents($user_id)
+    {
+        // Получение модели и сразу получение количества событий, созданных пользователем
+        $events = Event::where('user_id', $user_id)->count();
+
+        // Передача данных
+        return $events;
+    }
+
+
+    /**
+     * * Добавляет просмотр события
+     */
+
+    static function addView($event_id)
+    {
+        // Получение модели события
+        $action = Event::find($event_id);
+        // Извлечение количества просмотров
+        $views_count = $action->counter;
+        // Добавление 1-го просмотра
+        $views_count++;
+        // Применение нового количества просмотров к модели
+        $action->counter = $views_count;
+        // Запись модели в базу данных
+        $action->save();
+        // Возвращает обновленное количество просмотров
+        return $views_count;
+    }
 }

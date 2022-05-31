@@ -9,7 +9,8 @@
   :event="$event"
   :count="$count"
   :userId="$user_id"
-  :runUsersIds="$run_users_ids">
+  :runUsersIds="$run_users_ids"
+  :viewsCount="$views_count">
   
 </x-rocketComponents.sectionPageEvent>
   <!-- /Страница события -->

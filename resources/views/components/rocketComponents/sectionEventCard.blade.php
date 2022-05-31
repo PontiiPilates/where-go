@@ -123,21 +123,56 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
                     {{-- Преобразование даты в метку времени --}}
                     @php
+                    $month = [
+                    1 => 'января',
+                    2 => 'февраля',
+                    3 => 'марта',
+                    4 => 'апреля',
+                    5 => 'мая',
+                    6 => 'июня',
+                    7 => 'июля',
+                    8 => 'августа',
+                    9 => 'сентября',
+                    10 => 'октября',
+                    11 => 'ноября',
+                    12 => 'декабря',
+                    ];
                     $dateStart = strtotime($dateStart);
+                    $d = date('d', $dateStart);
+                    $n = date('n', $dateStart);
+                    $m = $month[$n];
+                    $y = date('Y', $dateStart);
+
                     @endphp
 
                     {{-- Вывод даты в удобном формате --}}
-                    <li>{{ date('d M Y', $dateStart) }}</li>
+                    <li>{{ $d . ' ' . $m . ' ' . $y }}</li>
 
-                    <li>г. Красноярск, ул. Высотная, стр. 1</li>
-                    <li>Вход: бесплатно</li>
+                    <li>{{ $adress }}</li>
+
+                    @php
+                    $price_type = '';
+                    if($priceType == 'free') {
+                    $price_type = 'Вход: бесплатно';
+                    } elseif ($priceType == 'donate') {
+                    $price_type = 'Вход: за донат';
+                    } elseif ($priceType == 'price') {
+                    $price = $cost;
+                    $price_type = "Вход: $price рублей";
+                    }
+                    @endphp
+                    <li>{{ $price_type }}</li>
                 </ul>
                 <!-- /Информация -->
 
                 <!-- Статистика -->
                 <div class="position-absolute bottom-0">
-                    <span class="card-icon bi bi-eye-fill"> 562</span>
-                    <span class="card-icon bi bi-people-fill"> 25</span>
+                    <span class="card-icon bi bi-eye-fill"> {{ $viewsCount }}</span>
+                    @php
+                    $goes = unserialize($goes);
+                    $goes = count($goes);
+                    @endphp
+                    <span class="card-icon bi bi-people-fill"> {{ $goes }}</span>
                 </div>
                 <!-- /Статистика -->
 

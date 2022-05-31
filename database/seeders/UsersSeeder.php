@@ -36,5 +36,10 @@ class UsersSeeder extends Seeder
             'email' => 'max@gmail.com',
             'password' => '$2y$10$GrolbZQd1R532/wh5XGitOZb5Ov8GVRIR440/mv2/THldJwI.WqGy',
         ]);
+        DB::table('users')->insert([
+            'name' => 'Сибирский федеральный университет',
+            'email' => 'SiberianFederalUniversity@yandex.ru',
+            'password' => '$2y$10$GrolbZQd1R532/wh5XGitOZb5Ov8GVRIR440/mv2/THldJwI.WqGy',
+        ]);
     }
 }

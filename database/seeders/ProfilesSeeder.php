@@ -13,12 +13,14 @@ class ProfilesSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     * 
+     * TODO: Засеять массивы "a:0:{}" вот так
      */
     public function run()
     {
         DB::table('profiles')->insert([
             'user_id' => '1',
-            'avatar' => 'zloileshii.jpeg',
+            'avatar' => 'zloileshii.jpg',
             'about' => 'В детстве просыпался под музыку из Санта-барбары. А сейчас думаю, что живешь именно так, как до этого хотел чувствовать свою жизнь.',
             'city' => 'Красноярск',
 
@@ -54,11 +56,14 @@ class ProfilesSeeder extends Seeder
 
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
-            'going' => NULL,
+            'going' => "a:0:{}",
+
+            'favourites' => "a:0:{}",
+            'follovers' => "a:0:{}",
         ]);
         DB::table('profiles')->insert([
             'user_id' => '2',
-            'avatar' => 'igor.jpeg',
+            'avatar' => 'igor.png',
             'about' => 'Люблю ездить на вахту, участвовать в политической жизни, есть плов и шурпу, ходить по спектаклям и свой мерседес.',
             'city' => 'Ачинск',
 
@@ -95,10 +100,13 @@ class ProfilesSeeder extends Seeder
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
             'going' => NULL,
+
+            'favourites' => "a:0:{}",
+            'follovers' => "a:0:{}",
         ]);
         DB::table('profiles')->insert([
             'user_id' => '3',
-            'avatar' => 'anna.jpeg',
+            'avatar' => 'anna.jpg',
             'about' => 'Ненавижу девочек, которые рисуют круги вокруг свечей, устраивают танцы с бубнами и думают, что сатана - это сама милота, с которой не справедливо обошлись. А котов люблю.',
             'city' => 'Красноярск',
 
@@ -135,10 +143,13 @@ class ProfilesSeeder extends Seeder
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
             'going' => NULL,
+
+            'favourites' => "a:0:{}",
+            'follovers' => "a:0:{}",
         ]);
         DB::table('profiles')->insert([
             'user_id' => '4',
-            'avatar' => 'max.jpeg',
+            'avatar' => 'max.jpg',
             'about' => 'Однажды я попробовал дурман и долго сидел в тёмном корридоре, пока Серёга смотрел ведьмака.',
             'city' => 'Красноярск',
 
@@ -175,6 +186,52 @@ class ProfilesSeeder extends Seeder
             'bookmarks' => 'a:1:{i:0;s:1:"0";}',
             'likes' => '0',
             'going' => NULL,
+
+            'favourites' => "a:0:{}",
+            'follovers' => "a:0:{}",
+        ]);
+        DB::table('profiles')->insert([
+            'user_id' => '5',
+            'avatar' => 'sfu.png',
+            'about' => 'Официальный аккаунт Сибирского федерального университета.',
+            'city' => 'Красноярск',
+
+            'phone' => NULL,
+            'phone_checked' => NULL,
+
+            'facebook' => NULL,
+            'facebook_checked' => NULL,
+
+            'ok' => NULL,
+            'ok_checked' => NULL,
+
+            'telegram' => NULL,
+            'telegram_checked' => NULL,
+
+            'twitter' => NULL,
+            'twitter_checked' => NULL,
+
+            'instagram' => NULL,
+            'instagram_checked' => NULL,
+
+            'viber' => NULL,
+            'viber_checked' => NULL,
+
+            'vk' => NULL,
+            'vk_checked' => NULL,
+
+            'whatsapp' => NULL,
+            'whatsapp_checked' => NULL,
+
+            'youtube' => NULL,
+            'youtube_checked' => NULL,
+
+            'bookmarks' => 'a:0:{}',
+            'likes' => '0',
+            'going' => 'a:0:{}',
+
+            'favourites' => 'a:0:{}',
+            'follovers' => 'a:0:{}',
         ]);
     }
 }

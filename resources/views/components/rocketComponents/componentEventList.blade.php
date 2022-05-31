@@ -10,7 +10,12 @@
   :category="$item->category"
   :id="$item->id"
   :creatorId="$item->user_id"
-  :bookmarks="$bookmarks">
+  :bookmarks="$bookmarks"
+  :viewsCount="$item->counter"
+  :adress="$item->adress"
+  :priceType="$item->price_type"
+  :cost="$item->cost"
+  :goes="$item->goes">
 </x-rocketComponents.sectionEventCard>
 <!-- /Карточка события -->
 

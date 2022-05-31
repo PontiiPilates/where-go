@@ -52,23 +52,26 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // + Получение идентификатора авторизованного пользователя
+        // Получение идентификатора авторизованного пользователя
         $user_id = Auth::id();
 
-        // + Создание экземпляра класса Profile
+        // Создание экземпляра класса Profile
         $profile = new Profile;
 
-        // + Добавление идентификатора зарегистрировавшегося пользователя в экземпляр класса
-        $profile->user_id = Auth::id();
-        // + Стандартного аватара
-        $profile->avatar = 'default.jpg';
+        // Добавление стандартных данных и структур данных в таблицу
+        $profile->user_id       = Auth::id();
+        $profile->avatar        = 'default.jpg';
+        $profile->bookmarks     = 'a:0:{}';
+        $profile->favourites    = 'a:0:{}';
+        $profile->follovers     = 'a:0:{}';
+        $profile->going         = 'a:0:{}';
 
-        // + Сохранение модели в таблицу
+        // Сохранение модели в таблицу
         $profile->save();
 
-        // - return redirect(RouteServiceProvider::HOME);
-
-        // + Переход на страницу зарегистрировавшегося пользователя
+        // Переход на страницу зарегистрировавшегося пользователя
         return redirect("/user/$user_id");
+
+        // return redirect(RouteServiceProvider::HOME);
     }
 }

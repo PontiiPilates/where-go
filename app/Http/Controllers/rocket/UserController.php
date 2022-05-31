@@ -40,13 +40,13 @@ class UserController extends Controller
 
         // Получение списка событий
         $events = Base::getQueries('user_events', $user_id);
+        // dd('ok');
 
         // Получение списка идентификаторов событий, которые пользователь добавил в закладки
         $bookmarks = Base::getIds('bookmarks');
 
         // Получение списка идентификаторов избранных пользователей
         $favourites = Base::getFavourites();
-        // dd($favourites);
 
 
 
@@ -60,8 +60,10 @@ class UserController extends Controller
         // Получение имени аватара авторизованного пользователя
         $std_avatar = $self->avatar;
 
-        $events_count = 'x';
-        $follovers_count = 'y';
+        
+
+        $events_count = Base::getCountEvents($user_id);
+        $follovers_count = Base::getCountFollovers($user_id);
 
         // Передача данных на представление
         return view('rocketViews.user', [

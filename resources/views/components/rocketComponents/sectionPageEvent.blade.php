@@ -22,7 +22,7 @@ $bookmark_class = 'bi-bookmark-check-fill';
 <div class="position-relative mb-5">
 
     <!-- Автор -->
-    <a href="#" class="d-flex align-items-center text-decoration-none mb-3 text-reset">
+    <a href="/user/{{ $event->user_id }}" class="d-flex align-items-center text-decoration-none mb-3 text-reset">
         @if($event->avatar)
         <img src="/public/img/avatars/{{ $event->avatar }}" alt="" width="45" height="45" class="rounded-circle me-2">
         @endif
@@ -53,24 +53,56 @@ $bookmark_class = 'bi-bookmark-check-fill';
     <!-- /Заголовок -->
 
     <!-- Категория -->
-    <p><small class="text-muted">Развлечения | Бизнес</small></p>
+    <p><small class="text-muted">@if($event->category !== 'Не имеет значения') {{ $event->category }} @endif</small></p>
     <!-- /Категория -->
 
     <!-- Изображение -->
+    @if($event->preview)
     <img src="/public/img/previews/{{ $event->preview }}" class="img-fluid rounded w-100 mb-3" alt="event-image">
+    @endif
     <!-- /Изображение -->
 
     <!-- Информация -->
     <ul class="list-unstyled">
         {{-- Преобразование даты в метку времени --}}
         @php
-        $date_start = strtotime($event->date_start);
+        $month = [
+        1 => 'января',
+        2 => 'февраля',
+        3 => 'марта',
+        4 => 'апреля',
+        5 => 'мая',
+        6 => 'июня',
+        7 => 'июля',
+        8 => 'августа',
+        9 => 'сентября',
+        10 => 'октября',
+        11 => 'ноября',
+        12 => 'декабря',
+        ];
+        $dateStart = strtotime($event->date_start);
+        $d = date('d', $dateStart);
+        $n = date('n', $dateStart);
+        $m = $month[$n];
+        $y = date('Y', $dateStart);
+
         @endphp
 
         {{-- Вывод даты в удобном формате --}}
-        <li>{{ date('d M Y', $date_start) }}</li>
-        <li>г. Красноярск, ул. Высотная, стр. 1</li>
-        <li>Вход: бесплатно</li>
+        <li>{{ $d . ' ' . $m . ' ' . $y }}</li>
+        <li>{{ $event->adress }}</li>
+        @php
+        $price_type = '';
+        if($event->price_type == 'free') {
+            $price_type = 'Вход: бесплатно';
+        } elseif ($event->price_type == 'donate') {
+            $price_type = 'Вход: за донат';
+        } elseif ($event->price_type == 'price') {
+            $price = $event->cost;
+            $price_type = "Вход: $price рублей";
+        }
+        @endphp
+        <li>{{ $price_type }}</li>
     </ul>
     <!-- /Информация -->
 
@@ -92,7 +124,7 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
     <!-- Статистика -->
     <div class="mb-3">
-        <span class="card-icon bi bi-eye-fill"> 562</span>
+        <span class="card-icon bi bi-eye-fill"> {{ $viewsCount }}</span>
         @auth
         <a href="/run/{{ $event->id }}/users" class="text-reset text-decoration-none">
             <span class="card-icon bi bi-people-fill"> {{ $count }}</span>
