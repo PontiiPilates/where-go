@@ -154,18 +154,26 @@
         @php
         // Высота контейнера по умолчанию
         $height = 'auto';
-        // Если количество подписок 5 и более ...
-        if(count($stdVarFavourites) >= 1) {
-        // То его высота становится фиксированной, а на 5 итерации цикла добавляется кнопка
-        // $height = '229px';
-        $height = '109px';
+        // Количество элементов в массиве
+        $count = count($stdVarFavourites);
+        // Количество отображаемых элементов
+        $open_items = 3;
+        // Итерация цикла, после которой произвести вывод кнопки
+        $show_button = $open_items - 1;
+        // Если количество элементов в массиве больше требуемого, то его высота становится фиксированной
+        // Она включает высоту выводимых элементов + кнопка
+        if($count > 3) {
+        // $height = '109px'; // Для отображения одной подписки и кнопки
+        $height = '189px'; // Для отображения трёх подписок и кнопки
+        // $height = '229px'; // Для отображения четырёх подписок и кнопки
         }
+        // dd($count);
         @endphp
 
         <div class="border-bottom pt-3 pb-3 d-flex flex-column gap-2" id="drop-list" style="height: {{ $height }}">
 
-            @if(count($stdVarFavourites) == 0)
-            <small class="m-0">Подпишитесь на кого-нибудь</small>
+            @if($count == 0)
+            <small class="m-0">{{ __('Подпишитесь на кого-нибудь') }}</small>
             @endif
 
             {{-- Это нужно сделать компонентом, поскольку этот фрагмент используется в двух местах --}}
@@ -178,8 +186,8 @@
                 <strong>{{ $item->name }}</strong>
             </a>
 
-            @if($loop->index == 0)
-            <button class="btn btn-light active w-100 text-start border-0 mb-3" id="drop-down">Еще ...</button>
+            @if($count > $open_items && $loop->index == 2)
+            <button class="btn btn-light active w-100 text-start border-0 mb-3" id="drop-down">{{ __('Еще ...') }}</button>
             @endif
 
             @endforeach

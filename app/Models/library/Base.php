@@ -243,9 +243,12 @@ class Base extends Model
         switch ($direction) {
 
             case 'all_events';
+            $date = date('Y-m-d');
+            // dd($date);
                 // ? Получение всех событий: для главной страницы 
                 $data = DB::table('events')
-                    ->where('status', 1)
+                    ->where('status', 1) // Выводить только опубликованные события
+                    ->where('date_start', '>', $date) // Не выводить события, которые прошли
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
@@ -713,9 +716,14 @@ class Base extends Model
         // Получение данных авторизованного пользователя
         $auth = Profile::firstWhere('user_id', $auth_id);
 
-        // Получение идентификаторов избранных пользователей у авторизованного пользователя
-        $favourites = $auth->favourites;
-        $favourites = unserialize($favourites);
+        // ! Предохранитель, который срабатывает в случае, если посетитель - гость
+        if($auth_id) {
+            // Получение идентификаторов избранных пользователей у авторизованного пользователя
+            $favourites = $auth->favourites;
+            $favourites = unserialize($favourites);
+        } else {
+            $favourites = array();
+        }
 
         return $favourites;
     }

@@ -57,8 +57,12 @@ class UserController extends Controller
         // Получение данных пользователя
         $self = Base::getQueries('user', Auth::id());
 
-        // Получение имени аватара авторизованного пользователя
-        $std_avatar = $self->avatar;
+        if(Auth::id()) {
+            // Получение имени аватара авторизованного пользователя
+            $std_avatar = $self->avatar;
+        } else {
+            $std_avatar = '';
+        }
 
         
 

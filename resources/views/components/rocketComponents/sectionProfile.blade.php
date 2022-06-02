@@ -2,7 +2,7 @@
 <div class="mb-5">
     <div class="d-flex justify-content-between mb-3">
         <div class="left-column d-flex flex-column justify-content-between">
-            <strong class="card-title text-truncate mb-0 fs-4">{{ $name }}</strong>
+            <strong class="card-title  mb-0 fs-4">{{ $name }}</strong>
             <div>
                 <ul class="list-inline mb-0">
 

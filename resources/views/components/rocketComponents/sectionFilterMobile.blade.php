@@ -1,5 +1,5 @@
   <!-- Фильтр -->
-  <div class="mt-3 mb-5 d-lg-none">
+  <div class="mb-5 d-lg-none">
       <form>
           <div class="mb-3">
               <label for="city" class="form-label">Город</label>

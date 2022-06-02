@@ -90,7 +90,9 @@ $bookmark_class = 'bi-bookmark-check-fill';
 
         {{-- Вывод даты в удобном формате --}}
         <li>{{ $d . ' ' . $m . ' ' . $y }}</li>
+
         <li>{{ $event->adress }}</li>
+        
         @php
         $price_type = '';
         if($event->price_type == 'free') {

@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Psr\Container\ContainerInterface;
 
+
+// Подключение класса Auth для возможности получения данных о статусе пользователя
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -152,12 +156,12 @@ Route::get('/l', function () {
 //  Подключение контроллера для главной страницы
 use App\Http\Controllers\rocket\GeneralController;
 // Главная страница
-Route::get('/', [GeneralController::class, 'general']);
+Route::get('/', [GeneralController::class, 'general'])->name('general');
 
 // Подключение контроллера для обеспечения работы закладок
 use App\Http\Controllers\rocket\BookmraksController;
 // Закладки
-Route::get('bookmarks', [BookmraksController::class, 'bookmarks'])->middleware('auth');
+Route::get('bookmarks', [BookmraksController::class, 'bookmarks'])->name('bookmarks')->middleware('auth');
 // Добавление в закладки
 Route::get('bookmarks/{id}/add', [BookmraksController::class, 'addBookmark'])->middleware('auth');
 // Удаление из закладок
@@ -166,7 +170,7 @@ Route::get('bookmarks/{id}/remove', [BookmraksController::class, 'removeBookmark
 // Подключение контроллера для избранных пользователей
 use App\Http\Controllers\rocket\FavouritesController;
 // Избранные пользователи
-Route::get('favourites', [FavouritesController::class, 'getFavourites']);
+Route::get('favourites', [FavouritesController::class, 'getFavourites'])->name('favourites')->middleware('auth');
 // Добавление в избранные пользователи
 Route::get('favourites/{user_id}/add', [FavouritesController::class, 'addFavourites']);
 // Удаление из избранных пользователей
@@ -178,7 +182,7 @@ use App\Http\Controllers\rocket\EventController;
 // Возвращает страницу события
 Route::get('event/{id}', [EventController::class, 'get'])->whereNumber('id'); // Явно указываю, что id - это число!
 // Добавляет событие
-Route::match(['get', 'post'], 'event/add', [EventController::class, 'add'])->middleware('auth');
+Route::match(['get', 'post'], 'event/add', [EventController::class, 'add'])->name('event.add')->middleware('auth');
 // Редактировать событие
 Route::match(['get', 'post'], 'event/{id}/edit', [EventController::class, 'edit']);
 // Удаляет событие
@@ -200,20 +204,36 @@ Route::get('run/{event_id}/users', [RunController::class, 'getUsers']);
 // Подключение контроллера для управления авторизованным пользователем
 use App\Http\Controllers\rocket\UserController;
 // Страница пользователя
-Route::get('user/{id}', [UserController::class, 'getUser']);
+Route::get('user/{id}', [UserController::class, 'getUser'])->name('user');
+// // Своя страница
+// Route::get('self', function () {
+//     $user_id = Auth::id();
+//     return redirect("user/$user_id");
+// })->name('self');
 // Страница управления данными пользователя
 Route::match(['get', 'post'], 'user/{id}/edit', [UserController::class, 'edit']);
 
-// TODO: Подправить картинку изображения - сделать ее кадрирование по центру
-// TODO: Подправвить изображение аватарки - сделать ее кадрирование по центру
 // // TODO: Сделать переход со страницы события на страницу пользователя
 // // TODO: Реализовать количество просмотров в карточке события и на странице события
-// TODO: Реализовать человекопонятную дату на карточке события
+// // TODO: Реализовать человекопонятную дату на карточке события
 // // TODO: на странице закладок применяется какой-то список событий не правильный, там количество участвующих пользователей не верное и на иду тоже
+// // TODO: сделать фильтр на мобильной версии
+// // TODO: сделать чтобы авторизованный пользователь мог смотреть статистику участников своих событий
+// // TODO: разобраться с подсветкой пункта меню если находимся на другом пользователе
+// // TODO: сделать просмотр своей странице доступным по пути selfprofile
+
+// Фронтенд
+// TODO: Подправить картинку изображения - сделать ее кадрирование по центру
+// TODO: Подправвить изображение аватарки - сделать ее кадрирование по центру
 // TODO: поправить кнопки, у них какой-то ареол не нужный появляется, сделать на монер "еще"
+// TODO: после создания события на мобилке модальное окно открывается сбоку
+
+// Продвижение
 // TODO: как тут зарабатывать пока что можно скрыть
+
+// Бэкенд
 // TODO: сделать общую страницу ошибки
-// TODO: сделать фильтр на мобильной версии
+// TODO: на фильтр нужна кнопочка сбросить
 
 
 

@@ -68,9 +68,29 @@ class RunController extends Controller
         // Получение списка пользователей, зарегистрировавшихся на событие
         $users = Base::getQueries('run_users', $event_id);
 
+
+        // ! Снабжение стандартными данными
+        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
+        // Получение данных пользователя
+        $user = Base::getQueries('user', Auth::id());
+        // Получение имени аватара авторизованного пользователя
+        if ($user) {
+            $std_avatar = $user->avatar;
+        } else {
+            $std_avatar = '';
+        }
+
+        if (Auth::id()) {
+            $user_id = Auth::id();
+        } else {
+            $user_id = 0;
+        }
+
         return view('rocketViews.userList', [
             'stdVarFavourites' => $stdVarFavourites,
-            'users' => $users
+            'users' => $users,
+            'std_avatar' => $std_avatar,
+            'user_id' => $user_id,
         ]);
     }
 }

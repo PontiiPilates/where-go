@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 // Подключение библиотеки собственных методов (функции)
 use App\Models\library\Base;
 
+// Подключение класса Auth для возможности получения данных о статусе пользователя
+use Illuminate\Support\Facades\Auth;
+
 class FavouritesController extends Controller
 {
     /**
@@ -18,7 +21,25 @@ class FavouritesController extends Controller
         // Получение данных избранных пользователей
         $stdVarFavourites = Base::getQueries('favourites_user');
 
-        return view('rocketViews.favourites', ['stdVarFavourites' => $stdVarFavourites]);
+        // ! Снабжение стандартными данными
+        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
+        // Получение данных пользователя
+        $user = Base::getQueries('user', Auth::id());
+        // Получение имени аватара авторизованного пользователя
+        if ($user) {
+            $std_avatar = $user->avatar;
+        } else {
+            $std_avatar = '';
+        }
+
+        // ! Снабжение стандартными данными
+        $user_id = Auth::id();
+
+        return view('rocketViews.favourites', [
+            'stdVarFavourites' => $stdVarFavourites,
+            'stdAvatar' => $std_avatar,
+            'userId' => $user_id,
+        ]);
     }
 
     /**
