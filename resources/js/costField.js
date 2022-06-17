@@ -16,3 +16,14 @@ $("#donate").change(function () {
 $("#price").change(function () {
     $('#cost').prop('disabled', false);
 });
+
+/**
+ * Управление полем ввода информации об организаторе
+ */
+$("#witness").click(function () {
+    if ($(this).is(':checked')) {
+        $('#source').prop('disabled', false);
+    } else {
+        $('#source').prop('disabled', true);
+    }
+});

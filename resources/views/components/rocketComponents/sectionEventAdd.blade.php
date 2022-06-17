@@ -1,9 +1,5 @@
  <!-- Форма создания события -->
- <form
-    class="mb-5"
-    action=""
-    method="POST"
-    enctype="multipart/form-data">
+ <form class="mb-5" action="" method="POST" enctype="multipart/form-data">
 
      @csrf
 
@@ -331,12 +327,19 @@
 
          <!-- Свидетель -->
          @if($userWitness === 1)
-         <div class="form-check mb-4">
-             <input name="event_witness" type="checkbox" id="event-witness" class="form-check-input" @if( isset($eventWitness) && $eventWitness===1 || old('event_witness') ) checked @endif>
-             <label class="form-check-label" for="event-witness">Свидетель события</label>
+         <div class="form-check mb-3">
+             <input name="event_witness" type="checkbox" id="witness" class="form-check-input" @if( isset($eventWitness) && $eventWitness===1 || old('event_witness') ) checked @endif>
+             <label class="form-check-label" for="witness">Свидетель события</label>
+         </div>
+
+         <div class="mb-4">
+             <!-- <label class="form-label" for="source">Информация об организаторе</label> -->
+             <input name="source" type="text" id="source" class="form-control" @if ( empty($eventWitness) || $eventWitness != 1 ) disabled @endif placeholder="Оставьте ссылку на источник">
          </div>
          @endif
          <!-- /Свидетель -->
+
+
 
          <div class="d-flex justify-content-between gap-3">
              <button name="form_name" type="submit" value="add" class="btn btn-warning flex-fill">Сохранить</button>

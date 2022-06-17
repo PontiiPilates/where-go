@@ -48,7 +48,7 @@ class Base extends Model
 
         // ! Предохранитель
         // Случилось так, что запись в таблице profiles не была создана, поэтому можно выполнить проверку перед дальнейшим выполнением
-        
+
         if ($profile) {
             // Извлечение массива с данными
             $data = $profile->$column;
@@ -243,8 +243,8 @@ class Base extends Model
         switch ($direction) {
 
             case 'all_events';
-            $date = date('Y-m-d');
-            // dd($date);
+                $date = date('Y-m-d');
+                // dd($date);
                 // ? Получение всех событий: для главной страницы 
                 $data = DB::table('events')
                     ->where('status', 1) // Выводить только опубликованные события
@@ -717,7 +717,7 @@ class Base extends Model
         $auth = Profile::firstWhere('user_id', $auth_id);
 
         // ! Предохранитель, который срабатывает в случае, если посетитель - гость
-        if($auth_id) {
+        if ($auth_id) {
             // Получение идентификаторов избранных пользователей у авторизованного пользователя
             $favourites = $auth->favourites;
             $favourites = unserialize($favourites);
@@ -782,5 +782,45 @@ class Base extends Model
         $action->save();
         // Возвращает обновленное количество просмотров
         return $views_count;
+    }
+
+    /**
+     * * Возвращает данные авторизованного пользователя
+     */
+    static function getData()
+    {
+        // объявление массива
+        $data = array();
+
+        // получение идентификатора авторизованного пользователя
+        $user_id = Auth::id();
+
+        // получение данных авторизованного пользователя
+        $user = self::getQueries('user', $user_id);
+
+        // сборка массива
+        // $data['user_id']            = $user_id;
+        $data['name']               = $user->name;
+        $data['avatar']             = $user->avatar;
+
+        // $data['about']              = $user->about;
+        // $data['city']               = $user->city;
+
+        // $data['phone']              = $user->phone;
+        // $data['phone_checked']      = $user->phone_checked;
+        // $data['telegram']           = $user->telegram;
+        // $data['telegram_checked']   = $user->telegram_checked;
+        // $data['whatsapp']           = $user->whatsapp;
+        // $data['whatsapp_checked']   = $user->whatsapp_checked;
+
+        $data['favourites']         = unserialize($user->favourites);
+        $data['bookmarks']          = unserialize($user->bookmarks);
+        $data['follovers']          = unserialize($user->follovers);
+        $data['going']              = unserialize($user->going);
+
+        // $data['witness']            = $user->witness;
+
+        // передача массива 
+        return $data;
     }
 }

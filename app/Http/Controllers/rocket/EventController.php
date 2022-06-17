@@ -138,11 +138,12 @@ class EventController extends Controller
                 $event->date_end        = $r->date_end;                                                     // дата окончания события
                 $event->time_start      = $r->time_start;                                                   // время начала события
                 $event->time_end        = $r->time_end;                                                     // время окончания события
-                $event->preview         = Images::image(575, 575, 'preview', '../public/img/previews/');    // загруженное изображение
+                $event->preview         = Images::image(700, 700, 'preview', '../public/img/previews/');    // загруженное изображение
                 $event->price_type      = $r->price_type;                                                   // форма оплаты за участие
                 $event->cost            = $r->cost;                                                         // стомсость участия
                 $event->goes            = 'a:0:{}';                                                         // зарегистрировавшиеся
                 $event->witness         = 0;                                                                // свидетель события
+                $event->source          = $r->source;                                                       // ссылка на источник
                 $event->status          = 1;                                                                // статус опубликованности события
 
                 // Если пользователь указал, что он свидетель
@@ -233,6 +234,7 @@ class EventController extends Controller
                 'time_end'          => 'nullable',                                              // проверяемое поле может быть NULL
                 'price_type'        => 'required',                                              // обязательно
                 'cost'              => 'required_if:price_type,==,price|regex:/^[0-9]+$/',      // обязательно если выбран радио + целое число
+                // TODO: организовать проверку поля источник
             ]);
 
             // Реализации валидации
@@ -259,6 +261,7 @@ class EventController extends Controller
                 $event->price_type      = $r->price_type;                                                   // форма оплаты за участие
                 $event->cost            = $r->cost;                                                         // стомсость участия
                 $event->witness         = 0;                                                                // свидетель события
+                $event->source          = $r->source;                                                       // ссылка на источник
                 $event->status          = 1;                                                                // статус опубликованности события
 
                 // Если пользователь указал, что он свидетель
@@ -268,7 +271,7 @@ class EventController extends Controller
 
                 // Если пользователь загрузил новое изображение
                 if ($r->preview) {
-                    $event->preview     = Images::image(575, 575, 'preview', '../public/img/previews/');
+                    $event->preview     = Images::image(700, 700, 'preview', '../public/img/previews/');
                 }
 
                 // Сохранение модели в таблицу

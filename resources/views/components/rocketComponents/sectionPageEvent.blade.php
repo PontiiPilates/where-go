@@ -111,12 +111,17 @@ $bookmark_class = 'bi-bookmark-check-fill';
     <!-- Связаться -->
     <ul class="list-inline mb-3">
 
-        <!-- Компонент: иконки контактов -->
-        <x-rocketComponents.componentContacts :phoneChecked="$event->phone_checked" :phone="$event->phone"
-            :telegramChecked="$event->telegram_checked" :telegram="$event->telegram"
-            :whatsappChecked="$event->whatsapp_checked" :whatsapp="$event->whatsapp">
-        </x-rocketComponents.componentContacts>
-        <!-- /Компонент: иконки контактов -->
+    @if($event->source)
+    <p>Источник: <a href="{{ $event->source }}">{{ $event->source }}</a></p>
+    @else
+    <!-- Компонент: иконки контактов -->
+    <x-rocketComponents.componentContacts :phoneChecked="$event->phone_checked" :phone="$event->phone"
+        :telegramChecked="$event->telegram_checked" :telegram="$event->telegram"
+        :whatsappChecked="$event->whatsapp_checked" :whatsapp="$event->whatsapp">
+    </x-rocketComponents.componentContacts>
+    <!-- /Компонент: иконки контактов -->
+    @endif
+
     </ul>
     <!-- /Связаться -->
 

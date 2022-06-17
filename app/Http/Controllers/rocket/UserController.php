@@ -33,13 +33,23 @@ class UserController extends Controller
      */
     public function getUser($user_id)
     {
+
         // Получение данных пользователя
         $user = Base::getQueries('user', $user_id);
 
-        // dd($user);
-
         // Получение списка событий
         $events = Base::getQueries('user_events', $user_id);
+
+        // получение данных авторизованного пользователя
+        $data = Base::getData();
+
+
+
+
+
+
+        // dd($user);
+
         // dd('ok');
 
         // Получение списка идентификаторов событий, которые пользователь добавил в закладки
@@ -63,6 +73,8 @@ class UserController extends Controller
         } else {
             $std_avatar = '';
         }
+
+        // dd(Base::getData());
 
         
 
