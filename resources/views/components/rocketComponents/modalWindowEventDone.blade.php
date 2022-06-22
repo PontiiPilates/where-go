@@ -23,7 +23,7 @@
                     data-bs-placement="top"
                     data-bs-original-title="Ссылка скопирована"
                     data-main-uri="https://where-go.ru/event/{{ $id }}">
-                    Копировать ссылку
+                    Скопировать ссылку
                 </button>
                 <!-- /Поделиться -->
 

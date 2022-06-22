@@ -5,92 +5,68 @@ namespace App\Http\Controllers\rocket;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-// Подключение библиотеки собственных методов (функции)
+// подключение библиотеки кастомных методов
 use App\Models\library\Base;
-
-use Illuminate\Support\Facades\Auth;
 
 class RunController extends Controller
 {
+    /**
+     * Страница событий, в которых пользователь принимает участие
+     * @return mixed
+     */
     public function getEvents()
     {
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
 
-        // Получение данных избранных пользователей
-
-        // return view('rocketViews.userList', ['events' => $events]);
-
-        // Получение списка событий
+        // получение списка событий
         $events = Base::getQueries('run_events');
-        // $events = Base::getQueries('all_events');
-
-        // Получение списка идентификаторов событий, которые пользователь добавил в закладки
-        // ! Здесь должна быть проверка на авторизованность, которую уместно перенести в Tools и которая часто будет использоваться
-        // ! По умолчанию bookmarks путьс будет array, поскольку шаблон ожидавет именно этого типа переменной
-        $bookmarks = array();
-        $favourites = array();
-        if (Auth::id()) {
-            $bookmarks = Base::getIds('bookmarks');
-            $stdVarFavourites = Base::getQueries('favourites_user');
-        }
-
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (идентификатор авторизованного пользователя)
-        $auth_id = Auth::id();
-
-        $std_avatar = '';
-        if ($auth_id) {
-            // * Получение данных пользователя
-            $user = Base::getQueries('user', $auth_id);
-            // * Получение имени аватара авторизованного пользователя
-            $std_avatar = $user->avatar;
-        }
+        // обработка списка событий
+        $events = Base::getEventsFinished($events);
 
         return view('rocketViews.general', [
+            'localstorage' => $localstorage,
             'events' => $events,
-            'bookmarks' => $bookmarks,
-            'stdVarFavourites' => $stdVarFavourites,
-            'stdAvatar' => $std_avatar,
-            'userId' => $auth_id,
         ]);
     }
+
+    /**
+     * Страница просмотра участников события
+     * @return mixed
+     */
+    public function getUsers($event_id)
+    {
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
+
+        // получение списка пользователей, зарегистрировавшихся на событие
+        $users = Base::getQueries('run_users', $event_id);
+
+        return view('rocketViews.userList', [
+            'localstorage' => $localstorage,
+            'users' => $users,
+        ]);
+    }
+
+    /**
+     * Добавляет участника события
+     * @return string 
+     */
     public function add($event_id)
     {
         return Base::addRun($event_id, 'going', 'goes');
     }
+
+    /**
+     * Удаляет участника события
+     * @return string
+     */
     public function remove($event_id)
     {
         return Base::removeRun($event_id, 'going', 'goes');
-    }
-    public function getUsers($event_id)
-    {
-        // Обеспечение стандартными данными: избранные пользователти
-        $stdVarFavourites = Base::getQueries('favourites_user');
-
-        // Получение списка пользователей, зарегистрировавшихся на событие
-        $users = Base::getQueries('run_users', $event_id);
-
-
-        // ! Снабжение стандартными данными
-        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
-        // Получение данных пользователя
-        $user = Base::getQueries('user', Auth::id());
-        // Получение имени аватара авторизованного пользователя
-        if ($user) {
-            $std_avatar = $user->avatar;
-        } else {
-            $std_avatar = '';
-        }
-
-        if (Auth::id()) {
-            $user_id = Auth::id();
-        } else {
-            $user_id = 0;
-        }
-
-        return view('rocketViews.userList', [
-            'stdVarFavourites' => $stdVarFavourites,
-            'users' => $users,
-            'std_avatar' => $std_avatar,
-            'user_id' => $user_id,
-        ]);
     }
 }

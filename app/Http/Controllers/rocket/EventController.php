@@ -5,313 +5,239 @@ namespace App\Http\Controllers\rocket;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-// Подключение библиотеки собственных методов (функции)
+// подключение библиотеки кастомных методов
 use App\Models\library\Base;
-
-// Подключение класса Auth для возможности получения данных о статусе пользователя
-use Illuminate\Support\Facades\Auth;
-
-// Подключение модели таблицы Events
+// подключение модели
 use App\Models\Event;
-
-// Подключение модели таблицы Profile
-use App\Models\Profile;
-
-// Подулючение класса Image для обработки изображений
+// подулючение обработчика изображений
 use App\Models\library\Images;
-
-// Подключение класса Validator для управления валидацией
-use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
 {
     /**
-     * * Вывод страницы события
+     * Страница события
+     * @param $event_id string идентификатор события
+     * @return mixed передача данных в представление
      */
     public function get($event_id)
     {
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (идентификатор авторизованного пользователя)
-        $auth_id = Auth::id();
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
 
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (подписки)
-        $stdVarFavourites = Base::getQueries('favourites_user');
+        // получение данных одного события
+        $event = Base::getEventPage($event_id);
+        $event = Base::getEventsFinished($event);
+        $event = $event->all()[0];
 
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (закладки)
-        $stdVarBookmarks = Base::getIds('bookmarks');
-
-        $std_avatar = '';
-        if ($auth_id) {
-            // * Получение данных пользователя
-            $user = Base::getQueries('user', $auth_id);
-            // * Получение имени аватара авторизованного пользователя
-            $std_avatar = $user->avatar;
-        }
-
-
-        // Получение данных одного события
-        $event = Base::getQueries('one_event', $event_id);
-
-        // Получение количества пользователей, зарегистрировавшихся на событие
-        $count = Base::elements_count('events', $event_id, 'goes');
-
-        // Получение идентификаторов пользователей, зарегистрировавшихся на событие для возможности определения состояния управляющего элемента для авторизованного пользователя
-        $run_users_ids = Base::getQueries('run_users_ids', $event_id);
-
-        // Предохранитель на случай того, если переменная окажется пустой
-        if (!$run_users_ids) {
-            $run_users_ids = array();
-        }
-
-        // Добавить просмотр события и вывести новое значение
-        $views_count = Base::addView($event_id);
+        // добавить просмотр события
+        Base::addView($event_id);
 
         return view('rocketViews.eventPage', [
-            'stdVarBookmarks' => $stdVarBookmarks,
-            'stdVarFavourites' => $stdVarFavourites,
+            'localstorage' => $localstorage,
             'event' => $event,
-            'count' => $count,
-            'user_id' => $auth_id,
-            'run_users_ids' => $run_users_ids,
-            'std_avatar' => $std_avatar,
-            'views_count' => $views_count,
         ]);
     }
 
     /**
-     * * Добавление события
+     * Страница создания события
+     * @param $r class содержит данные, отправленные из формы
+     * @return mixed содержит перенаправления и передачу данных в представление
      */
     public function add(Request $r)
     {
-        // * Снабжение контроллера идентификатором авторизованного пользователя
-        // * Лучше сделать это сразу, поскольку он используется далее несколько раз
-        $auth_id = Auth::id();
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
 
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (подписки)
-        $stdVarFavourites = Base::getQueries('favourites_user');
-
-        // * Снабжение контроллера данными авторизованного пользователя, необходимыми для обеспечения функционала формы
-        $user_witness = Profile::firstWhere('user_id', $auth_id);
-        // Получение отметки о том, может ли авторизованный пользователь быть свидетелем
-        $user_witness = $user_witness->witness;
-
-        // Если произошла отправка формы
+        // если произошла отправка формы
         if ($r->isMethod('post')) {
 
-            // Определение правил валидации
-            $validator = Validator::make($r->all(), [
-                'preview'           => 'mimes:jpeg,png',                                        // должно быть в формате jpeg или png
-                'title'             => 'required|min:3',                                        // TODO: указать нежелательные символы
-                'description'       => 'required|min:10',                                       // TODO: указать нежелательные символы
-                'city'              => 'required',                                              // обязательно
-                'category'          => 'required',                                              // обязательно
-                'adress'            => 'required',                                              // обязательно
-                'date_start'        => 'required',                                              // обязательно
-                'time_start'        => 'nullable',                                              // проверяемое поле может быть NULL
-                'date_end'          => 'nullable',                                              // проверяемое поле может быть NULL
-                'time_end'          => 'nullable',                                              // проверяемое поле может быть NULL
-                'price_type'        => 'required',                                              // обязательно
-                'cost'              => 'required_if:price_type,==,price|regex:/^[0-9]+$/',      // обязательно если выбран радио + целое число
-            ]);
+            // валидация отправленных данных
+            $validator = Base::validates($r->all());
 
-            // Реализации валидации
             if ($validator->fails()) {
-
-                // Если есть ошибки, то вернуть пользователя обратно на форму
-                return redirect("/event/add")
-                    ->withErrors($validator)
-                    ->withInput();
-
-                // Если нет ошибок валидации
+                // если данные не валидны, то вернуть пользователя обратно на форму
+                return redirect("/event/add")->withErrors($validator)->withInput();
             } else {
-
-                // Создание модели для таблицы Events
+                // иначе создать модель события
                 $event = new Event;
+                // наполнение данными
+                $event->user_id         = session('user_id');
+                $event->title           = $r->title;
+                $event->description     = $r->description;
+                $event->city            = $r->city;
+                $event->category        = $r->category;
+                $event->adress          = $r->adress;
+                $event->date_start      = $r->date_start;
+                $event->date_end        = $r->date_end;
+                $event->time_start      = $r->time_start;
+                $event->time_end        = $r->time_end;
+                $event->preview         = Images::image(700, 700, 'preview', '../public/img/previews/');
+                $event->price_type      = $r->price_type;
+                $event->cost            = $r->cost;
+                $event->goes            = 'a:0:{}';
+                $event->witness         = 0;
+                $event->source          = $r->source;
+                $event->status          = 1;
 
-                // Наполнение модели данными
-                $event->user_id         = $auth_id;                                                         // создатель события
-                $event->title           = $r->title;                                                        // заголовок
-                $event->description     = $r->description;                                                  // описание
-                $event->city            = $r->city;                                                         // город
-                $event->category        = $r->category;                                                     // категория
-                $event->adress          = $r->adress;                                                       // адрес
-                $event->date_start      = $r->date_start;                                                   // дата начала события
-                $event->date_end        = $r->date_end;                                                     // дата окончания события
-                $event->time_start      = $r->time_start;                                                   // время начала события
-                $event->time_end        = $r->time_end;                                                     // время окончания события
-                $event->preview         = Images::image(700, 700, 'preview', '../public/img/previews/');    // загруженное изображение
-                $event->price_type      = $r->price_type;                                                   // форма оплаты за участие
-                $event->cost            = $r->cost;                                                         // стомсость участия
-                $event->goes            = 'a:0:{}';                                                         // зарегистрировавшиеся
-                $event->witness         = 0;                                                                // свидетель события
-                $event->source          = $r->source;                                                       // ссылка на источник
-                $event->status          = 1;                                                                // статус опубликованности события
+                // преобразование селекторов формата участия
+                switch ($event->price_type) {
+                    case ('free');
+                        $event->free    = 'checked';
+                        $event->donate  = NULL;
+                        $event->price   = NULL;
+                        break;
+                    case ('donate');
+                        $event->free    = NULL;
+                        $event->donate  = 'checked';
+                        $event->price   = NULL;
+                        break;
+                    case ('price');
+                        $event->free    = NULL;
+                        $event->donate  = NULL;
+                        $event->price   = 'checked';
+                        break;
+                }
 
-                // Если пользователь указал, что он свидетель
-                if ($r->event_witness) {
+                // если пользователь указал себя свидетелем
+                if ($r->witness) {
                     $event->witness     = 1;
                 }
 
-                // Сохранение модели в таблицу
+                // если сохранение модели прошло успешно
                 if ($event->save()) {
-                    // Получение идентификатора только что созданной записи в базе данных
-                    $new_event_id = $event->id;
-                    // Перенаправить ползователя на страницу созданного события
-                    return redirect("/event/$new_event_id?uppopup");
+                    return redirect("/event/$event->id?uppopup");
                 }
             }
         }
 
-        // ! Снабжение стандартными данными
-        // ! Если пользователь не авторизован, то такой запрос можно не выполнять
-        // Получение данных пользователя
-        $user = Base::getQueries('user', Auth::id());
-        // Получение имени аватара авторизованного пользователя
-        if ($user) {
-            $std_avatar = $user->avatar;
-        } else {
-            $std_avatar = '';
-        }
-
-        if (Auth::id()) {
-            $user_id = Auth::id();
-        } else {
-            $user_id = 0;
-        }
-
-        // Передача данных во view
-        return view('rocketViews.eventAdd', [
-            'stdVarFavourites' => $stdVarFavourites,
-            'user_witness' => $user_witness,
-            'stdAvatar' => $std_avatar,
-            'userId' => $user_id,
+        return view('rocketViews.eventControll', [
+            'localstorage' => $localstorage,
+            'event' => NULL
         ]);
     }
 
     /**
-     * * Редактирование события
-     * TODO: сделать проверку на то, что материал принадлежит авторизованному пользователю
-     * TODO: сделать маршруту проверку на авторизованность
+     * Страница редактирования события
+     * @param $r class содержит данные, отправленные из формы
+     * @param $event_id идентификатор редактируемого события
+     * @return mixed содержит перенаправления и передачу данных в представление
      */
     public function edit(Request $r, $event_id)
     {
-        // * Снабжение контроллера идентификатором авторизованного пользователя
-        // * Лучше сделать это сразу, поскольку он используется далее несколько раз
-        $auth_id = Auth::id();
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
 
-        // * Снабжение контроллера стандартными данными авторизованного пользователя (подписки)
-        $stdVarFavourites = Base::getQueries('favourites_user');
-
-        // * Снабжение контроллера данными авторизованного пользователя, необходимыми для обеспечения функционала формы
-        $user_witness = Profile::firstWhere('user_id', $auth_id);
-        // Получение отметки о том, может ли авторизованный пользователь быть свидетелем
-        $user_witness = $user_witness->witness;
-
-        // * Снабжение контроллера данными редактируемого события
+        // получение модели редактируемого события
         $event = Event::find($event_id);
 
-        $std_avatar = '';
-        if ($auth_id) {
-            // * Получение данных пользователя
-            $user = Base::getQueries('user', $auth_id);
-            // * Получение имени аватара авторизованного пользователя
-            $std_avatar = $user->avatar;
+        // проверка: принодлежность события редактируемому пользователю (иначе можно удалять чужие события)
+        if (session('user_id') != $event->user_id) {
+            return redirect("/error");
         }
 
-        // Если произошла отправка формы
+        // преобразование даты начала
+        $date_start = explode(' ', $event->date_start);
+        $date_start = $date_start[0];
+        $event->date_start = $date_start;
+
+        // преобразование даты окончания
+        $date_end = explode(' ', $event->date_end);
+        $date_end = $date_end[0];
+        $event->date_end = $date_end;
+
+        // если произошла отправка формы
         if ($r->isMethod('post')) {
 
-            // Определение правил валидации
-            $validator = Validator::make($r->all(), [
-                'preview'           => 'mimes:jpeg,png',                                        // должно быть в формате jpeg или png
-                'title'             => 'required|min:3',                                        // TODO: указать нежелательные символы
-                'description'       => 'required|min:10',                                       // TODO: указать нежелательные символы
-                'city'              => 'required',                                              // обязательно
-                'category'          => 'required',                                              // обязательно
-                'adress'            => 'required',                                              // обязательно
-                'date_start'        => 'required',                                              // обязательно
-                'time_start'        => 'nullable',                                              // проверяемое поле может быть NULL
-                'date_end'          => 'nullable',                                              // проверяемое поле может быть NULL
-                'time_end'          => 'nullable',                                              // проверяемое поле может быть NULL
-                'price_type'        => 'required',                                              // обязательно
-                'cost'              => 'required_if:price_type,==,price|regex:/^[0-9]+$/',      // обязательно если выбран радио + целое число
-                // TODO: организовать проверку поля источник
-            ]);
+            // валидация отправленных данных
+            $validator = Base::validates($r->all());
 
-            // Реализации валидации
             if ($validator->fails()) {
-
-                // Если есть ошибки, то вернуть пользователя обратно на форму
-                return redirect("/event/$event_id/edit")
-                    ->withErrors($validator)
-                    ->withInput();
-
-                // Если нет ошибок валидации
+                // если данные не валидны, то вернуть пользователя обратно на форму редактирования события
+                return redirect("/event/$event_id/edit")->withErrors($validator)->withInput();
             } else {
+                // наполнение данными
+                $event->user_id         = session('user_id');
+                $event->title           = $r->title;
+                $event->description     = $r->description;
+                $event->city            = $r->city;
+                $event->category        = $r->category;
+                $event->adress          = $r->adress;
+                $event->date_start      = $r->date_start;
+                $event->date_end        = $r->date_end;
+                $event->time_start      = $r->time_start;
+                $event->time_end        = $r->time_end;
+                $event->price_type      = $r->price_type;
+                $event->cost            = $r->cost;
+                $event->witness         = 0;
+                $event->source          = $r->source;
+                $event->status          = 1;
 
-                $event->user_id         = $auth_id;                                                         // создатель события
-                $event->title           = $r->title;                                                        // заголовок
-                $event->description     = $r->description;                                                  // описание
-                $event->city            = $r->city;                                                         // город
-                $event->category        = $r->category;                                                     // категория
-                $event->adress          = $r->adress;                                                       // адрес
-                $event->date_start      = $r->date_start;                                                   // дата начала события
-                $event->date_end        = $r->date_end;                                                     // дата окончания события
-                $event->time_start      = $r->time_start;                                                   // время начала события
-                $event->time_end        = $r->time_end;                                                     // время окончания события
-                $event->price_type      = $r->price_type;                                                   // форма оплаты за участие
-                $event->cost            = $r->cost;                                                         // стомсость участия
-                $event->witness         = 0;                                                                // свидетель события
-                $event->source          = $r->source;                                                       // ссылка на источник
-                $event->status          = 1;                                                                // статус опубликованности события
+                // преобразование селекторов формата участия
+                switch ($event->price_type) {
+                    case ('free');
+                        $event->free    = 'checked';
+                        $event->donate  = NULL;
+                        $event->price   = NULL;
+                        break;
+                    case ('donate');
+                        $event->free    = NULL;
+                        $event->donate  = 'checked';
+                        $event->price   = NULL;
+                        break;
+                    case ('price');
+                        $event->free    = NULL;
+                        $event->donate  = NULL;
+                        $event->price   = 'checked';
+                        break;
+                }
 
-                // Если пользователь указал, что он свидетель
-                if ($r->event_witness) {
+                // если пользователь указал себя свидетелем
+                if ($r->witness) {
                     $event->witness     = 1;
                 }
 
-                // Если пользователь загрузил новое изображение
+                // если пользователь загрузил новое изображение
                 if ($r->preview) {
                     $event->preview     = Images::image(700, 700, 'preview', '../public/img/previews/');
                 }
 
-                // Сохранение модели в таблицу
+                // если сохранение модели прошло успешно
                 if ($event->save()) {
-                    // Перенаправить ползователя на страницу редактируемого события
                     return redirect("/event/$event_id");
                 }
             }
         }
 
-        // Передача данных во view
-        return view('rocketViews.eventEdit', [
-            'stdVarFavourites' => $stdVarFavourites,
-            'event' => $event,
-            'user_witness' => $user_witness,
-            'std_avatar' => $std_avatar,
-            'user_id' => $auth_id,
+        return view('rocketViews.eventControl', [
+            'localstorage' => $localstorage,
+            'event' => $event
         ]);
     }
 
     /**
-     * * Удаление события путем изменения его статуса опубликованности
+     * Удаление события путем изменения его статуса опубликованности
+     * @param $event_id int идентификатор редактируемого события
+     * @return mixed выполняет редирект
      */
     public function remove($event_id)
     {
-        // * Снабжение контроллера идентификатором авторизованного пользователя
-        // * Лучше сделать это сразу, поскольку он используется далее несколько раз
-        $auth_id = Auth::id();
+        $user_id = session('user_id');
 
-        // * Снабжение контроллера данными редактируемого события
+        // получение модели редактируемого события
         $event = Event::find($event_id);
 
-        // статус опубликованности события
+        // изменение статуса опубликованности события
         $event->status = 0;
 
-        // Сохранение модели в таблицу
+        // если сохранение модели прошло успешно
         if ($event->save()) {
-            // Перенаправить ползователя на страницу редактируемого события
-            // return "Event id: $event_id is publication status $event->status";
-            return redirect("/user/$auth_id");
+            return redirect("/user/$user_id");
         }
     }
 }

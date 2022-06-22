@@ -1,111 +1,57 @@
-<!-- Профиль -->
 <div class="mb-5">
     <div class="d-flex justify-content-between mb-3">
         <div class="left-column d-flex flex-column justify-content-between">
-            <strong class="card-title  mb-0 fs-4">{{ $name }}</strong>
+            <strong class="card-title  mb-0 fs-4">{{ $user->name }}</strong>
             <div>
                 <ul class="list-inline mb-0">
 
-                    <!-- Компонент: иконки контактов -->
-                    <x-rocketComponents.componentContacts :phoneChecked="$phoneChecked" :phone="$phone"
-                        :telegramChecked="$telegramChecked" :telegram="$telegram" :whatsappChecked="$whatsappChecked"
-                        :whatsapp="$whatsapp">
+                    {{-- Контакты --}}
+                    <x-rocketComponents.componentContacts :phoneChecked="$user->phone_checked" :phone="$user->phone"
+                        :telegramChecked="$user->telegram_checked" :telegram="$user->telegram"
+                        :whatsappChecked="$user->whatsapp_checked" :whatsapp="$user->whatsapp">
                     </x-rocketComponents.componentContacts>
-                    <!-- /Компонент: иконки контактов -->
 
                 </ul>
             </div>
             <div class="d-flex gap-3">
                 <div>
-                    <strong class="d-block m-0 p-0 lh-1 fs-5">{{ $folloversCount }}</strong>
+                    <strong class="d-block m-0 p-0 lh-1 fs-5">{{ $user->count_follovers }}</strong>
                     <small class="d-block m-0 p-0 lh-1 text-secondary">подписчиков</small>
                 </div>
                 <div>
-                    <strong class="d-block m-0 p-0 lh-1 fs-5">{{ $eventsCount }}</strong>
+                    <strong class="d-block m-0 p-0 lh-1 fs-5">{{ $user->count_events }}</strong>
                     <small class="d-block m-0 p-0 lh-1 text-secondary">событий</small>
                 </div>
             </div>
         </div>
         <div class="right-column">
-            <img src="/public/img/avatars/{{ $avatar ?? 'default.jpg' }}" alt="image-profile" width="120" height="120"
-                class="rounded-circle">
+            <img src="/public/img/avatars/{{ $user->avatar ?? 'default.jpg' }}" alt="image-profile" width="120"
+                height="120" class="rounded-circle">
         </div>
     </div>
     <div class="mb-4">
-        <p>{{ $about }}</p>
+        <p>{{ $user->about }}</p>
     </div>
     <div class="d-lg-block d-flex justify-content-between gap-3">
 
         @auth
-        @php
-        // Это нужно для того, чтобы условие ниже могло съесть переменную в случае, если у пользователя еще нет закладок
-        if(!$favourites) {
-        $favourites = array();
-        }
-        @endphp
-
-        @if(Auth::id() == $userId )
-        <a href="/user/{{ $userId }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
-        <!-- Поделиться -->
-        <button class="share-link btn btn-light border ms-lg-3" data-bs-trigger="click" data-bs-toggle="tooltip"
-            data-bs-placement="left" title="Ссылка скопирована" data-bs-original-title="Ссылка скопирована"
-            data-main-uri="https://where-go.ru/user/{{ $userId }}">
-            <i class="bi bi-reply-fill"></i>
-        </button>
-        <!-- /Поделиться -->
+        @if( Request::is( 'user/' . Auth::id() ) )
+        <a href="/user/{{ $user->user_id }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
+        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
         @else
-
-        {{-- {{dd($favourites)}} --}}
-        @if(in_array($userId, $favourites) )
+        @if( in_array( $user->user_id, session('favourites_list') ) )
         <button class="btn btn-light border tools-bw-btn flex-fill" id="subscribe">Отписаться</button>
-        <!-- Поделиться -->
-        <button class="share-link btn btn-light border ms-lg-3" data-bs-trigger="click" data-bs-toggle="tooltip"
-            data-bs-placement="left" title="Ссылка скопирована" data-bs-original-title="Ссылка скопирована"
-            data-main-uri="https://where-go.ru/user/{{ $userId }}">
-            <i class="bi bi-reply-fill"></i>
-        </button>
-        <!-- /Поделиться -->
+        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
         @else
         <button class="btn btn-warning tools-bw-btn flex-fill" id="subscribe">Подписаться</button>
-        <!-- Поделиться -->
-        <button class="share-link btn btn-light border ms-lg-3" data-bs-trigger="click" data-bs-toggle="tooltip"
-            data-bs-placement="left" title="Ссылка скопирована" data-bs-original-title="Ссылка скопирована"
-            data-main-uri="https://where-go.ru/user/{{ $userId }}">
-            <i class="bi bi-reply-fill"></i>
-        </button>
-        <!-- /Поделиться -->
+        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
         @endif
         @endif
-
-
         @endauth
-
         @guest
-        <!-- Поделиться -->
-        <button class="share-link btn btn-light border tools-bw-btn" data-bs-trigger="click" data-bs-toggle="tooltip"
-            data-bs-placement="left" title="Ссылка скопирована" data-bs-original-title="Ссылка скопирована"
-            data-main-uri="https://where-go.ru/user/{{ $userId }}">
-            <i class="bi bi-reply-fill"></i>
-        </button>
-        <!-- /Поделиться -->
+        <x-rocketComponents.componentShare class="tools-bw-btn" id="{{ $user->user_id }}">
+        </x-rocketComponents.componentShare>
         @endguest
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     </div>
 </div>
-<!-- /Профиль -->

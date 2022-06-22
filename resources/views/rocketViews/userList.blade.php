@@ -1,13 +1,6 @@
-<x-rocketComponents.index
-:stdVarFavourites="$stdVarFavourites"
-:stdAvatar="$std_avatar"
-:userId="$user_id">
+<x-rocketComponents.index :localstorage="$localstorage">
 
-  <!-- Список избранных пользователей -->
-  <x-rocketComponents.sectionFavourites :stdVarFavourites="$users">
-
-  </x-rocketComponents.sectionFavourites>
-  <!-- /Список избранных пользователей -->
-
+  {{-- Список пользователей --}}
+  <x-rocketComponents.sectionFavourites :data="$users"></x-rocketComponents.sectionFavourites>
 
 </x-rocketComponents.index>

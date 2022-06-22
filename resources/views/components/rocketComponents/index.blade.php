@@ -10,10 +10,7 @@
 <body>
 
     <!-- Header desctop -->
-    <x-rocketComponents.sectionHeaderDesctop
-    :stdAvatar="$stdAvatar"
-    :userId="$userId">
-    </x-rocketComponents.sectionHeaderDesctop>
+    <x-rocketComponents.sectionHeaderDesctop></x-rocketComponents.sectionHeaderDesctop>
     <!-- /Header desctop -->
 
     <!-- Header mobile -->
@@ -27,7 +24,7 @@
                 <div class="sf-rail col-lg-3 d-none d-lg-block">
 
                     <!-- Левый сайдбар -->
-                    <x-rocketComponents.sectionLeftSidebar :stdVarFavourites="$stdVarFavourites"></x-rocketComponents.sectionLeftSidebar>
+                    <x-rocketComponents.sectionLeftSidebar :localstorage="$localstorage"></x-rocketComponents.sectionLeftSidebar>
                     <!-- /Левый сайдбар -->
 
                 </div>
@@ -37,23 +34,7 @@
                 <!-- /Разделитель колонок -->
 
                 <!-- Правая колонка -->
-                <div class="col col-lg-8 pt-5">
-
-                    {{ $slot }}
-
-
-                    {{--
-                    
-
-                    
-                    <!-- Модальное окно созданного события -->
-                    <x-rocketComponents.modalWindowEventDone></x-rocketComponents.modalWindowEventDone>
-                    <!-- /Модальное окно созданного события -->
-                    
-                    --}}
-
-
-                </div>
+                <div class="col col-lg-8 pt-5">{{ $slot }}</div>
                 <!-- /Правая колонка -->
 
             </div>

@@ -5,62 +5,51 @@ namespace App\Http\Controllers\rocket;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-// Подключение библиотеки собственных методов (функции)
+// подключение библиотеки кастомных методов
 use App\Models\library\Base;
 
+// подключение помощника
 use Illuminate\Support\Facades\Auth;
-
 
 class BookmraksController extends Controller
 {
     /**
-     * ? Передает во view данные для рендеринга закладок пользователя
+     * Страница закладок
+     * @return mixed
      */
     public function bookmarks()
     {
-        // Обеспечение стандартными данными: избранные пользователти
-        $stdVarFavourites = Base::getQueries('favourites_user');
-        
-        // Получение списка событий
-        $events = Base::getQueries('bookmarks_events');
+        // сборка данных со стороны авторизованного пользователя
+        Base::sessionRefresh();
+        // сборка данных со стороны сервиса
+        $localstorage = Base::getLocalstorage();
 
-        // Получение списка идентификаторов событий, которые пользователь добавил в закладки
-        $bookmarks = Base::getIds('bookmarks');
+        // получение идентификатора авторизованного пользователя
+        $user_id = Auth::id();
 
-        $auth_id = Auth::id();
-
-        $std_avatar = '';
-        if ($auth_id) {
-            // * Получение данных пользователя
-            $user = Base::getQueries('user', $auth_id);
-            // * Получение имени аватара авторизованного пользователя
-            $std_avatar = $user->avatar;
-        }
+        // получение списка событий, которые авторизованный пользователь добавил в закладки
+        $events = Base::getEventsList('list_events_bookmarks', $user_id);
+        $events = Base::getEventsFinished($events);
 
         return view('rocketViews.bookmarks', [
-            'stdVarFavourites' => $stdVarFavourites,
-            'events' => $events,
-            'bookmarks' => $bookmarks,
-            'std_avatar' => $std_avatar,
-            'user_id' => $auth_id,
+            'localstorage' => $localstorage,
+            'events' => $events
         ]);
     }
 
     /**
-     * ? Передает идентификатор события на скрипт, который добавляет его в закладки пользователя
+     * Добавляет событие в закладки
      */
     public function addBookmark($event_id)
     {
-        // Добавление идентификатора события в закладки
         return Base::addIds($event_id, 'bookmarks');
     }
 
     /**
-     * ? Передает идентификатор события на скрипт, который удаляет его из закладок пользователя
+     * Удаляет событие из закладок
      */
     public function removeBookmark($event_id)
     {
-        // Удаление идентификатора события из закладок
         return Base::removeIds($event_id, 'bookmarks');
     }
 }

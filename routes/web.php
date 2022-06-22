@@ -184,7 +184,7 @@ Route::get('event/{id}', [EventController::class, 'get'])->whereNumber('id'); //
 // Добавляет событие
 Route::match(['get', 'post'], 'event/add', [EventController::class, 'add'])->name('event.add')->middleware('auth');
 // Редактировать событие
-Route::match(['get', 'post'], 'event/{id}/edit', [EventController::class, 'edit']);
+Route::match(['get', 'post'], 'event/{id}/edit', [EventController::class, 'edit'])->middleware('auth');
 // Удаляет событие
 Route::get('event/{id}/remove', [EventController::class, 'remove']);
 
@@ -331,3 +331,17 @@ Route::match(['get', 'post'], 'user/{id}/edit', [UserController::class, 'edit'])
 
 // TODO: 1 собственноеручное/с друзьями заполнение пространства событиями (сфу, городскими)
 // TODO: Очередную версию стоит начинать с разработки путей и понимания того, что на каждом будет происходить
+
+
+
+
+
+
+
+
+
+// приходилось ли тебе думать о том куда и с кем сходить в пятницу вечером?
+// не обязательно в пятницу, можно в любой другой день.
+// попробуй сервис where-go.
+// тым найдется событие на любой вкус.
+// если вдруг событий для тебя на нашлось, то можешь создать их самомтоятельно

@@ -23,6 +23,9 @@ use App\Models\library\Tools;
 
 use function PHPUnit\Framework\isType;
 
+// Подключение класса Validator для управления валидацией
+use Illuminate\Support\Facades\Validator;
+
 // TODO: Нужно подумать как организовать отображение закладок в событиях. Дело в том, что карточка события требует для этого массива закладок для сличения идентификаторов. При нахождении совпадения, карточка подставляет управляющему элементу класс для придания ему соответствующего состояния. Таким образом в контроллере приходится передавать еще и массив идентификаторов закладок для каждой страницы, на которой есть карточка события. Это привело к неудобной связке getBookmarksIds, addBookmark, removeBookmark и контроллеров отвечающих за вывод событий. На первое время этого должно быть достаточно. Но нужно подумать над тем, как это организовать более архитектурно эргономично.
 
 // TODO: Несколько представлений используют одну и ту же конструкцию для вывода событий. Нужно избавиться от копипаста, заменив это каким-то другим решением. Опять же, сейчас это работает, но нужно подумать о более качественном использовании кода. В этом участвуют general.blade.php, bookmarks.blade.php.
@@ -479,25 +482,246 @@ class Base extends Model
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
-     * * Возвращает список событий в зависимости от выбранного фильтра
-     * * Написано хорошо, переделывать не нужно
+     * * Временное хранилище
+     */
+    static function getLocalstorage()
+    {
+        $localstorage = array(
+            'cityes' => array(
+                'Ачинск',
+                'Артемовск',
+                'Боготол',
+                'Бородино',
+                'Енисейск',
+                'Железногорск',
+                'Дивногорск',
+                'Дудинка',
+                'Заозерный',
+                'Зеленогорск',
+                'Игарка',
+                'Иланский',
+                'Канск',
+                'Кодинск',
+                'Красноярск',
+                'Лесосибирск',
+                'Минусинск',
+                'Назарово',
+                'Норильск',
+                'Сосновоборск',
+                'Ужур',
+                'Уяр',
+                'Шарыпово',
+            ),
+            'categories' => array(
+                'Активный отдых',
+                'Бизнес',
+                'Вечеринка',
+                'Выставка',
+                'Досуг',
+                'Дети',
+                'Здоровье',
+                'Игры',
+                'Искусство',
+                'Карьера',
+                'Кино',
+                'Конференция',
+                'Концерт',
+                'Культура',
+                'Курсы',
+                'Эзотерика',
+                'Мастер-классы',
+                'Музыка',
+                'Наука',
+                'Общение',
+                'Образование',
+                'Отдых',
+                'Онлайн',
+                'Поход',
+                'Развлечения',
+                'Семинар',
+                'Спорт',
+                'Стендап',
+                'Туризм',
+                'Хобби',
+                'Шоу',
+                'Другое',
+            ),
+        );
+
+        return $localstorage;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * * Возвращает результат сырого запроса события из базы данных
+     * * Для страниц, где требуется вывод событий пользователя:
+     * * - все события пользователя
+     * * - закладки пользователя
+     * * - события, в которых участвует пользователь
+     */
+
+    static function getEventsList($selector, $user_id)
+    {
+        // ограничение количества выводимых элементов
+        $limit = 30;
+
+        switch ($selector) {
+
+            case 'list_events_user';
+                // получение всех событий пользователя
+                $events = DB::table('events')
+                    ->where('events.status', 1)
+                    ->where('events.user_id', $user_id)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select(
+                        'events.id',
+                        'events.title',
+                        'events.preview',
+                        'events.user_id',
+                        'users.name',
+                        'profiles.avatar',
+                        'events.category',
+                        'events.description',
+                        'events.city',
+                        'events.adress',
+                        'events.date_start',
+                        'events.date_end',
+                        'events.time_start',
+                        'events.time_end',
+                        'events.price_type',
+                        'events.cost',
+                        'events.goes',
+                        'events.witness',
+                        'events.source',
+                        'events.counter',
+                    )
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'list_events_bookmarks';
+                // получение событий, добавленных в закладки авторизованным пользователем
+                $bookmarks = session('bookmarks');
+                $events = DB::table('events')
+                    ->whereIn('events.id', $bookmarks)
+                    ->where('status', 1)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select(
+                        'events.id',
+                        'events.title',
+                        'events.preview',
+                        'events.user_id',
+                        'users.name',
+                        'profiles.avatar',
+                        'events.category',
+                        'events.description',
+                        'events.city',
+                        'events.adress',
+                        'events.date_start',
+                        'events.date_end',
+                        'events.time_start',
+                        'events.time_end',
+                        'events.price_type',
+                        'events.cost',
+                        'events.goes',
+                        'events.witness',
+                        'events.source',
+                        'events.counter',
+                    )
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+        }
+
+        return $events;
+    }
+
+    /**
+     * * Возвращает результат сырого запроса из базы данных в зависимости от выбранного фильтра
+     * * Для главной страницы, где существует фильтрация событий
+     * ! Отрефакторено
      * @param $direction string
      * @param $city string
      * @param $category string
      * @param $date_start string
      * @return $events object
+     * TODO: поправить запросы, чтобы не показывать прошедшие события
      */
 
-    static function getEvents($direction, $city, $category, $date_start)
+    static function getEventsFiltrated($selector, $city, $category, $date_start)
     {
-        // Ограничение количества выводимых элементов
+        // ограничение количества выводимых элементов
         $limit = 30;
 
-        switch ($direction) {
+        switch ($selector) {
 
             case 'filtrated_city';
-                // По городу
+                // фильтр по городу
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
@@ -509,7 +733,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_category';
-                // По категории
+                // фильтр по категории
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.category', $category)
@@ -521,7 +745,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_date';
-                // По дате
+                // фильтр по дате
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('date_start', '>=', $date_start)
@@ -533,7 +757,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_city_category';
-                // По городу и категории
+                // фильтр по городу и категории
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
@@ -546,7 +770,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_city_date';
-                // По городу и дате
+                // фильтр по городу и дате
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
@@ -559,7 +783,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_category_date';
-                // По категории и дате
+                // фильтр по категории и дате
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.category', $category)
@@ -572,7 +796,7 @@ class Base extends Model
                 break;
 
             case 'filtrated_city_category_date';
-                // По городу, категории и дате
+                // фильтр по городу, категории и дате
                 $events = DB::table('events')
                     ->where('status', 1)
                     ->where('events.city', $city)
@@ -586,8 +810,150 @@ class Base extends Model
                 break;
         }
 
+        // dd($events);
+
+
         return $events;
     }
+
+
+
+
+    static function getEventPage($event_id)
+    {
+        $event = DB::table('events')
+            ->where('events.id', $event_id)
+            ->join('users', 'events.user_id', '=', 'users.id')
+            ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+            ->select('users.name', 'profiles.*', 'events.*')
+            ->get();
+
+
+        return $event;
+    }
+
+
+
+
+
+
+
+    /**
+     * * Возвращает обработанный список событий
+     * * Содержит в себе все обработки, ранее использовавшиеся в шаблоне
+     */
+
+    static function getEventsFinished($events)
+    {
+        // вспомогательный массив имен месяцев
+        $month = [
+            1 => 'января',
+            2 => 'февраля',
+            3 => 'марта',
+            4 => 'апреля',
+            5 => 'мая',
+            6 => 'июня',
+            7 => 'июля',
+            8 => 'августа',
+            9 => 'сентября',
+            10 => 'октября',
+            11 => 'ноября',
+            12 => 'декабря',
+        ];
+
+        // обход полученных событий
+        foreach ($events as $event) {
+
+            // получение списка идентификаторов участников
+            $goes = unserialize($event->goes);
+
+            // формирование списка идентификаторов участников
+            $event->goes = $goes;
+
+            // формирование счетчика участников
+            $event->count_goes = count($goes);
+
+            // преобразование категории
+            $event->category = explode(',', $event->category);
+
+            // формирование отметки о том, что событие прошло
+            if (strtotime($event->date_start) + 86400 < time()) {
+                $event->last = 1;
+            } else {
+                $event->last = 0;
+            }
+
+            // преобразование даты
+            $date_start = strtotime($event->date_start);
+            $d = date('d', $date_start);
+            $n = date('n', $date_start);
+            $m = $month[$n];
+            $y = date('Y', $date_start);
+            $event->date_start = $d . ' ' . $m . ' ' . $y;
+
+            // преобразование состояния закладки в зависимости от наличия события в закладках авторизованного полььзователя
+            if (in_array($event->id, session('bookmarks'))) {
+                $event->state_bookmark = 'bi-bookmark-check-fill';
+            } else {
+                $event->state_bookmark = 'bi-bookmark';
+            }
+
+            // формирование условия участия
+            if ($event->price_type == 'free') {
+                $event->participant = 'бесплатно';
+            } elseif ($event->price_type == 'donate') {
+                $event->participant = 'за донат';
+            } elseif ($event->price_type == 'price') {
+                $event->participant = "$event->cost руб.";
+            }
+
+            // проверка участия авторизованного пользователя в событии
+            if (in_array(Auth::id(), $goes)) {
+                $event->run = 1;
+            } else {
+                $event->run = 0;
+            }
+
+            // проверка: является ли событие созданным авторизованным пользователем
+            if (Auth::id() == $event->user_id) {
+                $event->my = 1;
+            } else {
+                $event->my = 0;
+            }
+
+            // dd($event);
+        }
+
+        // передача данных в представление
+        return $events;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * * Соглашение о терминологии
@@ -780,47 +1146,128 @@ class Base extends Model
         $action->counter = $views_count;
         // Запись модели в базу данных
         $action->save();
-        // Возвращает обновленное количество просмотров
-        return $views_count;
+    }
+
+
+
+
+    /**
+     * * Возвращает данные пользователя
+     * * Для отрисовки страницы любого пользователя
+     */
+    static function getUser($user_id)
+    {
+        // объявление массива (на случай отсутствия значений в таблице)
+        $user = array();
+
+        // получение данных пользователя
+        $user = DB::table('profiles')
+            ->where('user_id', $user_id)
+            ->join('users', 'profiles.user_id', '=', 'users.id')
+            ->select(
+                'profiles.user_id',
+                'profiles.avatar',
+                'profiles.about',
+                'profiles.phone',
+                'profiles.phone_checked',
+                'profiles.telegram',
+                'profiles.telegram_checked',
+                'profiles.whatsapp',
+                'profiles.whatsapp_checked',
+                'users.name'
+            )
+            ->get();
+
+        // преобразование данных пользователя
+        $user[0]->count_events      = self::getCountEvents($user_id);
+        $user[0]->count_follovers   = self::getCountFollovers($user_id);
+
+        // возвращение полученных данных
+        return $user[0];
     }
 
     /**
-     * * Возвращает данные авторизованного пользователя
+     * * Формирует сессию
+     * * Для осуществления сквозного доступа к данным авторизованного пользователя
      */
-    static function getData()
+    static function sessionRefresh()
     {
-        // объявление массива
-        $data = array();
-
         // получение идентификатора авторизованного пользователя
         $user_id = Auth::id();
 
         // получение данных авторизованного пользователя
-        $user = self::getQueries('user', $user_id);
+        $auth = DB::table('profiles')
+            ->where('user_id', $user_id)
+            ->join('users', 'profiles.user_id', '=', 'users.id')
+            ->select(
+                'users.name',
+                'profiles.avatar',
+                'profiles.bookmarks',
+                'profiles.favourites',
+                'profiles.follovers',
+                'profiles.going',
+                'profiles.witness'
+            )
+            ->get()[0];
 
-        // сборка массива
-        // $data['user_id']            = $user_id;
-        $data['name']               = $user->name;
-        $data['avatar']             = $user->avatar;
+        // преобразование списка идентификаторов избранных пользователей
+        $favourites_list = unserialize($auth->favourites);
+        // получение некоторых данных избранных пользователей на основе преобразованных значений
+        $favourites_obj = DB::table('profiles')
+            ->whereIn('user_id', $favourites_list)
+            ->join('users', 'profiles.user_id', '=', 'users.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'profiles.avatar'
+            )
+            ->get();
 
-        // $data['about']              = $user->about;
-        // $data['city']               = $user->city;
+        // сборка сессии
+        session(['user_id' => $user_id]);
+        session(['name' => $auth->name]);
+        session(['avatar' => $auth->avatar]);
+        session(['bookmarks' => unserialize($auth->bookmarks)]);
+        session(['favourites_list' => $favourites_list]);
+        session(['favourites_obj' => $favourites_obj->all()]);
+        session(['follovers' => unserialize($auth->follovers)]);
+        session(['going' => unserialize($auth->going)]);
+        session(['witness' => $auth->witness]);
+    }
 
-        // $data['phone']              = $user->phone;
-        // $data['phone_checked']      = $user->phone_checked;
-        // $data['telegram']           = $user->telegram;
-        // $data['telegram_checked']   = $user->telegram_checked;
-        // $data['whatsapp']           = $user->whatsapp;
-        // $data['whatsapp_checked']   = $user->whatsapp_checked;
+    /**
+     * Валидирует
+     * @param $fields object принимает метод: $r->all()
+     */
+    static function validates($fields)
+    {
+        $validator = Validator::make($fields, [
+            'preview'           => 'mimes:jpeg,png',                                        // должно быть в формате jpeg или png
+            'title'             => 'required|min:3',                                        // TODO: указать нежелательные символы
+            'description'       => 'required|min:10',                                       // TODO: указать нежелательные символы
+            'city'              => 'required',                                              // обязательно
+            'category'          => 'required',                                              // обязательно
+            'adress'            => 'required',                                              // обязательно
+            'date_start'        => 'required',                                              // обязательно
+            'time_start'        => 'nullable',                                              // проверяемое поле может быть NULL
+            'date_end'          => 'nullable',                                              // проверяемое поле может быть NULL
+            'time_end'          => 'nullable',                                              // проверяемое поле может быть NULL
+            'price_type'        => 'required',                                              // обязательно
+            'cost'              => 'required_if:price_type,==,price|regex:/^[0-9]+$/',      // обязательно если выбран радио + целое число
+        ]);
 
-        $data['favourites']         = unserialize($user->favourites);
-        $data['bookmarks']          = unserialize($user->bookmarks);
-        $data['follovers']          = unserialize($user->follovers);
-        $data['going']              = unserialize($user->going);
 
-        // $data['witness']            = $user->witness;
 
-        // передача массива 
-        return $data;
+        return $validator;
+    }
+
+    /**
+     * Проверка материала на принадлежность авторизованному пользователю
+     */
+    static function owner($event_id) {
+        
+        if(session('user_id'))
+
     }
 }
+

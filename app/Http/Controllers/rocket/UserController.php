@@ -29,69 +29,28 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     /**
-     * * Передает во view данные для рендеринга страниц пользователей
+     * * Страница любого пользователя
      */
     public function getUser($user_id)
     {
+        // формирование сессии из данных авторизованного пользователя
+        Base::sessionRefresh();
 
-        // Получение данных пользователя
-        $user = Base::getQueries('user', $user_id);
+        // обращение к временному хранилищу
+        $localstorage = Base::getLocalstorage();
 
-        // Получение списка событий
-        $events = Base::getQueries('user_events', $user_id);
+        // получение данных пользователя, к странице которого ведет запрос
+        $user = Base::getUser($user_id);
 
-        // получение данных авторизованного пользователя
-        $data = Base::getData();
+        // получение списка событий пользователя, к странице которого ведет запрос
+        $events = Base::getEventsList('list_events_user', $user_id);
+        $events = Base::getEventsFinished($events);
 
-
-
-
-
-
-        // dd($user);
-
-        // dd('ok');
-
-        // Получение списка идентификаторов событий, которые пользователь добавил в закладки
-        $bookmarks = Base::getIds('bookmarks');
-
-        // Получение списка идентификаторов избранных пользователей
-        $favourites = Base::getFavourites();
-
-
-
-
-        // Получение данных избранных пользователей
-        $stdVarFavourites = Base::getQueries('favourites_user');
-
-        // Получение данных пользователя
-        $self = Base::getQueries('user', Auth::id());
-
-        if(Auth::id()) {
-            // Получение имени аватара авторизованного пользователя
-            $std_avatar = $self->avatar;
-        } else {
-            $std_avatar = '';
-        }
-
-        // dd(Base::getData());
-
-        
-
-        $events_count = Base::getCountEvents($user_id);
-        $follovers_count = Base::getCountFollovers($user_id);
-
-        // Передача данных на представление
+        // передача данных в представление
         return view('rocketViews.user', [
             'user' => $user,
             'events' => $events,
-            'bookmarks' => $bookmarks,
-            'favourites' => $favourites,
-            'stdVarFavourites' => $stdVarFavourites,
-            'user_id' => $user_id,
-            'std_avatar' => $std_avatar,
-            'events_count' => $events_count,
-            'follovers_count' => $follovers_count
+            'localstorage' => $localstorage
         ]);
     }
 
