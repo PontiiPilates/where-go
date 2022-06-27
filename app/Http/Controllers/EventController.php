@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\rocket;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,6 +11,8 @@ use App\Models\library\Base;
 use App\Models\Event;
 // подулючение обработчика изображений
 use App\Models\library\Images;
+// подключение помощника Auth
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -19,10 +21,13 @@ class EventController extends Controller
      * @param $event_id string идентификатор события
      * @return mixed передача данных в представление
      */
-    public function get($event_id)
+    public function getEvent($event_id)
     {
-        // сборка данных со стороны авторизованного пользователя
-        Base::sessionRefresh();
+        if (Auth::id()) {
+            // если пользователь авторизован, то формирование сессии из его данных
+            Base::sessionRefresh();
+        }
+
         // сборка данных со стороны сервиса
         $localstorage = Base::getLocalstorage();
 
@@ -31,10 +36,12 @@ class EventController extends Controller
         $event = Base::getEventsFinished($event);
         $event = $event->all()[0];
 
+        // dd($event);
+
         // добавить просмотр события
         Base::addView($event_id);
 
-        return view('rocketViews.eventPage', [
+        return view('pageEvent', [
             'localstorage' => $localstorage,
             'event' => $event,
         ]);
@@ -45,7 +52,7 @@ class EventController extends Controller
      * @param $r class содержит данные, отправленные из формы
      * @return mixed содержит перенаправления и передачу данных в представление
      */
-    public function add(Request $r)
+    public function addEvent(Request $r)
     {
         // сборка данных со стороны авторизованного пользователя
         Base::sessionRefresh();
@@ -56,7 +63,7 @@ class EventController extends Controller
         if ($r->isMethod('post')) {
 
             // валидация отправленных данных
-            $validator = Base::validates($r->all());
+            $validator = Base::validates('form_control_event', $r->all());
 
             if ($validator->fails()) {
                 // если данные не валидны, то вернуть пользователя обратно на форму
@@ -64,7 +71,7 @@ class EventController extends Controller
             } else {
                 // иначе создать модель события
                 $event = new Event;
-                // наполнение данными
+                // иначе наполнение данными
                 $event->user_id         = session('user_id');
                 $event->title           = $r->title;
                 $event->description     = $r->description;
@@ -114,7 +121,7 @@ class EventController extends Controller
             }
         }
 
-        return view('rocketViews.eventControll', [
+        return view('controlEvent', [
             'localstorage' => $localstorage,
             'event' => NULL
         ]);
@@ -126,7 +133,7 @@ class EventController extends Controller
      * @param $event_id идентификатор редактируемого события
      * @return mixed содержит перенаправления и передачу данных в представление
      */
-    public function edit(Request $r, $event_id)
+    public function editEvent(Request $r, $event_id)
     {
         // сборка данных со стороны авторизованного пользователя
         Base::sessionRefresh();
@@ -155,13 +162,13 @@ class EventController extends Controller
         if ($r->isMethod('post')) {
 
             // валидация отправленных данных
-            $validator = Base::validates($r->all());
+            $validator = Base::validates('form_control_event', $r->all());
 
             if ($validator->fails()) {
                 // если данные не валидны, то вернуть пользователя обратно на форму редактирования события
                 return redirect("/event/$event_id/edit")->withErrors($validator)->withInput();
             } else {
-                // наполнение данными
+                // иначе наполнение данными
                 $event->user_id         = session('user_id');
                 $event->title           = $r->title;
                 $event->description     = $r->description;
@@ -214,7 +221,7 @@ class EventController extends Controller
             }
         }
 
-        return view('rocketViews.eventControl', [
+        return view('controlEvent', [
             'localstorage' => $localstorage,
             'event' => $event
         ]);
@@ -225,7 +232,7 @@ class EventController extends Controller
      * @param $event_id int идентификатор редактируемого события
      * @return mixed выполняет редирект
      */
-    public function remove($event_id)
+    public function removeEvent($event_id)
     {
         $user_id = session('user_id');
 

@@ -63,6 +63,7 @@
         {{-- Контакты --}}
         <x-rocketComponents.componentContacts :phoneChecked="$event->phone_checked" :phone="$event->phone"
             :telegramChecked="$event->telegram_checked" :telegram="$event->telegram"
+            :vkChecked="$event->vk_checked" :vk="$event->vk"
             :whatsappChecked="$event->whatsapp_checked" :whatsapp="$event->whatsapp">
         </x-rocketComponents.componentContacts>
 
@@ -78,15 +79,17 @@
         {{-- Счетчик просмотров --}}
         <span class="card-icon bi bi-eye-fill"> {{ $event->counter }}</span>
 
-        @if ( $event->my )
         {{-- Счетчик участников для автора события --}}
+        @auth
         <a href="/run/{{ $event->id }}/users" class="text-reset text-decoration-none">
             <span class="card-icon bi bi-people-fill"> {{ $event->count_goes }}</span>
         </a>
-        @else
+        @endauth
+
         {{-- Счетчик участников для любого другого пользователя --}}
+        @guest
         <span class="card-icon bi bi-people-fill"> {{ $event->count_goes }}</span>
-        @endif
+        @endguest
 
     </div>
 
@@ -111,7 +114,7 @@
         @endauth
 
         @guest
-        <x-rocketComponents.componentShare class="tools-bw-btn" id="{{ $event->user_id }}">
+        <x-rocketComponents.componentShare class="share-link btn btn-light border tools-bw-btn" id="{{ $event->user_id }}">
         </x-rocketComponents.componentShare>
         @endguest
 

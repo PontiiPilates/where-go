@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\rocket;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -22,11 +22,12 @@ class RunController extends Controller
         $localstorage = Base::getLocalstorage();
 
         // получение списка событий
-        $events = Base::getQueries('run_events');
+        $events = Base::getFirstQuery('list_event_run');
+
         // обработка списка событий
         $events = Base::getEventsFinished($events);
 
-        return view('rocketViews.general', [
+        return view('listEvents', [
             'localstorage' => $localstorage,
             'events' => $events,
         ]);
@@ -34,6 +35,7 @@ class RunController extends Controller
 
     /**
      * Страница просмотра участников события
+     * @param $event_id int идентификатор события, в котором пользователи принимают участие
      * @return mixed
      */
     public function getUsers($event_id)
@@ -44,9 +46,9 @@ class RunController extends Controller
         $localstorage = Base::getLocalstorage();
 
         // получение списка пользователей, зарегистрировавшихся на событие
-        $users = Base::getQueries('run_users', $event_id);
+        $users = Base::getFirstQuery('list_users_run', $event_id);
 
-        return view('rocketViews.userList', [
+        return view('listUsers', [
             'localstorage' => $localstorage,
             'users' => $users,
         ]);
@@ -54,18 +56,20 @@ class RunController extends Controller
 
     /**
      * Добавляет участника события
+     * @param $event_id int идентификатор события, в котором авторизованный пользователь принимает участие
      * @return string 
      */
-    public function add($event_id)
+    public function addRun($event_id)
     {
         return Base::addRun($event_id, 'going', 'goes');
     }
 
     /**
      * Удаляет участника события
+     * @param $event_id int идентификатор события, от участия в котором авторизованный пользователь отказывается
      * @return string
      */
-    public function remove($event_id)
+    public function removeRun($event_id)
     {
         return Base::removeRun($event_id, 'going', 'goes');
     }

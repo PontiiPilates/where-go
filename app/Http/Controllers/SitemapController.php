@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\project;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -81,6 +81,6 @@ class SitemapController extends Controller
 
 
 
-        return view('project.sitemap', ['data' => $data]);
+        return view('sitemap', ['data' => $data]);
     }
 }

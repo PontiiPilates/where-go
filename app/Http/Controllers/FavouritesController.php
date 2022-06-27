@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\rocket;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,21 +14,25 @@ class FavouritesController extends Controller
      * Страница подписок
      * @return mixed
      */
-    public function getFavourites()
+    public function getUsers()
     {
         // сборка данных со стороны авторизованного пользователя
         Base::sessionRefresh();
-
         // сборка данных со стороны сервиса
         $localstorage = Base::getLocalstorage();
 
-        return view('rocketViews.favourites', [
-            'localstorage' => $localstorage
+        // получение подписок
+        $users = session('favourites_obj');
+
+        return view('listUsers', [
+            'localstorage' => $localstorage,
+            'users' => $users,
         ]);
     }
 
     /**
      * Добавляет подписки на пользователя
+     * @param $user_id int идентификатор избранного пользователя
      * @return string
      */
     public function addFavourites($user_id)
@@ -38,6 +42,7 @@ class FavouritesController extends Controller
 
     /**
      * Удаляет подписки на пользователя
+     * @param $user_id int идентификатор избранного пользователя
      * @return string
      */
     public function removeFavourites($user_id)

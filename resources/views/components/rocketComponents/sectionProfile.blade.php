@@ -8,6 +8,7 @@
                     {{-- Контакты --}}
                     <x-rocketComponents.componentContacts :phoneChecked="$user->phone_checked" :phone="$user->phone"
                         :telegramChecked="$user->telegram_checked" :telegram="$user->telegram"
+                        :vkChecked="$user->vk_checked" :vk="$user->vk"
                         :whatsappChecked="$user->whatsapp_checked" :whatsapp="$user->whatsapp">
                     </x-rocketComponents.componentContacts>
 

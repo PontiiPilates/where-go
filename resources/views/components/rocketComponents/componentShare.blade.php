@@ -1,6 +1,6 @@
 {{-- TODO: данные шарилки нужно переделать таким образом, чтобы динамическим был id, event/user, classes --}}
 
-<button
+<button {{ $attributes }}
     class="share-link btn btn-light border ms-lg-3"
     data-bs-trigger="click"
     data-bs-toggle="tooltip"

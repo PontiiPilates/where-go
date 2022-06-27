@@ -1,7 +1,8 @@
 <div class="mb-5">
 
+    
     @foreach ( $data as $item)
-
+    
     {{-- Карточка пользователя --}}
     <a href="/user/{{ $item->id }}" class="text-reset text-decoration-none">
         <div class="follow main-light-shadow rounded p-2 mb-2 d-flex align-items-center">

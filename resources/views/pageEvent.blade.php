@@ -1,3 +1,4 @@
+{{-- Layout --}}
 <x-rocketComponents.index :localstorage="$localstorage">
 
   {{-- Страница события --}}

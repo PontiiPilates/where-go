@@ -1,5 +1,3 @@
-<x-rocketComponents.index :localstorage="$localstorage">
-
     {{-- Фильтр событий на главной --}}
     <div class="mb-5 pb-3 d-lg-none">
         <form method="get" action="">
@@ -24,8 +22,3 @@
 
         </form>
     </div>
-
-    {{-- Список событий --}}
-    <x-rocketComponents.componentEventList :events="$events"></x-rocketComponents.componentEventList>
-
-</x-rocketComponents.index>
