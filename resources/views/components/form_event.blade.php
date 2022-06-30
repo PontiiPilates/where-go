@@ -256,5 +256,5 @@
 
 {{-- Подтверждение удаления --}}
 @isset( $event->id )
-<x-rocketComponents.modalWindowSure :id="$event->id"></x-rocketComponents.modalWindowSure>
+<x-modal_shure :id="$event->id"></x-modal_shure>
 @endisset

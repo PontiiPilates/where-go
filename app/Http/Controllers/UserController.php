@@ -32,17 +32,24 @@ class UserController extends Controller
         // обращение к временному хранилищу
         $localstorage = Base::getLocalstorage();
 
+        // объявление массива (на случай отсутствия значений в таблице)
+        $user = array();
+
         // получение данных пользователя, к странице которого ведет запрос
-        $user = Base::getUser($user_id);
+        $user = Base::getFirstQuery('page_user', $user_id);
+
+        // преобразование данных пользователя
+        $user[0]->count_events      = Base::getCountEvents($user_id);
+        $user[0]->count_follovers   = Base::getCountFollovers($user_id);
 
         // получение списка событий пользователя, к странице которого ведет запрос
         $events = Base::getFirstQuery('list_events_user', $user_id);
 
-        $events = Base::getEventsFinished($events);
+        $events = Base::eventsFinished($events);
 
         // передача данных в представление
         return view('pageUser', [
-            'user' => $user,
+            'user' => $user[0],
             'events' => $events,
             'localstorage' => $localstorage
         ]);
@@ -163,4 +170,3 @@ class UserController extends Controller
         ]);
     }
 }
- 

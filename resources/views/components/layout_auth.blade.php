@@ -2,9 +2,9 @@
 <html lang="ru">
 
 <head>
-    <x-rocketComponents.head>
+    <x-section_head>
         <x-slot name="title">Where-go</x-slot>
-    </x-rocketComponents.head>
+    </x-section_head>
 </head>
 
 <body>
@@ -14,9 +14,9 @@
             {{ $slot }}
 
             {{--
-                <!-- 404 -->
-                <x-rocketComponents.empty404></x-rocketComponents.empty404>
-                <!-- /404 -->
+            <!-- 404 -->
+            <x-rocketComponents.empty404></x-rocketComponents.empty404>
+            <!-- /404 -->
             --}}
 
         </div>

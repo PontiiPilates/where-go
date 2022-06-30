@@ -2,46 +2,24 @@
 
 namespace App\Models\library;
 
-// Стандартные подключения
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// Подключение DB для создания произвольных запросов к базе данных
-use Illuminate\Support\Facades\DB;
-
-// Подключение класса Auth для возможности получения данных о статусе пользователя
-use Illuminate\Support\Facades\Auth;
-
-// Подключение модели Profile для возможности получения данных из таблицы
-use App\Models\Profile;
-
-// Подключение модели Event для возможности получения данных из таблицы
-use App\Models\Event;
-
-// Подключение библиотеки собственных методов (помощники)
-use App\Models\library\Tools;
-
-use function PHPUnit\Framework\isType;
-
-// Подключение класса Validator для управления валидацией
+// подключение помощников
 use Illuminate\Support\Facades\Validator;
-
-// TODO: Нужно подумать как организовать отображение закладок в событиях. Дело в том, что карточка события требует для этого массива закладок для сличения идентификаторов. При нахождении совпадения, карточка подставляет управляющему элементу класс для придания ему соответствующего состояния. Таким образом в контроллере приходится передавать еще и массив идентификаторов закладок для каждой страницы, на которой есть карточка события. Это привело к неудобной связке getBookmarksIds, addBookmark, removeBookmark и контроллеров отвечающих за вывод событий. На первое время этого должно быть достаточно. Но нужно подумать над тем, как это организовать более архитектурно эргономично.
-
-// TODO: Несколько представлений используют одну и ту же конструкцию для вывода событий. Нужно избавиться от копипаста, заменив это каким-то другим решением. Опять же, сейчас это работает, но нужно подумать о более качественном использовании кода. В этом участвуют general.blade.php, bookmarks.blade.php.
-
-// ! Сейчас цель - запуск ! Работает и работает !
-
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Profile;
+use App\Models\Event;
 
 class Base extends Model
 {
-
     /**
      * Конструктор запросов
      * Возвращает результат соответствующего запроса
+     * Предназначен для хранения всех запросов к базе в одном методе
      * @param $selector string селектор запроса
-     * @param $id int любой идентификатор
+     * @param $id mixed любой идентификатор или массив идентификаторов
      * @param $facets array набор фасетов
      * @return object результат запроса
      */
@@ -152,7 +130,20 @@ class Base extends Model
                     ->simplePaginate($limit);
                 break;
 
-            case 'list_event_run';
+            case 'list_users_favourites';
+                // получение некоторых данных избранных пользователей
+                $q = DB::table('profiles')
+                    ->whereIn('user_id', $id)
+                    ->join('users', 'profiles.user_id', '=', 'users.id')
+                    ->select(
+                        'users.id',
+                        'users.name',
+                        'profiles.avatar'
+                    )
+                    ->get();
+                break;
+
+            case 'list_events_run';
                 // получение списка событий, на которые зарегистрирован пользователь
                 $q = DB::table('events')
                     ->whereIn('events.id', session('going'))
@@ -174,13 +165,8 @@ class Base extends Model
                     ->get()
                     ->all()[0]
                     ->goes;
-                // получение данных участников события
-                $q = DB::table('profiles')
-                    ->whereIn('user_id', unserialize($q1))
-                    ->join('users', 'profiles.user_id', '=', 'users.id')
-                    ->select('users.id', 'users.name', 'profiles.avatar')
-                    ->get()
-                    ->all();
+                // получение некоторых данных участников события
+                $q = self::getFirstQuery('list_users_favourites', unserialize($q1))->all();
                 break;
 
             case 'list_events_user';
@@ -248,642 +234,259 @@ class Base extends Model
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
+
+            case 'page_event';
+                // получение данных для формирования страницы события
+                $q = DB::table('events')
+                    ->where('events.id', $id)
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('users.name', 'profiles.*', 'events.*')
+                    ->get();
+                break;
+
+            case 'page_user';
+                // получение данных для формирования страницы пользователя
+                $q = DB::table('profiles')
+                    ->where('user_id', $id)
+                    ->join('users', 'profiles.user_id', '=', 'users.id')
+                    ->select(
+                        'profiles.user_id',
+                        'profiles.avatar',
+                        'profiles.about',
+                        'profiles.phone',
+                        'profiles.phone_checked',
+                        'profiles.telegram',
+                        'profiles.telegram_checked',
+                        'profiles.vk',
+                        'profiles.vk_checked',
+                        'profiles.whatsapp',
+                        'profiles.whatsapp_checked',
+                        'users.name'
+                    )
+                    ->get();
+                break;
+
+            case 'session';
+                // получение данных авторизованного пользователя
+                $q = DB::table('profiles')
+                    ->where('user_id', $id)
+                    ->join('users', 'profiles.user_id', '=', 'users.id')
+                    ->select(
+                        'users.name',
+                        'users.email',
+                        'profiles.avatar',
+                        'profiles.about',
+                        'profiles.bookmarks',
+                        'profiles.favourites',
+                        'profiles.follovers',
+                        'profiles.going',
+                        'profiles.witness',
+                        'profiles.phone',
+                        'profiles.phone_checked',
+                        'profiles.telegram',
+                        'profiles.telegram_checked',
+                        'profiles.whatsapp',
+                        'profiles.whatsapp_checked',
+                        'profiles.vk',
+                        'profiles.vk_checked',
+                    )
+                    ->get()[0];
+                break;
         }
 
         return $q;
     }
 
-
     /**
-     * TODO: тоже бы соединить со списком сырых запросов, сейчас используется контроллером
-     */
-
-    static function getEventPage($event_id)
-    {
-        $event = DB::table('events')
-            ->where('events.id', $event_id)
-            ->join('users', 'events.user_id', '=', 'users.id')
-            ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
-            ->select('users.name', 'profiles.*', 'events.*')
-            ->get();
-
-
-        return $event;
-    }
-
-
-    /**
-     * TODO: это нужно соединить с методом запросов и сделать метод запросов, которыми питается система
-     * * Возвращает данные пользователя
-     * * Для отрисовки страницы любого пользователя
-     */
-    static function getUser($user_id)
-    {
-        // объявление массива (на случай отсутствия значений в таблице)
-        $user = array();
-
-        // получение данных пользователя
-        $user = DB::table('profiles')
-            ->where('user_id', $user_id)
-            ->join('users', 'profiles.user_id', '=', 'users.id')
-            ->select(
-                'profiles.user_id',
-                'profiles.avatar',
-                'profiles.about',
-                'profiles.phone',
-                'profiles.phone_checked',
-                'profiles.telegram',
-                'profiles.telegram_checked',
-                'profiles.vk',
-                'profiles.vk_checked',
-                'profiles.whatsapp',
-                'profiles.whatsapp_checked',
-                'users.name'
-            )
-            ->get();
-
-        // преобразование данных пользователя
-        $user[0]->count_events      = self::getCountEvents($user_id);
-        $user[0]->count_follovers   = self::getCountFollovers($user_id);
-
-        // возвращение полученных данных
-        return $user[0];
-    }
-
-
-    /**
-     * Формирует / обновляет данные сессии
+     * Сессия
+     * Обновляет данные сессии при каждом новом запросе
      * Для осуществления сквозного доступа к данным авторизованного пользователя
-     * ! Refactored
      */
     static function sessionRefresh()
     {
         // получение идентификатора авторизованного пользователя
         $user_id = Auth::id();
 
-        // получение данных авторизованного пользователя
-        $auth = DB::table('profiles')
-            ->where('user_id', $user_id)
-            ->join('users', 'profiles.user_id', '=', 'users.id')
-            ->select(
-                'users.name',
-                'users.email',
-                'profiles.avatar',
-                'profiles.about',
-                'profiles.bookmarks',
-                'profiles.favourites',
-                'profiles.follovers',
-                'profiles.going',
-                'profiles.witness',
-                'profiles.phone',
-                'profiles.phone_checked',
-                'profiles.telegram',
-                'profiles.telegram_checked',
-                'profiles.whatsapp',
-                'profiles.whatsapp_checked',
-                'profiles.vk',
-                'profiles.vk_checked',
-            )
-            ->get()[0];
+        // если пользователь авторизован, то продолжить формирование сессии
+        if ($user_id) {
+            // получение данных авторизованного пользователя
+            $auth = self::getFirstQuery('session', $user_id);
 
-        // преобразование списка идентификаторов избранных пользователей
-        $favourites_list = unserialize($auth->favourites);
-        // получение некоторых данных избранных пользователей на основе преобразованных значений
-        $favourites_obj = DB::table('profiles')
-            ->whereIn('user_id', $favourites_list)
-            ->join('users', 'profiles.user_id', '=', 'users.id')
-            ->select(
-                'users.id',
-                'users.name',
-                'profiles.avatar'
-            )
-            ->get();
+            // преобразование списка идентификаторов избранных пользователей
+            $favourites_list = unserialize($auth->favourites);
+    
+            // получение некоторых данных избранных пользователей на основе преобразованных значений
+            $favourites_obj = self::getFirstQuery('list_users_favourites', $favourites_list);
+    
+            // сборка сессии
+            session(['user_id' => $user_id]);
+            session(['name' => $auth->name]);
+            session(['email' => $auth->email]);
+            session(['avatar' => $auth->avatar]);
+            session(['about' => $auth->about]);
+            session(['bookmarks' => unserialize($auth->bookmarks)]);
+            session(['favourites_list' => $favourites_list]);
+            session(['favourites_obj' => $favourites_obj->all()]);
+            session(['follovers' => unserialize($auth->follovers)]);
+            session(['going' => unserialize($auth->going)]);
+            session(['witness' => $auth->witness]);
+            session(['phone' => $auth->phone]);
+            session(['phone_checked' => $auth->phone_checked]);
+            session(['telegram' => $auth->telegram]);
+            session(['telegram_checked' => $auth->telegram_checked]);
+            session(['whatsapp' => $auth->whatsapp]);
+            session(['whatsapp_checked' => $auth->whatsapp_checked]);
+            session(['vk' => $auth->vk]);
+            session(['vk_checked' => $auth->vk_checked]);
+        }
 
-        // сборка сессии
-        session(['user_id' => $user_id]);
-        session(['name' => $auth->name]);
-        session(['email' => $auth->email]);
-        session(['avatar' => $auth->avatar]);
-        session(['about' => $auth->about]);
-        session(['bookmarks' => unserialize($auth->bookmarks)]);
-        session(['favourites_list' => $favourites_list]);
-        session(['favourites_obj' => $favourites_obj->all()]);
-        session(['follovers' => unserialize($auth->follovers)]);
-        session(['going' => unserialize($auth->going)]);
-        session(['witness' => $auth->witness]);
-        session(['phone' => $auth->phone]);
-        session(['phone_checked' => $auth->phone_checked]);
-        session(['telegram' => $auth->telegram]);
-        session(['telegram_checked' => $auth->telegram_checked]);
-        session(['whatsapp' => $auth->whatsapp]);
-        session(['whatsapp_checked' => $auth->whatsapp_checked]);
-        session(['vk' => $auth->vk]);
-        session(['vk_checked' => $auth->vk_checked]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * 
-     */
-    static function getPostQuery($query)
-    {
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * * Возвращает идентификаторы из указанного столбца (идентификаторы закладок, подписок, участий в событиях)
-     * ! Нужно переписать этот метод. Сейчас он жестко привязан к таблице, в то время, как массивы с данными находятся уже в двух таблицах
-     * bookmarks
-     * favourites
-     * going
-     */
-    static function getIds($column)
-    {
-        // Id авторизованного пользователя
-        $user_id = Auth::id();
-
-        // Получение модели профиля для извлечения данных
-        $profile = Profile::firstWhere('user_id', $user_id);
-
-        // ! Предохранитель
-        // Случилось так, что запись в таблице profiles не была создана, поэтому можно выполнить проверку перед дальнейшим выполнением
-
-        if ($profile) {
-            // Извлечение массива с данными
-            $data = $profile->$column;
-            // dd($data);
-            $data = unserialize($data);
-        } else {
-            $data = array();
-        }
-
-        // dd($profile);
-
-
-        // ! Если в таблице поле указано NULL, то при первой итерации значение переменной будет false, а view нужен array
-        if (!$data) {
-            $data = array();
-        }
-
-        // Возвращает результат запроса
-        return $data;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * ! Чувствую из этого можно сделать цельный кусок
-     */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Отмена регистрации на участие в событии
-     * @param $event_id int идентификатор события
-     * @param string $profile_column имя колонки в таблице profiles
-     * @param string $event_column имя колонки в таблице events
-     * @return string сообщение
-     * TODO: из этого можно сделать нечто среднее с закладками
-     */
-    static function removeRun($event_id, $profile_column, $event_column)
-    {
-        // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::firstWhere('user_id', Auth::id());
-
-
-        // Получение идентификаторов событий, на которые зарегистрировался пользователь
-        $profile_ids = $profile->$profile_column;
-        $profile_ids = unserialize($profile_ids);
-
-        // Удаление идентификатора события, на которое зарегистрировался пользователь
-        foreach ($profile_ids as $key => $item) {
-            if ($item == $event_id) {
-                unset($profile_ids[$key]);
-            }
-        }
-
-        // Упаковка нового массива
-        $profile_ids = serialize($profile_ids);
-        $profile->$profile_column = $profile_ids;
-
-        // Сохранение в базу данных
-        if ($profile->save()) {
-            $msg = 'Profile id is removed<br>';
-        }
-
-        // Получение модели события для извлечения массива идентификаторов зарегистрировавшихся пользователей
-        $event = Event::find($event_id);
-
-        // Получение идентификаторов событий, на которые зарегистрировался пользователь
-        $event_ids = $event->$event_column;
-        $event_ids = unserialize($event_ids);
-
-        // Удаление идентификатора пользователя из массива зарегистрировавшихся пользователей
-        foreach ($event_ids as $key => $item) {
-            if ($item == Auth::id()) {
-                unset($event_ids[$key]);
-            }
-        }
-
-        // Упаковка нового массива
-        $event_ids = serialize($event_ids);
-        $event->$event_column = $event_ids;
-
-        // Сохранение в базу данных
-        if ($event->save()) {
-            $msg .= 'Event id is removed';
-        }
-
-        // return $msg;
-        return $msg;
-    }
-
-    /**
-     * * Добавляет идентификатор в указанный столбец (идентификаторы закладок, подписок, участий в событиях)
-     */
-    static function addRun($event_id, $profile_column, $event_column)
-    {
-        // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::firstWhere('user_id', Auth::id());
-
-        // Получение идентификаторов событий, на которые зарегистрировался пользователь
-        $profile_ids = $profile->$profile_column;
-        $profile_ids = unserialize($profile_ids);
-
-        // Добавление идентификатора события, на которое зарегистрировался пользователь
-        $profile_ids[] = $event_id;
-        $profile_ids = serialize($profile_ids);
-        $profile->$profile_column = $profile_ids;
-
-        // Сохранение в базу данных
-        if ($profile->save()) {
-            $msg = 'Profile id is added<br>';
-        }
-
-        // Получение модели события для извлечения массива идентификаторов зарегистрировавшихся пользователей
-        $event = Event::find($event_id);
-
-        // Получение идентификаторов событий, на которые зарегистрировался пользователь
-        $event_ids = $event->$event_column;
-        $event_ids = unserialize($event_ids);
-
-        // Добавление идентификатора пользователя к событию, на которое он зарегистрировался
-        $event_ids[] = Auth::id();
-        $event_ids = serialize($event_ids);
-        $event->$event_column = $event_ids;
-
-        // Сохранение в базу данных
-        if ($event->save()) {
-            $msg .= 'Event id is added';
-        }
-
-        return $msg;
-    }
-
-    /**
-     * * Удаляет идентификатор из указанного столбца (идентификаторы закладок, подписок, участий в событиях)
-     * bookmarks
-     * favourites
-     * going
-     */
-    static function removeIds($event_id, $column)
-    {
-        // Получение модели профиля для извлечения закладок
-        $profile = Profile::firstWhere('user_id', Auth::id());
-
-        // Получение массива с закладками авторизованного поьзователя
-        $data = self::getIds($column);
-
-        // Удаление элемента из массива
-        foreach ($data as $key => $item) {
-            if ($item == $event_id) {
-                unset($data[$key]);
-            }
-        }
-
-        // Упаковка нового массива
-        $data = serialize($data);
-        $profile->$column = $data;
-
-        // Сохранение в базу данных
-        if ($profile->save()) {
-            return 'removeded';
-        }
-    }
-
-    /**
-     * * Добавляет идентификатор в указанный столбец (идентификаторы закладок, подписок, участий в событиях)
-     * bookmarks
-     * favourites
-     * going
-     */
-    static function addIds($event_id, $column)
-    {
-        // Получение модели профиля для извлечения массива идентификаторов
-        $profile = Profile::firstWhere('user_id', Auth::id());
-        // dd(Auth::id());
-
-        // Получение массива с закладками авторизованного поьзователя
-        $data = self::getIds($column);
-
-
-        // Добавление нового элемента в массив идентификаторов
-        $data[] = $event_id;
-        $data = serialize($data);
-        $profile->$column = $data;
-
-        // Сохранение в базу данных
-        if ($profile->save()) {
-            return 'added';
-        }
-    }
-
-    /**
-     * * Удалить подписку
-     */
-
-    static function removeSubscribe($user_id)
-    {
-        // Приведение идентификатора пользователя к типу
-        $user_id = (int) $user_id;
-
-        // Получение идентификатора авторизованного пользователя
-        $auth_id = Auth::id();
-
-        // Получение данных авторизованного пользователя
-        $auth = Profile::firstWhere('user_id', $auth_id);
-
-        // Получение данных избранного пользователя
-        $user = Profile::firstWhere('user_id', $user_id);
-
-        // Получение идентификаторов избранных пользователей у авторизованного пользователя
-        $favourites = $auth->favourites;
-        $favourites = unserialize($favourites);
-
-        // Получение идентификаторов подписчиков у избранного пользователя
-        $follovers = $user->follovers;
-        $follovers = unserialize($follovers);
-
-        // Удаление идентификатора избранного пользователя из данных авторизованного пользователя
-        foreach ($favourites as $k => $v) {
-            if ($v == $user_id) {
-                unset($favourites[$k]);
-            }
-        }
-
-        // Добавление избранному пользователю идентификатора авторизованного пользователя
-        foreach ($follovers as $k => $v) {
-            if ($v == $auth_id) {
-                unset($follovers[$k]);
-            }
-        }
-
-        // Применение новых данных к модели авторизованного пользователя
-        $favourites = serialize($favourites);
-        $auth->favourites = $favourites;
-
-        // Применение новых данных к модели избранного пользователя
-        $follovers = serialize($follovers);
-        $user->follovers = $follovers;
-
-        // Сохранение данных
-        if ($auth->save() && $user->save()) {
-            return 'removed';
-        }
-    }
-
 
     /**
      * * Соглашение о терминологии
      * 
+     * * user - любой пользователь
      * * auth - авторизованный пользователь
-     * * user - другой пользователь
      * * guest - гость
      * 
      * * subscribe - подписка
      * * favourite - избранный пользователь
      * * follover - подписчик
-     * 
-     * * Написано хорошо, переделывать не нужно
      */
 
     /**
-     * Добавление подписки
-     * TODO: Если в строке запроса указать $user_id не существующего пользователя, то скрипт не сможет обратиться к этой строке в базе данных. Нужно пропатчить.
+     * Реверсивный
+     * Производит запись в базу и / или удаление этой записи
+     * Предназначен для реализации (регистрации участия, подписок, закладок)
+     * @param $selector string
+     * @param $control string
+     * @param $id int
+     * @return $msg array
+     * TODO: если указать id не существующего пользователя, то скрипт не сможет обратиться к этой строке в базе данных
      */
-
-    static function addSubscribe($user_id)
+    static function reversible($selector, $control, $id)
     {
-        // Приведение идентификатора пользователя к типу
-        $user_id = (int) $user_id;
+        // итерация
+        $i = 0;
 
-        // Получение идентификатора авторизованного пользователя
-        $auth_id = Auth::id();
+        // формирование групп дпнных для обхода и применения (порядок имеет значение)
+        switch ($selector) {
 
-        // Получение данных авторизованного пользователя
-        $auth = Profile::firstWhere('user_id', $auth_id);
+            case 'run';
+                // для участия
+                $models = [
+                    Event::find($id),
+                    Profile::firstWhere('user_id', session('user_id')),
+                ];
+                $columns = [
+                    'goes',
+                    'going',
+                ];
+                $values = [
+                    session('user_id'),
+                    $id
+                ];
+                break;
 
-        // Получение данных избранного пользователя
-        $user = Profile::firstWhere('user_id', $user_id);
+            case 'bookmarks';
+                // для закладок
+                $models = [
+                    Profile::firstWhere('user_id', session('user_id')),
+                ];
+                $columns = [
+                    'bookmarks',
+                ];
+                $values = [
+                    $id
+                ];
+                break;
 
-        // Получение идентификаторов избранных пользователей у авторизованного пользователя
-        $favourites = $auth->favourites;
-        $favourites = unserialize($favourites);
-
-        // Получение идентификаторов подписчиков у избранного пользователя
-        $follovers = $user->follovers;
-        $follovers = unserialize($follovers);
-
-        // Добавление идентификатора избранного пользователя авторизованному пользователю
-        $favourites[] = $user_id;
-
-        // Добавление избранному пользователю идентификатора авторизованного пользователя
-        $follovers[] = $auth_id;
-
-        // Применение новых данных к модели авторизованного пользователя
-        $favourites = serialize($favourites);
-        $auth->favourites = $favourites;
-
-        // Применение новых данных к модели избранного пользователя
-        $follovers = serialize($follovers);
-        $user->follovers = $follovers;
-
-        // Сохранение данных
-        if ($auth->save() && $user->save()) {
-            return 'added';
+            case 'favourites';
+                // для подписок
+                $models = [
+                    Profile::firstWhere('user_id', $id),
+                    Profile::firstWhere('user_id', session('user_id')),
+                ];
+                $columns = [
+                    'follovers',
+                    'favourites',
+                ];
+                $values = [
+                    session('user_id'),
+                    $id
+                ];
+                break;
         }
+
+        // сценарий добавления
+        if ($control == 'add') {
+
+            // обход групп данных
+            foreach ($models as $model) {
+
+                // извлечение данных из модели
+                $column = $columns[$i];
+                $data = $model->$column;
+                $data = unserialize($data);
+
+                // добавление
+                $data[] = $values[$i];
+
+                // упаковка обновлённых данных
+                $data = serialize($data);
+                $model->$column = $data;
+
+                // если модель сохранена успешно, то создать сообщение
+                if ($model->save()) {
+                    $msg[] = "Добавлено значение <b>$values[$i]</b> в колонку <b>$column</b>";
+                }
+
+                // итерация
+                $i++;
+            }
+        }
+
+        // сценарий удаления
+        if ($control == 'remove') {
+
+            // обход групп данных
+            foreach ($models as $model) {
+
+                // извлечение данных из модели
+                $column = $columns[$i];
+                $data = $model->$column;
+                $data = unserialize($data);
+
+                // удаление
+                foreach ($data as $k => $v) {
+                    if ($v == $values[$i]) {
+                        unset($data[$k]);
+                    }
+                }
+
+                // упаковка обновлённых данных
+                $data = serialize($data);
+                $model->$column = $data;
+
+                // если модель сохранена успешно, то создать сообщение
+                if ($model->save()) {
+                    $msg[] = "Удалено значение <b>$values[$i]</b> из колонки <b>$column</b>";
+                }
+
+                // итерация
+                $i++;
+            }
+        }
+
+        return $msg;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * ! Все, что ниже - хорошо отрефакторено
-     */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Централизованное хранилище данных не до конца определенных данных
+     * Локалсторадж
+     * Централизованное хранилище не до конца определенных данных
      * Для каждой страницы
      * @return mixed
-     * ! Refactored
      */
     static function getLocalstorage()
     {
@@ -952,16 +555,14 @@ class Base extends Model
         return $localstorage;
     }
 
-
-
     /**
-     * Преобразует список событий
+     * Постобработчик
+     * Преобразует список событий до удобно применяемого состояния
      * Содержит все обработки, которые ранее выполнялись представлением
-     * @param object $events список событий, которые вернул сырой запрос
+     * @param $events object список событий, которые вернул сырой запрос
      * @return mixed список событий с обработанными данными
-     * ! Refaсtored
      */
-    static function getEventsFinished($events)
+    static function eventsFinished($events)
     {
         // вспомогательный массив имен месяцев
         $month = [
@@ -1048,12 +649,11 @@ class Base extends Model
     }
 
     /**
+     * Счетчик подписчиков
      * Получает количество подписчиков
      * @param int $user_id идентификатор пользователя
      * @return int количество подписчиков
-     * ! Refactored
      */
-
     static function getCountFollovers($user_id)
     {
         // получение модели
@@ -1072,10 +672,10 @@ class Base extends Model
     }
 
     /**
+     * Счетчик событий
      * Получает количество событий, созданных пользователем
      * @param $user_id int идентификатор пользователя
      * @return int количество событий
-     * ! Refactored
      */
     static function getCountEvents($user_id)
     {
@@ -1085,11 +685,10 @@ class Base extends Model
         return $events;
     }
 
-
     /**
+     * Просмотр
      * Добавляет 1 просмотр события
      * @param $event_id идентификатор события
-     * ! Refactored
      */
     static function addView($event_id)
     {
@@ -1105,14 +704,12 @@ class Base extends Model
         $action->save();
     }
 
-
-
     /**
+     * Валидатор
      * Валидирует данные выбранной формы
      * @param $selector string селктор набора валидирующих правил
      * @param $fields object экземпляр коасса Request: $r->all()
      * @return mixed
-     * ! Refactored
      */
     static function validates($selector, $fields)
     {

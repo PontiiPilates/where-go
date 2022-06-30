@@ -4,17 +4,17 @@
 
             {{-- Фильтр по городу --}}
             <div class="mb-3">
-                <x-rocketComponents.componentFieldFilterCity :localstorage="$localstorage"></x-rocketComponents.componentFieldFilterCity>
+                <x-field_city_filter :localstorage="$localstorage"></x-field_city_filter>
             </div>
 
             <div class="mb-3">
                 {{-- Фильтр по категории --}}
-                <x-rocketComponents.componentFieldFilterCategory :localstorage="$localstorage"></x-rocketComponents.componentFieldFilterCategory>
+                <x-field_category_filter :localstorage="$localstorage"></x-field_category_filter>
             </div>
             
             <div class="mb-4">
                 {{-- Фильтр по дате --}}
-                <x-rocketComponents.componentFieldFilterDate></x-rocketComponents.componentFieldFilterDate>
+                <x-field_data_filter></x-field_data_filter>
             </div>
 
             <button name="filter" value="true" type="submit" class="btn btn-warning w-100 text-start"><i

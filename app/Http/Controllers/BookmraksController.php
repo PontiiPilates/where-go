@@ -27,9 +27,8 @@ class BookmraksController extends Controller
         $user_id = Auth::id();
 
         // получение списка событий, которые авторизованный пользователь добавил в закладки
-        // $events = Base::getEventsList('list_events_bookmarks', $user_id);
         $events = Base::getFirstQuery('list_events_bookmarks', $user_id);
-        $events = Base::getEventsFinished($events);
+        $events = Base::eventsFinished($events);
 
         return view('listEvents', [
             'localstorage' => $localstorage,
@@ -44,7 +43,7 @@ class BookmraksController extends Controller
      */
     public function addBookmark($event_id)
     {
-        return Base::addIds($event_id, 'bookmarks');
+        return Base::reversible('bookmarks', 'add', (int) $event_id);
     }
 
     /**
@@ -54,6 +53,6 @@ class BookmraksController extends Controller
      */
     public function removeBookmark($event_id)
     {
-        return Base::removeIds($event_id, 'bookmarks');
+        return Base::reversible('bookmarks', 'remove', (int) $event_id);
     }
 }

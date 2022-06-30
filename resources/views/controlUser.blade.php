@@ -1,7 +1,7 @@
 {{-- Layout --}}
-<x-rocketComponents.index :localstorage="$localstorage">
+<x-layout :localstorage="$localstorage">
 
   {{-- Настройки профиля авторизованного пользователя --}}
-  <x-rocketComponents.sectionProfileSettings :active="$active"></x-rocketComponents.sectionProfileSettings>
+  <x-form_settings :active="$active"></x-form_settings>
 
-</x-rocketComponents.index>
+</x-layout>

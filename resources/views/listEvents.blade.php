@@ -1,10 +1,10 @@
 {{-- Layout --}}
-<x-rocketComponents.index :localstorage="$localstorage">
+<x-layout :localstorage="$localstorage">
 
     {{-- Фильтр событий для главной страницы в мобильной версии --}}
-    <x-rocketComponents.componentFilterMobile :localstorage="$localstorage"></x-rocketComponents.componentFilterMobile>
+    <x-form_filter_mobile :localstorage="$localstorage"></x-form_filter_mobile>
 
     {{-- Список событий --}}
-    <x-rocketComponents.componentEventList :events="$events"></x-rocketComponents.componentEventList>
+    <x-list_events :events="$events"></x-list_events>
 
-</x-rocketComponents.index>
+</x-layout>

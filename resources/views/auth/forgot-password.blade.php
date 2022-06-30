@@ -1,9 +1,9 @@
-<x-rocketComponents.outdex>
+<x-layout_auth>
 
     <!-- Форма запроса сброса пароля -->
-    <x-rocketComponents.emptyForgot
+    <x-form_forgot
         :status="session('status')">
-    </x-rocketComponents.emptyForgot>
+    </x-form_forgot>
     <!-- /Форма запроса сброса пароля -->
 
-</x-rocketViews.outdex>
+</x-layout_auth>

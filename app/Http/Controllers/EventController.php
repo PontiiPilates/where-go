@@ -32,8 +32,10 @@ class EventController extends Controller
         $localstorage = Base::getLocalstorage();
 
         // получение данных одного события
-        $event = Base::getEventPage($event_id);
-        $event = Base::getEventsFinished($event);
+        // $event = Base::getEventPage($event_id);
+        $event = Base::getFirstQuery('page_event', $event_id);
+
+        $event = Base::eventsFinished($event);
         $event = $event->all()[0];
 
         // dd($event);

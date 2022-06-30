@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,8 +20,6 @@ Route::get('/dashboard', function () {
 
 require __DIR__ . '/auth.php';
 
-
-
 /**
  * Служебные пути
  */
@@ -35,7 +31,6 @@ Route::get('/yandex_55160e05f8349cf0.html', function () {
 
 // карта сайта
 use App\Http\Controllers\SitemapController;
-
 Route::get('/sitemap', [SitemapController::class, 'getSitemap']);
 
 // успешно
@@ -48,24 +43,20 @@ Route::get('/error', function () {
     return '<strong>Что-то пошло не так.</strong><p>Пожалуйста попробуйте еще раз. Если ошибка повторится, то напишите об этом разработчику.</p>';
 })->name('error');
 
-
-
 /**
  * Для тестов
  */
 
-use App\Http\Controllers\DevelopmentController;
 // для разработки
+use App\Http\Controllers\DevelopmentController;
 Route::match(['get', 'post'], '/d', [DevelopmentController::class, 'get']);
-
-
 
 /**
  * Where-go
  */
 
-use App\Http\Controllers\GeneralController;
 // главная 
+use App\Http\Controllers\GeneralController;
 Route::get('/', [GeneralController::class, 'getEvents'])->name('general');
 
 use App\Http\Controllers\BookmraksController;
@@ -109,8 +100,6 @@ use App\Http\Controllers\UserController;
 Route::get('/user/{id}', [UserController::class, 'getUser'])->name('user');
 // редактирование профиля
 Route::match(['get', 'post'], '/user/{id}/edit', [UserController::class, 'editUser']);
-
-
 
 /**
  * Лог разработки

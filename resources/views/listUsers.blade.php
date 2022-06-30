@@ -1,7 +1,7 @@
 {{-- Layout --}}
-<x-rocketComponents.index :localstorage="$localstorage">
+<x-layout :localstorage="$localstorage">
 
   {{-- Список пользователей --}}
-  <x-rocketComponents.sectionFavourites :data="$users"></x-rocketComponents.sectionFavourites>
+  <x-list_users :data="$users"></x-list_users>
 
-</x-rocketComponents.index>
+</x-layout>

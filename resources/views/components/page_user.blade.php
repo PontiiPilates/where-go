@@ -6,11 +6,11 @@
                 <ul class="list-inline mb-0">
 
                     {{-- Контакты --}}
-                    <x-rocketComponents.componentContacts :phoneChecked="$user->phone_checked" :phone="$user->phone"
+                    <x-section_contacts :phoneChecked="$user->phone_checked" :phone="$user->phone"
                         :telegramChecked="$user->telegram_checked" :telegram="$user->telegram"
                         :vkChecked="$user->vk_checked" :vk="$user->vk"
                         :whatsappChecked="$user->whatsapp_checked" :whatsapp="$user->whatsapp">
-                    </x-rocketComponents.componentContacts>
+                    </x-section_contacts>
 
                 </ul>
             </div>
@@ -38,20 +38,20 @@
         @auth
         @if( Request::is( 'user/' . Auth::id() ) )
         <a href="/user/{{ $user->user_id }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
-        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $user->user_id }}"></x-button_share>
         @else
         @if( in_array( $user->user_id, session('favourites_list') ) )
         <button class="btn btn-light border tools-bw-btn flex-fill" id="subscribe">Отписаться</button>
-        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $user->user_id }}"></x-button_share>
         @else
         <button class="btn btn-warning tools-bw-btn flex-fill" id="subscribe">Подписаться</button>
-        <x-rocketComponents.componentShare id="{{ $user->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $user->user_id }}"></x-button_share>
         @endif
         @endif
         @endauth
         @guest
-        <x-rocketComponents.componentShare class="tools-bw-btn" id="{{ $user->user_id }}">
-        </x-rocketComponents.componentShare>
+        <x-button_share class="share-link btn btn-light border tools-bw-btn" id="{{ $user->user_id }}">
+        </x-button_share>
         @endguest
 
     </div>

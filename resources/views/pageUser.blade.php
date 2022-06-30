@@ -1,10 +1,10 @@
 {{-- Layout --}}
-<x-rocketComponents.index :localstorage="$localstorage">
+<x-layout :localstorage="$localstorage">
   
   {{-- Данные о пользователе --}}
-  <x-rocketComponents.sectionProfile :user="$user"></x-rocketComponents.sectionProfile>
+  <x-page_user :user="$user"></x-page_user>
 
   {{-- Список событий --}}
-  <x-rocketComponents.componentEventList :events="$events"></x-rocketComponents.componentEventList>
+  <x-list_events :events="$events"></x-list_events>
 
-</x-rocketComponents.index>
+</x-layout>

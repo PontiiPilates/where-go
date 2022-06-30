@@ -1,8 +1,7 @@
-<x-rocketComponents.outdex>
+<x-layout_auth>
 
     <!-- Форма сброса пароля -->
-    <x-rocketComponents.emptyReset :request="$request">
-    </x-rocketComponents.emptyReset>
+    <x-form_reset :request="$request"></x-form_reset>
     <!-- /Форма сброса пароля -->
 
-</x-rocketViews.outdex>
+</x-layout_auth>

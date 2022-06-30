@@ -37,7 +37,7 @@ class FavouritesController extends Controller
      */
     public function addFavourites($user_id)
     {
-        return Base::addSubscribe($user_id);
+        return Base::reversible('favourites', 'add', (int) $user_id);
     }
 
     /**
@@ -47,6 +47,6 @@ class FavouritesController extends Controller
      */
     public function removeFavourites($user_id)
     {
-        return Base::removeSubscribe($user_id);
+        return Base::reversible('favourites', 'remove', (int) $user_id);
     }
 }

@@ -1,7 +1,7 @@
 {{-- Layout --}}
-<x-rocketComponents.index :localstorage="$localstorage">
+<x-layout :localstorage="$localstorage">
 
   {{-- Страница события --}}
-  <x-rocketComponents.sectionPageEvent :event="$event"></x-rocketComponents.sectionPageEvent>
+  <x-page_event :event="$event"></x-page_event>
 
-</x-rocketComponents.index>
+</x-layout>

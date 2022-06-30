@@ -17,7 +17,7 @@
 <!-- /Main styles -->
 
 <!-- Yandex.Metrika counter -->
-<x-rocketComponents.yandexMetrica></x-rocketComponents.yandexMetrica>
+<x-yandex_metrica></x-yandex_metrica>
 <!-- /Yandex.Metrika counter -->
 
 <!-- Jq -->

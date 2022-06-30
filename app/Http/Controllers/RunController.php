@@ -22,10 +22,10 @@ class RunController extends Controller
         $localstorage = Base::getLocalstorage();
 
         // получение списка событий
-        $events = Base::getFirstQuery('list_event_run');
+        $events = Base::getFirstQuery('list_events_run');
 
         // обработка списка событий
-        $events = Base::getEventsFinished($events);
+        $events = Base::eventsFinished($events);
 
         return view('listEvents', [
             'localstorage' => $localstorage,
@@ -61,7 +61,7 @@ class RunController extends Controller
      */
     public function addRun($event_id)
     {
-        return Base::addRun($event_id, 'going', 'goes');
+        return Base::reversible('run', 'add', (int) $event_id);
     }
 
     /**
@@ -71,6 +71,6 @@ class RunController extends Controller
      */
     public function removeRun($event_id)
     {
-        return Base::removeRun($event_id, 'going', 'goes');
+        return Base::reversible('run', 'remove', (int) $event_id);
     }
 }

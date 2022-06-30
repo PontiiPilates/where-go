@@ -8,7 +8,7 @@
 
             {{-- Mobile --}}
             <div class="d-block d-sm-none position-relative p-0 mb-3">
-                <x-rocketComponents.componentEventCardHeader :item="$item"></x-rocketComponents.componentEventCardHeader>
+                <x-card_event_header :item="$item"></x-card_event_header>
             </div>
 
             <img src="/public/img/previews/{{ $item->preview }}" class="img-fluid rounded" alt="img">
@@ -23,7 +23,7 @@
 
                 {{-- Desktop --}}
                 <div class="d-none d-sm-block position-relative">
-                    <x-rocketComponents.componentEventCardHeader :item="$item"></x-rocketComponents.componentEventCardHeader>
+                    <x-card_event_header :item="$item"></x-card_event_header>
                 </div>
 
                 {{-- Заголовок --}}
@@ -32,17 +32,17 @@
                 </a>
 
                 {{-- Категория --}}
-                <x-rocketComponents.componentEventCategory :item="$item"></x-rocketComponents.componentEventCategory>
+                <x-card_event_category :item="$item"></x-card_event_category>
 
                 {{-- Информация --}}
-                <x-rocketComponents.componentEventInformation :item="$item"></x-rocketComponents.componentEventInformation>
+                <x-card_event_information :item="$item"></x-card_event_information>
 
                 {{-- Статистика --}}
-                <x-rocketComponents.componentEventStatistic :item="$item"></x-rocketComponents.componentEventStatistic>
+                <x-card_event_statistic :item="$item"></x-card_event_statistic>
 
                 {{-- Поделиться --}}
                 <div class="position-absolute bottom-0 end-0">
-                    <x-rocketComponents.componentShareCircle id="{{ $item->id }}"></x-rocketComponents.componentShareCircle>
+                    <x-card_event_share id="{{ $item->id }}"></x-card_event_share>
                 </div>
 
             </div>
@@ -58,7 +58,8 @@
 
     {{-- Событие прошло --}}
     <a href="/event/{{ $item->id }}" class="text-reset text-decoration-none">
-        <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2" style="height: 120px; width: 120px;">
+        <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2"
+            style="height: 120px; width: 120px;">
             <div><i class="bi bi-hourglass-bottom"></i></div>
             <div class="text-center">Событие окончено</div>
         </div>

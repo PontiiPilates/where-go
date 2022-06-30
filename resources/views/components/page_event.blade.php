@@ -61,11 +61,10 @@
         @else
 
         {{-- Контакты --}}
-        <x-rocketComponents.componentContacts :phoneChecked="$event->phone_checked" :phone="$event->phone"
-            :telegramChecked="$event->telegram_checked" :telegram="$event->telegram"
-            :vkChecked="$event->vk_checked" :vk="$event->vk"
-            :whatsappChecked="$event->whatsapp_checked" :whatsapp="$event->whatsapp">
-        </x-rocketComponents.componentContacts>
+        <x-section_contacts :phoneChecked="$event->phone_checked" :phone="$event->phone"
+            :telegramChecked="$event->telegram_checked" :telegram="$event->telegram" :vkChecked="$event->vk_checked"
+            :vk="$event->vk" :whatsappChecked="$event->whatsapp_checked" :whatsapp="$event->whatsapp">
+        </x-section_contacts>
 
         @endif
 
@@ -100,22 +99,22 @@
         @if( $event->run)
         {{-- Отменить участие --}}
         <button id="run" class="btn btn-light border tools-bw-btn flex-fill">Отменить участие</button>
-        <x-rocketComponents.componentShare id="{{ $event->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $event->user_id }}"></x-button_share>
         @elseif(!$event->my)
         {{-- Принять участие --}}
         <button id="run" class="btn btn-warning tools-bw-btn flex-fill">Принять участие</button>
-        <x-rocketComponents.componentShare id="{{ $event->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $event->user_id }}"></x-button_share>
         @elseif($event->my)
         {{-- Редактировать --}}
         <a href="/event/{{ $event->id }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
-        <x-rocketComponents.componentShare id="{{ $event->user_id }}"></x-rocketComponents.componentShare>
+        <x-button_share id="{{ $event->user_id }}"></x-button_share>
         @endif
 
         @endauth
 
         @guest
-        <x-rocketComponents.componentShare class="share-link btn btn-light border tools-bw-btn" id="{{ $event->user_id }}">
-        </x-rocketComponents.componentShare>
+        <x-button_share class="share-link btn btn-light border tools-bw-btn" id="{{ $event->user_id }}">
+        </x-button_share>
         @endguest
 
     </div>
@@ -124,5 +123,5 @@
 
 @auth
 {{-- Модальное окно созданного события --}}
-<x-rocketComponents.modalWindowEventDone :id="$event->id"></x-rocketComponents.modalWindowEventDone>
+<x-modal_event_done :id="$event->id"></x-modal_event_done>
 @endauth
