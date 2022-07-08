@@ -27,6 +27,11 @@ class RunController extends Controller
         // обработка списка событий
         $events = Base::eventsFinished($events);
 
+        // формирование meta-тегов
+        $user_name = session('name');
+        $localstorage['meta']['title'] = $user_name;
+        $localstorage['meta']['description'] = "события, в которых пользователь $user_name принимает участие";
+
         return view('listEvents', [
             'localstorage' => $localstorage,
             'events' => $events,

@@ -38,10 +38,17 @@ class EventController extends Controller
         $event = Base::eventsFinished($event);
         $event = $event->all()[0];
 
-        // dd($event);
 
         // добавить просмотр события
         Base::addView($event_id);
+
+        // формирование meta-тегов
+        $description = mb_substr($event->description, 0, 170);
+        $description = mb_strtolower($description);
+        $description = preg_replace("/[^А-Яа-яA-Za-z0-9 ]/u", '', $description);
+
+        $localstorage['meta']['title'] = $event->title;
+        $localstorage['meta']['description'] = $description;
 
         return view('pageEvent', [
             'localstorage' => $localstorage,

@@ -30,6 +30,11 @@ class BookmraksController extends Controller
         $events = Base::getFirstQuery('list_events_bookmarks', $user_id);
         $events = Base::eventsFinished($events);
 
+        // формирование meta-тегов
+        $user_name = session('name');
+        $localstorage['meta']['title'] = $user_name;
+        $localstorage['meta']['description'] = "события, которые пользователь $user_name добавил в закладки";
+
         return view('listEvents', [
             'localstorage' => $localstorage,
             'events' => $events

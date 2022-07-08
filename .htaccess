@@ -7,6 +7,10 @@ DirectoryIndex public/index.php
 
     RewriteEngine On
 
+    # Rewrite Favicon Path
+    RewriteRule ^favicon.svg$ public/favicon.svg [NC]
+    RewriteRule ^robots.txt$ public/robots.txt [NC]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -20,4 +24,6 @@ DirectoryIndex public/index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ public/index.php [L]
+
+
 </IfModule>

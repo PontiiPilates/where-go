@@ -166,40 +166,37 @@
 
     </div>
 
-
     <div class="col d-flex gap-3">
-
         {{-- Бесплатно --}}
         <div class="form-check mb-0">
             <input name="price_type"
-                   type="radio"
-                   id="free"
-                   class="form-check-input @error('price_type') is-invalid @enderror"
-                   @isset($event) {{ $event->free }} @endisset
-                   value="free">
+            type="radio"
+            id="free"
+            class="form-check-input @error('price_type') is-invalid @enderror"
+            @if( $event && $event->free == 'checked' || old('price_type') == 'free' ) checked @endif
+            value="free">
             <label class="form-check-label" for="free">Бесплатно</label>
         </div>
-
         {{-- Донат --}}
         <div class="form-check mb-0">
             <input name="price_type"
-                   type="radio"
-                   id="donate"
-                   class="form-check-input @error('price_type') is-invalid @enderror" @isset($event) {{ $event->donate }} @endisset
-                   value="donate">
+            type="radio"
+            id="donate"
+            class="form-check-input @error('price_type') is-invalid @enderror"
+            @if( $event && $event->donate == 'checked' || old('price_type') == 'donate' ) checked @endif
+            value="donate">
             <label class="form-check-label" for="donate">Донат</label>
         </div>
-
         {{-- Цена --}}
         <div class="form-check mb-0">
             <input name="price_type"
-                   type="radio"
-                   id="price"
-                   class="form-check-input @error('price_type') is-invalid @enderror" @isset($event) {{ $event->price }} @endisset
-                   value="price">
-            <label class="form-check-label" for="price">Цена</label>
+            type="radio"
+            id="price"
+            class="form-check-input @error('price_type') is-invalid @enderror"
+            @if( $event && $event->price == 'checked' || old('price_type') == 'price' ) checked @endif
+            value="price">
+            <label class="form-check-label" for="price">Цена от</label>
         </div>
-        
     </div>
 
     <div class="col mb-3">
@@ -215,7 +212,7 @@
                id="cost"
                class="form-control @error('cost') is-invalid @enderror"
                value="{{ $event->cost ?? @old('cost') }}"
-               @if( isset($event->price) && $event->price != 'checked' ) disabled @endif
+               @if( $event && $event->price_type != 'price' && old('price_type') != 'price' ) disabled @endif
                placeholder="Цена в рублях" class="form-control">
         @error('cost')
         <div id="cost" class="invalid-feedback">Укажите стоимость участия, если выбираете "Цена"</div>

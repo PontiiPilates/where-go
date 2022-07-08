@@ -47,7 +47,14 @@ class UserController extends Controller
 
         $events = Base::eventsFinished($events);
 
-        // передача данных в представление
+        // формирование meta-тегов
+        $description = mb_substr($user[0]->about, 0, 170);
+        $description = mb_strtolower($description);
+        $description = preg_replace("/[^А-Яа-яA-Za-z0-9 ]/u", '', $description);
+
+        $localstorage['meta']['title'] = session('name');
+        $localstorage['meta']['description'] = $description;
+
         return view('pageUser', [
             'user' => $user[0],
             'events' => $events,

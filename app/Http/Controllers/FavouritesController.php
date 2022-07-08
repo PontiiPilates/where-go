@@ -24,6 +24,11 @@ class FavouritesController extends Controller
         // получение подписок
         $users = session('favourites_obj');
 
+        // формирование meta-тегов
+        $user_name = session('name');
+        $localstorage['meta']['title'] = $user_name;
+        $localstorage['meta']['description'] = "пользователи, на которых подписан $user_name";
+
         return view('listUsers', [
             'localstorage' => $localstorage,
             'users' => $users,

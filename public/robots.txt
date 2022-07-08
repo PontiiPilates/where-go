@@ -1,2 +1,21 @@
 User-agent: *
-Disallow:
+
+Disallow: /success
+Disallow: /error
+Disallow: /d
+Disallow: /bookmarks*
+Disallow: /favourites*
+Disallow: /event/add
+Disallow: /event/*/edit
+Disallow: /event/*/remove
+Disallow: /run*
+Disallow: /user/*/edit
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+Allow: /
+Allow: /event/*
+Allow: /user/*
+
+Sitemap: https://where-go.ru/sitemap

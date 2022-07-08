@@ -3,9 +3,8 @@
 
 <head>
     {{-- Head --}}
-    <x-section_head>
-        <x-slot name="title">Where-go</x-slot>
-    </x-section_head>
+    <x-section_head :localstorage="$localstorage"></x-section_head>
+        {{-- <x-slot name="title">Where-go</x-slot> --}}
 </head>
 
 <body>
