@@ -23,8 +23,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
 {{-- Favikon: путь скорректирован в .htaccess --}}
-{{-- <link rel="icon" href="/favicon.png" type="image/png"> --}}
 <link rel="icon" href="favicon.svg">
 
 {{-- Main styles --}}
-<link rel="stylesheet" href="/resources/css/rocket/style.css">
+<link rel="stylesheet" href="/resources/css/style.css">

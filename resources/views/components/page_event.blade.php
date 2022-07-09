@@ -37,7 +37,8 @@
 
     {{-- Категория --}}
     @foreach( $event->category as $category )
-    <p><small class="text-muted"><a href="" class="text-reset">{{ $category }}</a></small></p>
+    {{-- <p><small class="text-muted"><a href="" class="text-reset">{{ $category }}</a></small></p> --}}
+    <p><small class="text-muted">{{ $category }}</small></p>
     @unless($loop->last) | @endunless
     @endforeach
 
@@ -49,8 +50,8 @@
     {{-- Информация --}}
     <ul class="list-unstyled">
         <li><b>Начало:</b> {{ $event->date_start }}</li>
-        <li><b>Адрес:</b> {{ $event->adress }}</li>
         <li><b>Участие:</b> {{ $event->participant }}</li>
+        <li><b>Место встречи:</b> {{ $event->adress }}</li>
     </ul>
 
     <ul class="list-inline mb-3">
@@ -71,7 +72,20 @@
     </ul>
 
     {{-- Описание --}}
-    <p>{{ $event->description }}</p>
+    <p class="ppp">{!! $event->description !!}</p>
+    {{-- <p>{!! nl2br($event->description) !!}</p> --}}
+
+    <style>
+        .ppp {
+            white-space: pre-line;
+            /* word-wrap: break-word; */
+            /* word-break: break-word; */
+        }
+    </style>
+
+    {{-- {{ dd($event->description) }} --}}
+    {{--
+    <pre>{!! $event->description !!}</pre> --}}
 
     <div class="mb-3">
 

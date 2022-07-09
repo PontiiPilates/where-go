@@ -27,8 +27,8 @@
                 </div>
 
                 {{-- Заголовок --}}
-                <a href="/event/{{ $item->id }}" class="text-reset text-decoration-none">
-                    <h5 class="card-title text-truncate mb-0">{{ $item->title }}</h5>
+                <a href="/event/{{ $item->id }}" class="text-reset">
+                    <h5 class="card-title mb-0">{{ Str::limit($item->title, 60) }}</h5>
                 </a>
 
                 {{-- Категория --}}

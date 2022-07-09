@@ -4,7 +4,7 @@
     <img src="/public/img/avatars/{{ $item->avatar }}" alt="image-profile" width="45" height="45" class="rounded-circle me-2">
     @endif
 
-    <strong>{{ $item->name }}</strong>
+    <strong class="text-truncate" style="max-width: 215px" >{{ $item->name }}</strong>
 </a>
 
 @auth

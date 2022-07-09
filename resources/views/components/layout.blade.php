@@ -4,7 +4,7 @@
 <head>
     {{-- Head --}}
     <x-section_head :localstorage="$localstorage"></x-section_head>
-        {{-- <x-slot name="title">Where-go</x-slot> --}}
+    {{-- <x-slot name="title">Where-go</x-slot> --}}
 </head>
 
 <body>
@@ -45,6 +45,8 @@
     <script src="/resources/js/transmitter.js"></script>
     <script src="/resources/js/uppopup.js"></script>
 
+    {{-- Wysiwyg: требуется только на странице управления событием --}}
+    <script src="/resources/js/wysiwyg.js"></script>
 </body>
 
 </html>
