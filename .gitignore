@@ -1,3 +1,6 @@
+# Самого себя игнорировать нельзя
+# .gitignore
+
 # Доступы SFTP
 .vscode
 
@@ -8,15 +11,8 @@ storage
 public/img/previews
 public/img/avatars
 
-# Пакеты ядра
-vendor
-!vendor/laravel/framework/src/Illuminate
-
 # Файлы конфигурации
 .env*
 
 # Что-то для разработки
 tests
-
-# Самого себя
-.gitignore
