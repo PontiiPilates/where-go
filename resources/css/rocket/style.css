@@ -1,18 +1,18 @@
 :root {
     /* Тени */
-    --thin-shadow  : 0px 0px 5px 0px rgba(34, 60, 80, 0.2);
-    --light-shadow : 0px 0px 20px 0px rgba(34, 60, 80, 0.2);
+    --thin-shadow: 0px 0px 5px 0px rgba(34, 60, 80, 0.2);
+    --light-shadow: 0px 0px 20px 0px rgba(34, 60, 80, 0.2);
     --strong-shadow: 0px 0px 40px 0px rgba(34, 60, 80, 0.2);
 
     /* Ширина */
     --base-width-container: 340px;
-    --base-width-btn      : 240px;
-    --base-size-social    : 24px;
-    --md-size-avatar      : 45px;
+    --base-width-btn: 240px;
+    --base-size-social: 24px;
+    --md-size-avatar: 45px;
 
     /* Цвета */
-    --action-color   : #FFC107;
-    --selected-color : #F8F9FA;
+    --action-color: #FFC107;
+    --selected-color: #F8F9FA;
     --secondary-color: #E9ECEF;
 
     /* Отступы */
@@ -21,32 +21,32 @@
 
 /* Определение максимальной ширины контейнера */
 .container-content {
-    margin   : 0 auto;
+    margin: 0 auto;
     max-width: 960px;
 }
 
 /* Управление тенями */
 .main-thin-shadow {
     -webkit-box-shadow: var(--thin-shadow);
-    -moz-box-shadow   : var(--thin-shadow);
-    box-shadow        : var(--thin-shadow);
+    -moz-box-shadow: var(--thin-shadow);
+    box-shadow: var(--thin-shadow);
 }
 
 .main-light-shadow {
     -webkit-box-shadow: var(--light-shadow);
-    -moz-box-shadow   : var(--light-shadow);
-    box-shadow        : var(--light-shadow);
+    -moz-box-shadow: var(--light-shadow);
+    box-shadow: var(--light-shadow);
 }
 
 .main-strong-shadow {
     -webkit-box-shadow: var(--strong-shadow);
-    -moz-box-shadow   : var(--strong-shadow);
-    box-shadow        : var(--strong-shadow);
+    -moz-box-shadow: var(--strong-shadow);
+    box-shadow: var(--strong-shadow);
 }
 
 /* Позиционирование выпадающего меню профиля */
 .dropdown-menu[data-bs-popper] {
-    left : auto !important;
+    left: auto !important;
     right: 0;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .btn-light:focus {
-    box-shadow      : none;
+    box-shadow: none;
     background-color: var(--secondary-color);
 }
 
@@ -80,7 +80,7 @@
 .active-navigation-element,
 .active-navigation-element i,
 .active-navigation-element small {
-    color      : var(--action-color);
+    color: var(--action-color);
     font-weight: bolder;
 }
 
@@ -89,26 +89,26 @@
 
 .sf-container {
     position: fixed;
-    width   : 222px;
-    height  : calc(100vh - var(--sf-position));
+    width: 222px;
+    height: calc(100vh - var(--sf-position));
 }
 
 /* .sf-content {} */
 
 .unscroll-container {
-    overflow          : auto;
+    overflow: auto;
     -ms-overflow-style: none;
-    scrollbar-width   : none;
+    scrollbar-width: none;
 }
 
 .unscroll-container::-webkit-scrollbar {
-    width : 0;
+    width: 0;
     height: 0;
 }
 
 /* Управление раскрывающимся списком */
 #drop-list {
-    height    : 109px;
+    height: 109px;
     overflow-y: hidden;
 }
 
@@ -123,22 +123,22 @@
 
 /* Управление фоном для иконок события */
 .card-icon {
-    border          : none;
-    border-radius   : 30px;
+    border: none;
+    border-radius: 30px;
     background-color: var(--secondary-color);
-    padding         : 2px 8px;
+    padding: 2px 8px;
 }
 
 /* Управление размером изображения события */
 .event-preview {
-    width : 260px;
+    width: 260px;
     height: 260px;
 }
 
 /* Управление фоном модального окна */
 .modal-backdrop {
     background-color: white;
-    opacity         : 0.8 !important;
+    opacity: 0.8 !important;
 }
 
 /* Помощники */
@@ -155,74 +155,11 @@
 .tools-bs-social {
     /* Базовые размеры для иконок социальных сетей */
     height: var(--base-size-social);
-    width : var(--base-size-social)
+    width: var(--base-size-social)
 }
 
 .tools-md-avatar {
     /* Средние размеры аватарок */
     height: var(--md-size-avatar);
-    width : var(--md-size-avatar)
-}
-
-/* Wysiwyg */
-.toolbar a {
-    display        : inline-block;
-    border         : 1px solid #888;
-    padding        : 5px 8px;
-    margin         : 0 5px 10px 0;
-    color          : #000;
-    border-radius  : 3px;
-    font-size      : 12px;
-    box-shadow     : 1px 1px 2px #ddd;
-    background     : #fff;
-    vertical-align : top;
-    text-decoration: none;
-}
-
-.toolbar select {
-    display       : inline-block;
-    height        : 28px;
-    line-height   : 28px;
-    background    : #fff;
-    padding       : 0;
-    margin        : 0 5px 10px 0;
-    color         : #000;
-    box-shadow    : 1px 1px 2px #ddd;
-    border-radius : 3px;
-    vertical-align: top;
-    font-size     : 12px;
-}
-
-.toolbar input {
-    display       : inline-block;
-    height        : 28px;
-    line-height   : 28px;
-    background    : #fff;
-    padding       : 0;
-    margin        : 0 5px 10px 0;
-    color         : #000;
-    box-shadow    : 1px 1px 2px #ddd;
-    border-radius : 3px;
-    vertical-align: top;
-    font-size     : 12px;
-}
-
-.toolbar span {
-    display       : inline-block;
-    height        : 30px;
-    line-height   : 30px;
-    padding       : 0;
-    margin        : 0 0 10px 0;
-    color         : #000;
-    vertical-align: top;
-    font-size     : 12px;
-}
-
-.editor {
-    min-height      : 150px;
-    /* border       : 1px solid #ddd; */
-    /* padding      : 10px; */
-    /* border-radius: 2px; */
-    /* box-shadow   : 1px 1px 2px #ddd; */
-    /* background   : #fff; */
+    width: var(--md-size-avatar)
 }

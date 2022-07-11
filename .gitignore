@@ -1,36 +1,22 @@
-/node_modules
-/storage/*.key
-/vendor
-.env
-.env.backup
-.phpunit.result.cache
-docker-compose.override.yml
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
-/.idea
+# Доступы SFTP
+.vscode
 
+# Хранилище сессий
+storage
 
-/.vscode
-/app/Console
-/app/Events
-/app/Exceptions
-/app/Listeners
-/app/View
-/bootstrap
-/config
-/database/factories
-/database/.gitignore
-/storage
-/tests
-/vendor
-.editorconfig
-.env
-.gitattributes
-resources/views/components/project
-resources/views/project
-app/Http/Controllers/project/
-
+# Пользовательские закгрузки
 public/img/previews
 public/img/avatars
+
+# Пакеты ядра
+vendor
+!vendor/laravel/framework/src/Illuminate
+
+# Файлы конфигурации
+.env*
+
+# Что-то для разработки
+tests
+
+# Самого себя
+.gitignore
