@@ -114,7 +114,8 @@ class Base extends Model
                 // без фильтра
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->where('date_end', '>=', date('Y-m-d'))
+                    ->orWhere('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
@@ -186,7 +187,7 @@ class Base extends Model
                         'events.source',
                         'events.counter',
                     )
-                    ->orderBy('date_start')
+                    ->orderByDesc('date_start')
                     ->simplePaginate($limit);
                 break;
             case 'list_events_bookmarks';
@@ -280,6 +281,125 @@ class Base extends Model
         }
         return $q;
     }
+
+    /**
+     * Постобработчик
+     * Преобразует список событий до удобно применяемого состояния
+     * Содержит все обработки, которые ранее выполнялись представлением
+     * @param $events object список событий, которые вернул сырой запрос
+     * @return mixed список событий с обработанными данными
+     */
+    static function eventsFinished($events)
+    {
+        // вспомогательный массив имен месяцев
+        $month = [
+            1 => 'января',
+            2 => 'февраля',
+            3 => 'марта',
+            4 => 'апреля',
+            5 => 'мая',
+            6 => 'июня',
+            7 => 'июля',
+            8 => 'августа',
+            9 => 'сентября',
+            10 => 'октября',
+            11 => 'ноября',
+            12 => 'декабря',
+        ];
+
+        // обход полученных событий
+        foreach ($events as $event) {
+
+            // получение списка идентификаторов участников
+            $goes = unserialize($event->goes);
+
+            // формирование списка идентификаторов участников
+            $event->goes = $goes;
+
+            // формирование счетчика участников
+            $event->count_goes = count($goes);
+
+            // преобразование категории
+            $event->category = explode(',', $event->category);
+
+            // формирование отметки о том, что событие прошло: когда дата окончания и дата начала больше текущей
+            if (strtotime($event->date_end) + 86400 < time() && strtotime($event->date_start) + 86400 < time()) {
+                $event->last = 1;
+            } else {
+                $event->last = 0;
+            }
+
+            // преобразование даты начала
+            $date_start = strtotime($event->date_start);
+            $d = date('d', $date_start);
+            $n = date('n', $date_start);
+            $m = $month[$n];
+            $y = date('Y', $date_start);
+            // $event->date_start = $d . ' ' . $m . ' ' . $y;
+            $event->date_start = $d . ' ' . $m;
+
+            // преобразование даты окончания
+            if ($event->date_end) {
+                $date_end = strtotime($event->date_end);
+                $d = date('d', $date_end);
+                $n = date('n', $date_end);
+                $m = $month[$n];
+                $y = date('Y', $date_end);
+                // $event->date_end = $d . ' ' . $m . ' ' . $y;
+                $event->date_end = $d . ' ' . $m;
+            }
+
+            // dd($event->date_end);
+
+            // преобразование времени начала
+            if ($event->time_start) {
+                $time_start = substr($event->time_start, 0, 5);
+                $event->time_start = 'в ' . $time_start;
+            }
+
+            // преобразование времени окончания
+            if ($event->time_end) {
+                $time_end = substr($event->time_end, 0, 5);
+                $event->time_end = 'в ' . $time_end;
+            }
+
+            // если пользователь авторизован, то добавить к наполнению localstorage его данные
+            if (Auth::id()) {
+
+                // преобразование состояния закладки в зависимости от наличия события в закладках авторизованного полььзователя
+                if (in_array($event->id, session('bookmarks'))) {
+                    $event->state_bookmark = 'bi-bookmark-check-fill';
+                } else {
+                    $event->state_bookmark = 'bi-bookmark';
+                }
+
+                // проверка участия авторизованного пользователя в событии
+                if (in_array(Auth::id(), $goes)) {
+                    $event->run = 1;
+                } else {
+                    $event->run = 0;
+                }
+
+                // проверка: является ли событие созданным авторизованным пользователем
+                if (Auth::id() == $event->user_id) {
+                    $event->my = 1;
+                } else {
+                    $event->my = 0;
+                }
+            }
+
+            // формирование условия участия
+            if ($event->price_type == 'free') {
+                $event->participant = 'бесплатно';
+            } elseif ($event->price_type == 'donate') {
+                $event->participant = 'за донат';
+            } elseif ($event->price_type == 'price') {
+                $event->participant = "$event->cost руб.";
+            }
+        }
+        return $events;
+    }
+
     /**
      * Сессия
      * Обновляет данные сессии при каждом новом запросе
@@ -341,6 +461,11 @@ class Base extends Model
 
     /**
      * Проверка: принадлежит ли событие авторизованному пользователю
+     * Важно для безопасности
+     * Используется при:
+     * - редактировании профиля
+     * - редактировании события
+     * - удалении события
      * @param int $user_id
      */
     static function checkOwner($user_id)
@@ -538,85 +663,7 @@ class Base extends Model
         );
         return $localstorage;
     }
-    /**
-     * Постобработчик
-     * Преобразует список событий до удобно применяемого состояния
-     * Содержит все обработки, которые ранее выполнялись представлением
-     * @param $events object список событий, которые вернул сырой запрос
-     * @return mixed список событий с обработанными данными
-     */
-    static function eventsFinished($events)
-    {
-        // вспомогательный массив имен месяцев
-        $month = [
-            1 => 'января',
-            2 => 'февраля',
-            3 => 'марта',
-            4 => 'апреля',
-            5 => 'мая',
-            6 => 'июня',
-            7 => 'июля',
-            8 => 'августа',
-            9 => 'сентября',
-            10 => 'октября',
-            11 => 'ноября',
-            12 => 'декабря',
-        ];
-        // обход полученных событий
-        foreach ($events as $event) {
-            // получение списка идентификаторов участников
-            $goes = unserialize($event->goes);
-            // формирование списка идентификаторов участников
-            $event->goes = $goes;
-            // формирование счетчика участников
-            $event->count_goes = count($goes);
-            // преобразование категории
-            $event->category = explode(',', $event->category);
-            // формирование отметки о том, что событие прошло
-            if (strtotime($event->date_start) + 86400 < time()) {
-                $event->last = 1;
-            } else {
-                $event->last = 0;
-            }
-            // преобразование даты
-            $date_start = strtotime($event->date_start);
-            $d = date('d', $date_start);
-            $n = date('n', $date_start);
-            $m = $month[$n];
-            $y = date('Y', $date_start);
-            $event->date_start = $d . ' ' . $m . ' ' . $y;
-            // если пользователь авторизован, то добавить к наполнению localstorage его данные
-            if (Auth::id()) {
-                // преобразование состояния закладки в зависимости от наличия события в закладках авторизованного полььзователя
-                if (in_array($event->id, session('bookmarks'))) {
-                    $event->state_bookmark = 'bi-bookmark-check-fill';
-                } else {
-                    $event->state_bookmark = 'bi-bookmark';
-                }
-                // проверка участия авторизованного пользователя в событии
-                if (in_array(Auth::id(), $goes)) {
-                    $event->run = 1;
-                } else {
-                    $event->run = 0;
-                }
-                // проверка: является ли событие созданным авторизованным пользователем
-                if (Auth::id() == $event->user_id) {
-                    $event->my = 1;
-                } else {
-                    $event->my = 0;
-                }
-            }
-            // формирование условия участия
-            if ($event->price_type == 'free') {
-                $event->participant = 'бесплатно';
-            } elseif ($event->price_type == 'donate') {
-                $event->participant = 'за донат';
-            } elseif ($event->price_type == 'price') {
-                $event->participant = "$event->cost руб.";
-            }
-        }
-        return $events;
-    }
+
     /**
      * Счетчик подписчиков
      * Получает количество подписчиков

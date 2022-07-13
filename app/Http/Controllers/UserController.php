@@ -27,6 +27,9 @@ class UserController extends Controller
      */
     public function getUser($user_id)
     {
+        // проверка существования профиля, иначе 404
+        Base::checkIsset('user', $user_id);
+
         // формирование сессии из данных авторизованного пользователя
         Base::sessionRefresh();
         // обращение к временному хранилищу
@@ -68,6 +71,9 @@ class UserController extends Controller
      */
     public function editUser(Request $r, $user_id)
     {
+        // проверка принадлежности запрошенного профиля авторизованному пользователю
+        Base::checkOwner($user_id);
+
         // формирование сессии из данных авторизованного пользователя
         Base::sessionRefresh();
         // обращение к временному хранилищу
@@ -78,6 +84,8 @@ class UserController extends Controller
 
         // получение данных авторизованного пользователя
         $user = User::find($user_id);
+
+        // dd($profile);
 
         // если произошла отправка формы
         if ($r->isMethod('post')) {
