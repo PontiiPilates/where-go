@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Observers\EventsObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+
+use App\Models\Event;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Использование пагинации средствами bootstrap
         Paginator::useBootstrap();
+
+        // регистрация обсервера для модели событий
+        Event::observe(EventsObserver::class);
     }
 }

@@ -12,11 +12,14 @@ Disallow: /favourites*
 Disallow: /event/add
 Disallow: /event/*/edit
 Disallow: /event/*/remove
-Disallow: /event/*\?uppopup
 Disallow: /run*
 Disallow: /user/*/edit
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
+Disallow: /statistics/*
+
+Clean-param: uppopup /event/*
+Clean-param: city&category&date_start&filter /
 
 Sitemap: https://where-go.ru/sitemap

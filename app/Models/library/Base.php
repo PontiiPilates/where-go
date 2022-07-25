@@ -114,8 +114,9 @@ class Base extends Model
                 // без фильтра
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('date_end', '>=', date('Y-m-d'))
-                    ->orWhere('date_start', '>=', date('Y-m-d'))
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    // ->where('date_end', '>=', date('Y-m-d'))
+                    // ->orWhere('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
@@ -275,6 +276,7 @@ class Base extends Model
                         'profiles.whatsapp_checked',
                         'profiles.vk',
                         'profiles.vk_checked',
+                        'profiles.notifications',
                     )
                     ->get()[0];
                 break;
@@ -401,6 +403,119 @@ class Base extends Model
     }
 
     /**
+     * Добавление уведомлений в модели Profile
+     * Применяется обсервером при создании события пользователем
+     * @param object $event модель события
+     * @return ?
+     */
+    static function addNotification($event)
+    {
+        // получение данных для создания уведомления
+        $author_id = $event->getAttribute('user_id');
+        $event_id = $event->getAttribute('id');
+
+        // получение списка идентификаторов подписчиков
+        $author_profile = Profile::firstWhere('user_id', $author_id);
+        $follovers = $author_profile->follovers;
+        $follovers = unserialize($follovers);
+
+        // отправка уведомлений подписчикам
+        foreach ($follovers as $v) {
+
+            // получение уведомлений подписчика
+            $follover = Profile::firstWhere('user_id', $v);
+            $notifications = $follover->notifications;
+
+            // создание структуры, если уведомлений еще нет
+            if (!$notifications) {
+                $notifications = 'a:0:{}';
+            }
+
+            // формирование данных
+            $notifications = unserialize($notifications);
+            $notifications['events_news'][] = array(
+                'user_id' => $author_id,
+                'event_id' => $event_id,
+                'status' => '1',
+                'created_at' => time(),
+                'updated_at' => '',
+            );
+            $notifications = serialize($notifications);
+            $follover->notifications = $notifications;
+            $follover->save();
+        }
+    }
+
+    /**
+     * Прочтение уведомлений о новых событиях
+     * @param int $event_id идентификатор события
+     * @return ?
+     */
+    static function removeNotification($event_id)
+    {
+
+        // получение списка идентификаторов новых событий
+        $events_news_list = session('events_news_list');
+
+        // есть ли новые события
+        if ($events_news_list) {
+            // есть ли событие в новых событиях
+            if (in_array($event_id, $events_news_list)) {
+
+                // ! работа с моделью модели
+                $user_id = Auth::id();
+                $profile = Profile::find($user_id);
+                $notifications = $profile->notifications;
+
+                // есть ли уведомления в модели
+                if ($notifications) {
+
+                    $notifications = unserialize($notifications);
+
+                    // есть ли уведомления о новых событиях
+                    if ($notifications['events_news']) {
+
+                        // установка новых значений
+                        foreach ($notifications['events_news'] as $k => $v) {
+                            if ($v['event_id'] == $event_id && $v['status'] == 1) {
+                                $notifications['events_news'][$k]['status'] = 0;
+                                $notifications['events_news'][$k]['updated_at'] = time();
+                            }
+                        }
+
+                        $profile->notifications = serialize($notifications);
+                        $profile->save();
+                    }
+                }
+
+                // ! работа с сессией
+                $events_news_list = session('events_news_list');
+
+                // удаление иднтификаторов новых собыьтий
+                foreach ($events_news_list as $k => $v) {
+                    if ($v == $event_id) {
+                        unset($events_news_list[$k]);
+                    }
+                }
+
+                session(['events_news_list' => $events_news_list]);
+            }
+        }
+    }
+
+    /**
+     * Пользовательское свойство сортировки массива
+     * Для сортировки элементов на основе количества уведомлений
+     */
+    static function cmp($a, $b)
+    {
+        $a = $a->notifications;
+        $b = $b->notifications;
+
+        return $a <=> $b;
+    }
+
+    /**
      * Сессия
      * Обновляет данные сессии при каждом новом запросе
      * Для осуществления сквозного доступа к данным авторизованного пользователя
@@ -409,14 +524,19 @@ class Base extends Model
     {
         // получение идентификатора авторизованного пользователя
         $user_id = Auth::id();
+
         // если пользователь авторизован, то продолжить формирование сессии
         if ($user_id) {
+
             // получение данных авторизованного пользователя
             $auth = self::getFirstQuery('session', $user_id);
+
             // преобразование списка идентификаторов избранных пользователей
             $favourites_list = unserialize($auth->favourites);
+
             // получение некоторых данных избранных пользователей на основе преобразованных значений
             $favourites_obj = self::getFirstQuery('list_users_favourites', $favourites_list);
+
             // сборка сессии
             session(['user_id' => $user_id]);
             session(['name' => $auth->name]);
@@ -425,7 +545,7 @@ class Base extends Model
             session(['about' => $auth->about]);
             session(['bookmarks' => unserialize($auth->bookmarks)]);
             session(['favourites_list' => $favourites_list]);
-            session(['favourites_obj' => $favourites_obj->all()]);
+            session(['favourites_obj' => $favourites_obj]);
             session(['follovers' => unserialize($auth->follovers)]);
             session(['going' => unserialize($auth->going)]);
             session(['witness' => $auth->witness]);
@@ -437,6 +557,40 @@ class Base extends Model
             session(['whatsapp_checked' => $auth->whatsapp_checked]);
             session(['vk' => $auth->vk]);
             session(['vk_checked' => $auth->vk_checked]);
+
+            // есть ли уведомления
+            if ($auth->notifications) {
+                $notifications = unserialize($auth->notifications);
+
+                // если есть уведомления о новых событиях
+                if ($notifications['events_news']) {
+
+                    // формирование наборов уведомлений
+                    $events_news_list = array();
+                    foreach ($favourites_obj as $k => $v) {
+                        $v->notifications = 0;
+                        foreach ($notifications['events_news'] as $mk => $mv) {
+                            if ($v->id == $mv['user_id'] && $mv['status'] == 1) {
+                                // добавление уведомления от пользователя
+                                $v->notifications++;
+                                // добавление идентификатора нового события
+                                $events_news_list[] = $mv['event_id'];
+                            }
+                        }
+                    }
+
+                    // сортировка подписок, чтобы сверху были те, у которых появились новые события
+                    $favourites_obj = $favourites_obj->all();
+                    usort($favourites_obj,  [Base::class, "cmp"]);
+                    $favourites_obj = array_reverse($favourites_obj);
+
+                    // добавление уведомлений в сессию
+                    session(['events_news_list' => $events_news_list]);
+                } else {
+                    // добавление отсутствия уведомлений в сессию
+                    session(['events_news_list' => '']);
+                }
+            }
         }
     }
 
@@ -486,6 +640,7 @@ class Base extends Model
      * * favourite - избранный пользователь
      * * follover - подписчик
      */
+
     /**
      * Реверсивный
      * Производит запись в базу и / или удаление этой записи
@@ -599,6 +754,7 @@ class Base extends Model
         }
         return $msg;
     }
+
     /**
      * Локалсторадж
      * Централизованное хранилище не до конца определенных данных
@@ -612,15 +768,17 @@ class Base extends Model
                 'title' => NULL,
                 'title_default' => 'Where-go',
                 'description' => NULL,
-                'description_default' => 'не знаете куда сходить? подберите событие по вкусу',
+                // 'description_default' => 'Лента событий Красноярска. Ищишь куда сходить? Здесь все мероприятия собраны в одном месте. Просто найди подходящее.',
+                'description_default' => 'Хочешь найти куда сходить в Красноярске в 2022 году? Все события собраны здесь! Удобный фильтр по дате и категории. Смотри ленту и выбирай что нравится.',
+                'keywords' => 'куда сходить, куда сходить в красноярске, куда можно сходить в красноярске, мероприятия сегодня, мероприятия в красноярске, события, свежие события, события сегодня, события лента, события красноярск',
             ),
             'cityes' => array(
                 'Красноярск',
                 'Ачинск',
-                'Дивногорск',
                 'Железногорск',
+                'Зеленогорск',
                 'Минусинск',
-                'Сосновоборск',
+                'Норильск',
             ),
             'categories' => array(
                 'Активный отдых',
@@ -629,6 +787,7 @@ class Base extends Model
                 'Выставка',
                 'Досуг',
                 'Дети',
+                'Еда',
                 'Здоровье',
                 'Игры',
                 'Искусство',
@@ -682,6 +841,7 @@ class Base extends Model
         $count = count($follovers);
         return $count;
     }
+
     /**
      * Счетчик событий
      * Получает количество событий, созданных пользователем
@@ -694,6 +854,7 @@ class Base extends Model
         $events = Event::where('user_id', $user_id)->count();
         return $events;
     }
+
     /**
      * Просмотр
      * Добавляет 1 просмотр события
@@ -712,6 +873,7 @@ class Base extends Model
         // запись модели в базу данных
         $action->save();
     }
+
     /**
      * Валидатор
      * Валидирует данные выбранной формы
