@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 // подключение библиотеки кастомных методов
 use App\Models\library\Base;
 
+use App\Models\User;
+
 class FavouritesController extends Controller
 {
     /**

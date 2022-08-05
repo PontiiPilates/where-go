@@ -39,7 +39,7 @@ class EventController extends Controller
         Base::addView($event_id);
 
         // отметка о прочтении уведомления
-        Base::removeNotification($event_id);
+        Base::notificationRead($event_id);
 
         // формирование meta-тегов
         $description = mb_substr($event->description, 0, 170);

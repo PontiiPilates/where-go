@@ -101,6 +101,10 @@ Route::get('/user/{id}', [UserController::class, 'getUser'])->name('user');
 // редактирование профиля
 Route::match(['get', 'post'], '/user/{id}/edit', [UserController::class, 'editUser']);
 
+use App\Http\Controllers\NotificationsController;
+// список уведомлений
+Route::get('/notifications', [NotificationsController::class, 'getNotifications'] );
+
 // статистика
 use Illuminate\Support\Facades\DB;
 Route::get('/statistics/273076', function () {
@@ -175,6 +179,8 @@ Route::get('/statistics/273076', function () {
 // Кинопоказ в доме кино
 // Дизайн, показ мод, конкурс, фотоконкурс
 // Объявления, типа состояится конкурс принимаем заявки: // https://where-go.ru/event/146
+// турнир, чемпионат
+// настольные игры
 
 // Концерты и выступления
 // Праздники, фестивали и ярморки

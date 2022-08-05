@@ -504,15 +504,47 @@ class Base extends Model
     }
 
     /**
+     * Отметка о прочтении уведомления
+     * @param int 
+     */
+    static function notificationRead($event_id)
+    {
+        // обход уведомлений
+        foreach (session('notifications_unread') as $k => $notification) {
+            if ($notification->data['event'] == $event_id) {
+                // отметка о прочтении
+                session('notifications_unread')[$k]->markAsRead();
+            }
+        }
+    }
+
+    /**
      * Пользовательское свойство сортировки массива
      * Для сортировки элементов на основе количества уведомлений
      */
-    static function cmp($a, $b)
-    {
-        $a = $a->notifications;
-        $b = $b->notifications;
+    // static function cmp($a, $b)
+    // {
+    //     $a = $a->notifications;
+    //     $b = $b->notifications;
 
-        return $a <=> $b;
+    //     return $a <=> $b;
+    // }
+
+    /**
+     * Пользовательское сфойство сортировки массива
+     * Для сортировки элементов на основе наличия уведомлений:
+     * Сверху те, у которых есть маркер
+     */
+    static function sort_nmu($a, $b)
+    {
+        $a = $a->id;
+        // dd(session('notifications_marks_users'));
+
+        $b = session('notifications_marks_users');
+
+        if (!in_array($a, $b)) {
+            return 1;
+        }
     }
 
     /**
@@ -531,11 +563,40 @@ class Base extends Model
             // получение данных авторизованного пользователя
             $auth = self::getFirstQuery('session', $user_id);
 
+            // получение модели авторизованного пользователя
+            $user = User::find($user_id);
+
             // преобразование списка идентификаторов избранных пользователей
             $favourites_list = unserialize($auth->favourites);
 
+            // формирование списка пользователей, от которых есть уведомления
+            $notifications_marks_users = array();
+            foreach ($user->unreadNotifications as $k => $v) {
+                if (!in_array($v->data['author'], $notifications_marks_users)) {
+                    $notifications_marks_users[] = $v->data['author'];
+                }
+            }
+            session(['notifications_marks_users' => $notifications_marks_users]);
+
+            // формирование списка новых событий
+            $notifications_marks_events = array();
+            foreach ($user->unreadNotifications as $k => $v) {
+                if (!in_array($v->data['event'], $notifications_marks_events)) {
+                    $notifications_marks_events[] = $v->data['event'];
+                }
+            }
+            session(['notifications_marks_events' => $notifications_marks_events]);
+
             // получение некоторых данных избранных пользователей на основе преобразованных значений
             $favourites_obj = self::getFirstQuery('list_users_favourites', $favourites_list);
+            // подготовка данных
+            $favourites_obj = $favourites_obj->all();
+            // если есть непрочитанные уведомления
+            if ($user->unreadNotifications) {
+                // сортировка массива на основе наличия уведомлений
+                usort($favourites_obj, [Base::class, 'sort_nmu']);
+            }
+            session(['favourites_obj' => $favourites_obj]);
 
             // сборка сессии
             session(['user_id' => $user_id]);
@@ -545,7 +606,6 @@ class Base extends Model
             session(['about' => $auth->about]);
             session(['bookmarks' => unserialize($auth->bookmarks)]);
             session(['favourites_list' => $favourites_list]);
-            session(['favourites_obj' => $favourites_obj]);
             session(['follovers' => unserialize($auth->follovers)]);
             session(['going' => unserialize($auth->going)]);
             session(['witness' => $auth->witness]);
@@ -558,39 +618,8 @@ class Base extends Model
             session(['vk' => $auth->vk]);
             session(['vk_checked' => $auth->vk_checked]);
 
-            // есть ли уведомления
-            if ($auth->notifications) {
-                $notifications = unserialize($auth->notifications);
-
-                // если есть уведомления о новых событиях
-                if ($notifications['events_news']) {
-
-                    // формирование наборов уведомлений
-                    $events_news_list = array();
-                    foreach ($favourites_obj as $k => $v) {
-                        $v->notifications = 0;
-                        foreach ($notifications['events_news'] as $mk => $mv) {
-                            if ($v->id == $mv['user_id'] && $mv['status'] == 1) {
-                                // добавление уведомления от пользователя
-                                $v->notifications++;
-                                // добавление идентификатора нового события
-                                $events_news_list[] = $mv['event_id'];
-                            }
-                        }
-                    }
-
-                    // сортировка подписок, чтобы сверху были те, у которых появились новые события
-                    $favourites_obj = $favourites_obj->all();
-                    usort($favourites_obj,  [Base::class, "cmp"]);
-                    $favourites_obj = array_reverse($favourites_obj);
-
-                    // добавление уведомлений в сессию
-                    session(['events_news_list' => $events_news_list]);
-                } else {
-                    // добавление отсутствия уведомлений в сессию
-                    session(['events_news_list' => '']);
-                }
-            }
+            // группа уведомлений
+            session(['notifications_unread' => $user->unreadNotifications]);
         }
     }
 
@@ -632,10 +661,11 @@ class Base extends Model
     /**
      * * Соглашение о терминологии
      * 
-     * * user - любой пользователь
      * * auth - авторизованный пользователь
+     * * user - другой зарегистрированный пользователь
+     * * author - автор события
      * * guest - гость
-     * 
+     *
      * * subscribe - подписка
      * * favourite - избранный пользователь
      * * follover - подписчик
@@ -766,11 +796,16 @@ class Base extends Model
         $localstorage = array(
             'meta' => array(
                 'title' => NULL,
-                'title_default' => 'Where-go',
+                // 'title_default' => 'Where-go',
+                // 'title_default' => 'Куда сходить в Красноярске - лента событий и мероприятий | Where-go',
+                'title_default' => 'Поиск мероприятий в Красноярске | Where-go',
                 'description' => NULL,
                 // 'description_default' => 'Лента событий Красноярска. Ищишь куда сходить? Здесь все мероприятия собраны в одном месте. Просто найди подходящее.',
-                'description_default' => 'Хочешь найти куда сходить в Красноярске в 2022 году? Все события собраны здесь! Удобный фильтр по дате и категории. Смотри ленту и выбирай что нравится.',
-                'keywords' => 'куда сходить, куда сходить в красноярске, куда можно сходить в красноярске, мероприятия сегодня, мероприятия в красноярске, события, свежие события, события сегодня, события лента, события красноярск',
+                // 'description_default' => 'Хочешь найти куда сходить в Красноярске в 2022 году? Все события собраны здесь! Удобный фильтр по дате и категории. Смотри ленту и выбирай что нравится.',
+                // 'description_default' => 'Социальная сеть для создания и поиска событий и мероприятий в Красноярске: туры, походы, экскурсии, выставки, ярмарки, фестивали, сплавы, выходные, с детьми.',
+                'description_default' => 'Поиск мероприятий в Красноярске. Походы, сплавы, экскурсии, фестивали, выставки, тренинги, мастер-классы, ярмарки, выходные, с детьми. Бесплатное размещение мероприятий.',
+                // 'keywords' => 'куда сходить, куда сходить в красноярске, куда можно сходить в красноярске, мероприятия сегодня, мероприятия в красноярске, события, свежие события, события сегодня, события лента, события красноярск',
+                'keywords' => 'поиск, мероприятия, экскурсии, выставки, походы, сплавы, хайкинг, тренинги, мастер-классы, бесплатно, торгашинский хребет, столбы, мана, енисей, красноярское море, красноярск',
             ),
             'cityes' => array(
                 'Красноярск',
@@ -890,7 +925,7 @@ class Base extends Model
                     'preview'                   => 'mimes:jpeg,png',                                            // должно быть в формате jpeg или png
                     'title'                     => 'required|min:3',                                            // TODO: указать нежелательные символы
                     'description'               => 'required|min:10',                                           // TODO: указать нежелательные символы
-                    'city'                      => 'required',                                                  // обязательно
+                    // 'city'                      => 'required',                                                  // обязательно
                     'category'                  => 'required',                                                  // обязательно
                     'adress'                    => 'required',                                                  // обязательно
                     'date_start'                => 'required',                                                  // обязательно

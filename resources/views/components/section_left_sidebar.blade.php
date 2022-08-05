@@ -30,10 +30,12 @@
         {{-- Desctop фильтр --}}
         <div class="border-bottom pt-3 pb-3">
             <form method="get" action="">
-                <div class="mb-3">
-                    {{-- По городу --}}
+
+                {{-- <div class="mb-3">
+                    По городу
                     <x-field_city_filter :localstorage="$localstorage"></x-field_city_filter>
-                </div>
+                    </div> --}}
+                    
                 <div class="mb-3">
                     {{-- По категории --}}
                     <x-field_category_filter :localstorage="$localstorage"></x-field_category_filter>
@@ -48,76 +50,71 @@
             </form>
         </div>
 
-        {{-- Подписки --}}
         @auth
-        @php
-        // Высота контейнера по умолчанию
-        $height = 'auto';
-        // Количество элементов в массиве
-        $count = count(session('favourites_obj'));
-        // Количество отображаемых элементов
-        $open_items = 3;
-        // Итерация цикла, после которой произвести вывод кнопки
-        $show_button = $open_items - 1;
-        // Если количество элементов в массиве больше требуемого, то его высота становится фиксированной
-        // Она включает высоту выводимых элементов + кнопка
-        if($count > 3) {
-        // $height = '109px'; // Для отображения одной подписки и кнопки
-        $height = '195px'; // Для отображения трёх подписок и кнопки
-        // $height = '229px'; // Для отображения четырёх подписок и кнопки
-        }
-        // dd($count);
-        @endphp
 
+            {{-- Управление высотой контейнера --}}
+            @php
+            // Высота контейнера по умолчанию
+            $height = 'auto';
+            // Количество элементов в массиве
+            $count = count(session('favourites_obj'));
+            // Количество отображаемых элементов
+            $open_items = 3;
+            // Итерация цикла, после которой произвести вывод кнопки
+            $show_button = $open_items - 1;
+            // Если количество элементов в массиве больше требуемого, то его высота становится фиксированной
+            // Она включает высоту выводимых элементов + кнопка
+            if($count > 3) {
+            // $height = '109px'; // Для отображения одной подписки и кнопки
+            $height = '195px'; // Для отображения трёх подписок и кнопки
+            // $height = '229px'; // Для отображения четырёх подписок и кнопки
+            }
+            @endphp
 
+            {{-- Подписки --}}
+            <div class="border-bottom pt-3 pb-3 d-flex flex-column gap-2" id="drop-list" style="height: {{ $height }}">
 
-        <div class="border-bottom pt-3 pb-3 d-flex flex-column gap-2" id="drop-list" style="height: {{ $height }}">
-            @if($count == 0)
-            <small class="m-0">{{ __('Подпишитесь на кого-нибудь') }}</small>
-            @endif
-            {{-- Это нужно сделать компонентом, поскольку этот фрагмент используется в двух местах --}}
-            @foreach (session('favourites_obj') as $item)
-            {{-- <a href="/user/{{ $item->id }}" class="d-flex align-items-center text-decoration-none text-reset">
-                <img src="/public/img/avatars/{{ $item->avatar }}" alt="" width="32" height="32" class="rounded-circle me-2">
-                <strong class="text-truncate">{{ $item->name }}</strong>
-            </a> --}}
+                @if($count == 0)
+                <small class="m-0">{{ __('Подпишитесь на кого-нибудь') }}</small>
+                @endif
 
-            <a href="/user/{{ $item->id }}" type="button" class="btn btn-sm position-relative text-start m-0 p-0" style="width: 212px">
-                <img src="/public/img/avatars/{{ $item->avatar }}" alt="follwo-avatar" width="32" height="32" class="rounded-circle me-2">
-                <strong>{{ Str::limit($item->name, 15) }}</strong>
-                @isset ($item->notifications)
-                    @if ($item->notifications)
-                    <span class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger">{{ $item->notifications }}</span>
+                @foreach (session('favourites_obj') as $item)
+
+                    <a href="/user/{{ $item->id }}" type="button" class="btn btn-sm position-relative text-start m-0 p-0">
+                        <img src="/public/img/avatars/{{ $item->avatar }}" alt="follwo-avatar" width="32" height="32" class="rounded-circle me-2">
+                        <strong>{{ Str::limit($item->name, 15) }}</strong>
+
+                        {{-- Marker --}}
+                        @if( in_array($item->id, session('notifications_marks_users')) )
+                        <span class="position-absolute top-50 translate-middle p-1 bg-danger border border-light rounded-circle" style="left: 98%">
+                            <span class="visually-hidden">Новые уведомления</span>
+                        </span>
+                        @endif
+
+                    </a>
+
+                    @if($count > $open_items && $loop->index == 2)
+                    <button class="btn btn-light active w-100 text-start border-0 mb-3" id="drop-down">{{ __('Еще ...') }}</button>
                     @endif
-                @endisset
-            </a>
 
+                @endforeach
 
-            @if($count > $open_items && $loop->index == 2)
-            <button class="btn btn-light active w-100 text-start border-0 mb-3" id="drop-down">{{ __('Еще ...')
-                }}</button>
-            @endif
-            @endforeach
-        </div>
+            </div>
+
         @endauth
-        <!-- Подвал -->
+
+        {{-- Footer --}}
         <div class="pt-3">
             <ul class="list-inline lh-1">
-                {{--
                 <li class="list-inline-item align-middle">
-                    <a href="#" class="text-decoration-none text-secondary"><small>Как тут заработать?</small></a>
-                </li>
-                --}}
-                <li class="list-inline-item align-middle">
-                    <a href="https://t.me/zloileshii" class="text-decoration-none text-secondary"><small>Связаться с
-                            разработчиком</small></a>
+                    <a href="https://t.me/zloileshii" class="text-decoration-none text-secondary"><small>Связаться с разработчиком</small></a>
                 </li>
             </ul>
         </div>
-        <!-- /Подвал -->
+
     </div>
+
 </div>
-<!-- /Левый сайдбар -->
 
 <style>
     .btn:focus {

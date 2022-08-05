@@ -3,9 +3,9 @@
         <form method="get" action="">
 
             {{-- Фильтр по городу --}}
-            <div class="mb-3">
-                <x-field_city_filter :localstorage="$localstorage"></x-field_city_filter>
-            </div>
+            {{-- <div class="mb-3"> --}}
+                {{-- <x-field_city_filter :localstorage="$localstorage"></x-field_city_filter> --}}
+            {{-- </div> --}}
 
             <div class="mb-3">
                 {{-- Фильтр по категории --}}

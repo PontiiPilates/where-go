@@ -5,7 +5,16 @@ namespace App\Observers;
 use App\Models\Event;
 
 // подключение библиотеки кастомных методов
-use App\Models\library\Base;
+// use App\Models\library\Base;
+
+// подключение класса уведомлений
+use App\Notifications\EventNew;
+// подключение фассада уведомлений
+use Illuminate\Support\Facades\Notification;
+// подключение модели пользователя
+use App\Models\User;
+// подключение модели дополнительных данных пользователя
+use App\Models\Profile;
 
 class EventsObserver
 {
@@ -17,7 +26,16 @@ class EventsObserver
      */
     public function created(Event $event)
     {
-        Base::addNotification($event);
+        // получение списка идентификаторов подписчиков
+        $author = Profile::firstWhere('user_id', $event->user_id);
+        $follovers = $author->follovers;
+        $follovers = unserialize($follovers);
+
+        // получение моделей подписчиков
+        $users = User::whereIn('id', $follovers)->get();
+
+        // отправка уведомлений подписчикам
+        Notification::send($users, new EventNew($event));
     }
 
     /**

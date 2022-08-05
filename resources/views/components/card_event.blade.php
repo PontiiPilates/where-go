@@ -1,10 +1,9 @@
 <div class="card mb-3 main-light-shadow border-white postiton-relative">
 
-
-    {{-- Новое --}}
-    @if(session('events_news_list'))
-        @if( in_array($item->id, session('events_news_list')) )
-        <span   class="badge bg-danger position-absolute top-0 start-0 w-auto mt-2 ms-2 main-light-shadow" style="z-index: 1">Новое</span>
+    {{-- Marker --}}
+    @if(session('notifications_marks_events'))
+        @if( in_array($item->id, session('notifications_marks_events')) )
+            <span class="badge bg-danger position-absolute top-0 start-0 w-auto mt-2 ms-2 main-light-shadow" style="z-index: 1">Новое</span>
         @endif
     @endif
 
@@ -53,8 +52,7 @@
     </div>
     {{-- Событие прошло --}}
     <a href="/event/{{ $item->id }}" class="text-reset text-decoration-none">
-        <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2"
-            style="height: 120px; width: 120px;">
+        <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle opacity-100 main-strong-shadow d-flex flex-column justify-content-center align-items-center gap-2" style="height: 120px; width: 120px;">
             <div><i class="bi bi-hourglass-bottom"></i></div>
             <div class="text-center">Событие окончено</div>
         </div>
