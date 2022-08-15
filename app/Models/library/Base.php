@@ -27,89 +27,167 @@ class Base extends Model
     static function getFirstQuery($selector, $id = null, $facets = null)
     {
         $limit = 1000;
+        $q = '';
         switch ($selector) {
-            case 'filtrated_city';
-                // фильтр по городу
+
+                // селекторы первой строки
+            case 'selector__бесплатно_или_донат';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.city', $facets['city'])
+                    ->where('events.cost', NULL)
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_category';
-                // фильтр по категории
+
+            case 'selector__можно_с_детьми';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.category', $facets['category'])
+                    ->where('events.facet_child', 1)
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_date';
-                // фильтр по дате
+
+            case 'selector__в_эти_выходные';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('date_start', '>=', $facets['date_start'])
+                    ->where('events.facet_weekends', 1)
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_city_category';
-                // фильтр по городу и категории
+
+                // селекторы второй строки
+            case 'selector__активный_отдых';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.city', $facets['city'])
-                    ->where('events.category', $facets['category'])
+                    ->where('events.category', 'Активный отдых')
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_city_date';
-                // фильтр по городу и дате
+
+            case 'selector__бизнес_карьера';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.city', $facets['city'])
-                    ->where('date_start', '>=', $facets['date_start'])
+                    ->where('events.category', 'Бизнес, карьера')
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_category_date';
-                // фильтр по категории и дате
+
+            case 'selector__выставки_экскурсии';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.category', $facets['category'])
-                    ->where('date_start', '>=', $facets['date_start'])
+                    ->where('events.category', 'Выставки, экскурсии')
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
-            case 'filtrated_city_category_date';
-                // фильтр по городу, категории и дате
+
+            case 'selector__йога_медитации';
                 $q = DB::table('events')
                     ->where('status', 1)
-                    ->where('events.city', $facets['city'])
-                    ->where('events.category', $facets['category'])
-                    ->where('date_start', '>=', $facets['date_start'])
+                    ->where('events.category', 'Йога, медитации')
+                    ->where('date_start', '>=', date('Y-m-d'))
                     ->join('users', 'events.user_id', '=', 'users.id')
                     ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
                     ->select('events.*', 'users.name', 'profiles.avatar')
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
                 break;
+
+            case 'selector__концерты_выступления';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Концерты, выступления')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'selector__лекции_мастерклассы';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Лекции, мастер-классы')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'selector__психология_саморазвитие';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Психология, саморазвитие')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'selector__спорт_здоровье';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Спорт, здоровье')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'selector__ярмарки_фестивали';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Ярмарки, фестивали')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
+            case 'selector__другое';
+                $q = DB::table('events')
+                    ->where('status', 1)
+                    ->where('events.category', 'Другое ...')
+                    ->where('date_start', '>=', date('Y-m-d'))
+                    ->join('users', 'events.user_id', '=', 'users.id')
+                    ->join('profiles', 'events.user_id', '=', 'profiles.user_id')
+                    ->select('events.*', 'users.name', 'profiles.avatar')
+                    ->orderBy('date_start')
+                    ->simplePaginate($limit);
+                break;
+
             case 'unfiltrated';
                 // без фильтра
                 $q = DB::table('events')
@@ -187,6 +265,7 @@ class Base extends Model
                         'events.witness',
                         'events.source',
                         'events.counter',
+                        'events.counter_fake',
                     )
                     ->orderByDesc('date_start')
                     ->simplePaginate($limit);
@@ -219,6 +298,7 @@ class Base extends Model
                         'events.witness',
                         'events.source',
                         'events.counter',
+                        'events.counter_fake',
                     )
                     ->orderBy('date_start')
                     ->simplePaginate($limit);
@@ -322,7 +402,7 @@ class Base extends Model
             $event->count_goes = count($goes);
 
             // преобразование категории
-            $event->category = explode(',', $event->category);
+            // $event->category = explode(',', $event->category);
 
             // формирование отметки о том, что событие прошло: когда дата окончания и дата начала больше текущей
             if (strtotime($event->date_end) + 86400 < time() && strtotime($event->date_start) + 86400 < time()) {
@@ -403,132 +483,22 @@ class Base extends Model
     }
 
     /**
-     * Добавление уведомлений в модели Profile
-     * Применяется обсервером при создании события пользователем
-     * @param object $event модель события
-     * @return ?
-     */
-    static function addNotification($event)
-    {
-        // получение данных для создания уведомления
-        $author_id = $event->getAttribute('user_id');
-        $event_id = $event->getAttribute('id');
-
-        // получение списка идентификаторов подписчиков
-        $author_profile = Profile::firstWhere('user_id', $author_id);
-        $follovers = $author_profile->follovers;
-        $follovers = unserialize($follovers);
-
-        // отправка уведомлений подписчикам
-        foreach ($follovers as $v) {
-
-            // получение уведомлений подписчика
-            $follover = Profile::firstWhere('user_id', $v);
-            $notifications = $follover->notifications;
-
-            // создание структуры, если уведомлений еще нет
-            if (!$notifications) {
-                $notifications = 'a:0:{}';
-            }
-
-            // формирование данных
-            $notifications = unserialize($notifications);
-            $notifications['events_news'][] = array(
-                'user_id' => $author_id,
-                'event_id' => $event_id,
-                'status' => '1',
-                'created_at' => time(),
-                'updated_at' => '',
-            );
-            $notifications = serialize($notifications);
-            $follover->notifications = $notifications;
-            $follover->save();
-        }
-    }
-
-    /**
-     * Прочтение уведомлений о новых событиях
-     * @param int $event_id идентификатор события
-     * @return ?
-     */
-    static function removeNotification($event_id)
-    {
-
-        // получение списка идентификаторов новых событий
-        $events_news_list = session('events_news_list');
-
-        // есть ли новые события
-        if ($events_news_list) {
-            // есть ли событие в новых событиях
-            if (in_array($event_id, $events_news_list)) {
-
-                // ! работа с моделью модели
-                $user_id = Auth::id();
-                $profile = Profile::find($user_id);
-                $notifications = $profile->notifications;
-
-                // есть ли уведомления в модели
-                if ($notifications) {
-
-                    $notifications = unserialize($notifications);
-
-                    // есть ли уведомления о новых событиях
-                    if ($notifications['events_news']) {
-
-                        // установка новых значений
-                        foreach ($notifications['events_news'] as $k => $v) {
-                            if ($v['event_id'] == $event_id && $v['status'] == 1) {
-                                $notifications['events_news'][$k]['status'] = 0;
-                                $notifications['events_news'][$k]['updated_at'] = time();
-                            }
-                        }
-
-                        $profile->notifications = serialize($notifications);
-                        $profile->save();
-                    }
-                }
-
-                // ! работа с сессией
-                $events_news_list = session('events_news_list');
-
-                // удаление иднтификаторов новых собыьтий
-                foreach ($events_news_list as $k => $v) {
-                    if ($v == $event_id) {
-                        unset($events_news_list[$k]);
-                    }
-                }
-
-                session(['events_news_list' => $events_news_list]);
-            }
-        }
-    }
-
-    /**
      * Отметка о прочтении уведомления
      * @param int 
      */
     static function notificationRead($event_id)
     {
-        // обход уведомлений
-        foreach (session('notifications_unread') as $k => $notification) {
-            if ($notification->data['event'] == $event_id) {
-                // отметка о прочтении
-                session('notifications_unread')[$k]->markAsRead();
+        // ! проверка: авторизован ли пользователь
+        if (Auth::id()) {
+            // обход уведомлений
+            foreach (session('notifications_unread') as $k => $notification) {
+                if ($notification->data['event'] == $event_id) {
+                    // отметка о прочтении
+                    session('notifications_unread')[$k]->markAsRead();
+                }
             }
         }
     }
-
-    /**
-     * Пользовательское свойство сортировки массива
-     * Для сортировки элементов на основе количества уведомлений
-     */
-    // static function cmp($a, $b)
-    // {
-    //     $a = $a->notifications;
-    //     $b = $b->notifications;
-
-    //     return $a <=> $b;
-    // }
 
     /**
      * Пользовательское сфойство сортировки массива
@@ -538,8 +508,6 @@ class Base extends Model
     static function sort_nmu($a, $b)
     {
         $a = $a->id;
-        // dd(session('notifications_marks_users'));
-
         $b = session('notifications_marks_users');
 
         if (!in_array($a, $b)) {
@@ -793,12 +761,19 @@ class Base extends Model
      */
     static function getLocalstorage()
     {
+
+
+
+
+
+
+
         $localstorage = array(
             'meta' => array(
                 'title' => NULL,
                 // 'title_default' => 'Where-go',
                 // 'title_default' => 'Куда сходить в Красноярске - лента событий и мероприятий | Where-go',
-                'title_default' => 'Поиск мероприятий в Красноярске | Where-go',
+                'title_default' => 'Where-go | поиск мероприятий в Красноярске',
                 'description' => NULL,
                 // 'description_default' => 'Лента событий Красноярска. Ищишь куда сходить? Здесь все мероприятия собраны в одном месте. Просто найди подходящее.',
                 // 'description_default' => 'Хочешь найти куда сходить в Красноярске в 2022 году? Все события собраны здесь! Удобный фильтр по дате и категории. Смотри ленту и выбирай что нравится.',
@@ -807,52 +782,39 @@ class Base extends Model
                 // 'keywords' => 'куда сходить, куда сходить в красноярске, куда можно сходить в красноярске, мероприятия сегодня, мероприятия в красноярске, события, свежие события, события сегодня, события лента, события красноярск',
                 'keywords' => 'поиск, мероприятия, экскурсии, выставки, походы, сплавы, хайкинг, тренинги, мастер-классы, бесплатно, торгашинский хребет, столбы, мана, енисей, красноярское море, красноярск',
             ),
-            'cityes' => array(
-                'Красноярск',
-                'Ачинск',
-                'Железногорск',
-                'Зеленогорск',
-                'Минусинск',
-                'Норильск',
-            ),
+
             'categories' => array(
                 'Активный отдых',
-                'Бизнес',
-                'Вечеринка',
-                'Выставка',
-                'Досуг',
-                'Дети',
-                'Еда',
-                'Здоровье',
-                'Игры',
-                'Искусство',
-                'Карьера',
-                'Кино',
-                'Конференция',
-                'Концерт',
-                'Культура',
-                'Курсы',
-                'Мастер-классы',
-                'Музыка',
-                'Наука',
-                'Общение',
-                'Образование',
-                'Отдых',
-                'Онлайн',
-                'Поход',
-                'Развлечения',
-                'Семинар',
-                'Спорт',
-                'Стендап',
-                'Туризм',
-                'Тренинг',
-                'Фестиваль',
-                'Эзотерика',
-                'Экскурсия',
-                'Хобби',
-                'Шоу',
-                'Ярмарка',
-                'Другое',
+                'Бизнес, карьера',
+                'Выставки, экскурсии',
+                'Йога, медитации',
+                'Концерты, выступления',
+                'Лекции, мастер-классы',
+                'Психология, саморазвитие',
+                'Спорт, здоровье',
+                'Ярмарки, фестивали',
+                'Другое ...',
+            ),
+
+            'selectors' => array(
+                'row_first' => array(
+                    'Бесплатно или донат' => Base::getFirstQuery('selector__бесплатно_или_донат')->count(),
+                    'Можно с детьми' => Base::getFirstQuery('selector__можно_с_детьми')->count(),
+                    'В эти выходные' => Base::getFirstQuery('selector__в_эти_выходные')->count(),
+                ),
+                'row_second' => array(
+                    'Активный отдых' => Base::getFirstQuery('selector__активный_отдых')->count(),
+                    'Бизнес, карьера' => Base::getFirstQuery('selector__бизнес_карьера')->count(),
+                    'Выставки, экскурсии' => Base::getFirstQuery('selector__выставки_экскурсии')->count(),
+                    'Йога, медитации' => Base::getFirstQuery('selector__йога_медитации')->count(),
+                    'Концерты, выступления' => Base::getFirstQuery('selector__концерты_выступления')->count(),
+                    'Лекции, мастер-классы' => Base::getFirstQuery('selector__лекции_мастерклассы')->count(),
+                    'Психология, саморазвитие' => Base::getFirstQuery('selector__психология_саморазвитие')->count(),
+                    'Спорт, здоровье' => Base::getFirstQuery('selector__спорт_здоровье')->count(),
+                    'Ярмарки, фестивали' => Base::getFirstQuery('selector__ярмарки_фестивали')->count(),
+                    'Другое ...' => Base::getFirstQuery('selector__другое')->count(),
+                ),
+
             ),
         );
         return $localstorage;

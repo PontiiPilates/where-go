@@ -1,5 +1,7 @@
 <form class="mb-5" action="" method="POST" enctype="multipart/form-data" id="form_event">
+
     @csrf
+
     {{-- Название --}}
     <div class="mb-3">
         <label for="title" class="form-label">Название</label>
@@ -9,6 +11,7 @@
         <div id="title" class="invalid-feedback">Придумайте название события</div>
         @enderror
     </div>
+
     {{-- Описание --}}
     <div class="mb-3">
         <label for="description" class="form-label">Описание</label>
@@ -24,10 +27,12 @@
         <div id="description" class="invalid-feedback">Придумайте описание события не менее 120 символов</div>
         @enderror
     </div>
+
     {{-- Изображение --}}
     @isset($event->preview)
     <img src="/public/img/previews/{{ $event->preview }}" class="rounded w-50 mb-3" alt="image">
     @endisset
+
     {{-- Загрузка изображения --}}
     <div class="mb-3">
         <label for="preview" class="form-label">Изображение</label>
@@ -36,32 +41,17 @@
         <div id="preview" class="invalid-feedback">Изображение должно быть в формате: .jpg или .png</div>
         @enderror
     </div>
-    {{-- Выбор города --}}
-    {{-- <div class="mb-3">
-        <label for="city" class="form-label">Город</label>
-        <select name="city" id="city" class="form-select @error('city') is-invalid @enderror">
-            @foreach($localstorage['cityes'] as $city)
-            @if( isset($event) && $event->city == $city || old('city') == $city )
-            <option selected value="{{ $city }}">{{ $city }}</option>
-            @else
-            <option value="{{ $city }}">{{ $city }}</option>
-            @endif
-            @endforeach
-        </select>
-        @error('city')
-        <div id="city" class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div> --}}
+
     {{-- Адрес --}}
     <div class="mb-3">
-        <label for="adress" class="form-label">Адрес</label>
+        <label for="adress" class="form-label">Место встречи</label>
         <input name="adress" type="text" id="adress" class="form-control @error('adress') is-invalid @enderror"
-            value="{{ $event->adress ?? @old('adress') }}"
-            placeholder="ост. Театр Пушкина или https://go.2gis.com/eb0ps">
+            value="{{ $event->adress ?? @old('adress') }}" placeholder="ост. Театр Пушкина">
         @error('adress')
         <div id="adress" class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+
     {{-- Категория --}}
     <div class="mb-3">
         <label for="category" class="form-label">Категория</label>
@@ -78,6 +68,23 @@
         <div id="category" class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+
+    {{-- Дополнительные фасеты --}}
+    <div class="mb-3">
+        <div class="form-check form-check-inline">
+            <input name="facet_child" type="checkbox" id="facet-child" class="form-check-input" @if(
+                isset($event->facet_child) ||
+            old('facet_child') ) checked @endif>
+            <label class="form-check-label" for="facet-child">В эти выходные</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input name="facet_weekends" type="checkbox" id="facet-weekends" class="form-check-input" @if(
+                isset($event->facet_weekends) ||
+            old('facet_weekends') ) checked @endif>
+            <label class="form-check-label" for="facet-weekends">Можно с детьми</label>
+        </div>
+    </div>
+
     <div class="row">
         {{-- Дата начала --}}
         <div class="col mb-3">
@@ -122,6 +129,7 @@
             @enderror
         </div>
     </div>
+
     <div class="col d-flex gap-3">
         {{-- Бесплатно --}}
         <div class="form-check mb-0">
@@ -148,11 +156,13 @@
             <label class="form-check-label" for="price">Цена от</label>
         </div>
     </div>
+
     <div class="col mb-3">
         @error('price_type')
         <div id="price_type" class="invalid-feedback" style="display: block;">Выберите формат участия</div>
         @enderror
     </div>
+
     {{-- Стоимость --}}
     <div class="mb-3">
         <input name="cost" type="number" id="cost" class="form-control @error('cost') is-invalid @enderror"
@@ -163,6 +173,7 @@
         <div id="cost" class="invalid-feedback">Укажите стоимость участия, если выбираете "Цена"</div>
         @enderror
     </div>
+
     {{-- Свидетель --}}
     @if( session('witness') )
     <div class="form-check mb-3">
@@ -170,6 +181,7 @@
         old('witness') ) checked @endif>
         <label class="form-check-label" for="witness">Свидетель события</label>
     </div>
+
     {{-- Источник --}}
     <div class="mb-4">
         <input name="source" type="text" id="source" class="form-control" value="{{ $event->source ?? @old('source') }}"
@@ -178,12 +190,15 @@
         placeholder="Cсылка на источник">
     </div>
     @endif
+
     <div class="d-flex justify-content-between gap-3">
         <button name="form_name" type="submit" value="add" class="btn btn-warning flex-fill">Сохранить</button>
         <button type="button" class="btn btn-light border flex-fill" data-bs-toggle="modal"
             data-bs-target="#actionConfirm">Удалить</button>
     </div>
+
 </form>
+
 {{-- Подтверждение удаления --}}
 @isset( $event->id )
 <x-modal_shure :id="$event->id"></x-modal_shure>

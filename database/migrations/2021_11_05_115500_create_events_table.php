@@ -37,8 +37,8 @@ class CreateEventsTable extends Migration
             $table->text('source')->comment('ссылка на источник')->nullable();
             $table->integer('status')->comment('статус публикации события')->default(1);
             $table->integer('counter')->comment('счетчик просмотров')->default(1);
-            $table->timestamp('created_at')->comment('дата и время создания записи');
-            $table->timestamp('updated_at')->comment('дата и время обновления записи');
+            // cоздает created_at и updated_at
+            $table->timestamps();
         });
     }
 

@@ -28,44 +28,41 @@ class GeneralController extends Controller
         $localstorage = Base::getLocalstorage();
 
         // получение GET-параметров
-        $city = $r->city;
-        $category = $r->category;
-        $date_start = $r->date_start;
+        $selector = $r->selector;
 
-        // фильтрация событий
-        if ($city && !$category && !$date_start) {
-            // если есть город        
-            $events = Base::getFirstQuery('filtrated_city', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($category && !$city && !$date_start) {
-            // если есть категория
-            $events = Base::getFirstQuery('filtrated_category', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($date_start && !$city && !$category) {
-            // если есть дата
-            $events = Base::getFirstQuery('filtrated_date', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($city && $category && !$date_start) {
-            // если есть город и категория
-            $events = Base::getFirstQuery('filtrated_city_category', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($city && $date_start && !$category) {
-            // если есть город и дата
-            $events = Base::getFirstQuery('filtrated_city_date', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($category && $date_start && !$city) {
-            // если есть категория и дата
-            $events = Base::getFirstQuery('filtrated_category_date', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
-        } elseif ($city && $category && $date_start) {
-            // если есть город, категория и дата
-            $events = Base::getFirstQuery('filtrated_city_category_date', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
+        // селекторы событий событий
+        if ($selector == 'Бесплатно или донат') {
+            $events = Base::getFirstQuery('selector__бесплатно_или_донат');
+        } elseif ($selector == 'Можно с детьми') {
+            $events = Base::getFirstQuery('selector__можно_с_детьми');
+        } elseif ($selector == 'В эти выходные') {
+            $events = Base::getFirstQuery('selector__в_эти_выходные');
+        } elseif ($selector == 'Активный отдых') {
+            $events = Base::getFirstQuery('selector__активный_отдых');
+        } elseif ($selector == 'Бизнес, карьера') {
+            $events = Base::getFirstQuery('selector__бизнес_карьера');
+        } elseif ($selector == 'Выставки, экскурсии') {
+            $events = Base::getFirstQuery('selector__выставки_экскурсии');
+        } elseif ($selector == 'Йога, медитации') {
+            $events = Base::getFirstQuery('selector__йога_медитации');
+        } elseif ($selector == 'Концерты, выступления') {
+            $events = Base::getFirstQuery('selector__концерты_выступления');
+        } elseif ($selector == 'Лекции, мастер-классы') {
+            $events = Base::getFirstQuery('selector__лекции_мастерклассы');
+        } elseif ($selector == 'Психология, саморазвитие') {
+            $events = Base::getFirstQuery('selector__психология_саморазвитие');
+        } elseif ($selector == 'Спорт, здоровье') {
+            $events = Base::getFirstQuery('selector__спорт_здоровье');
+        } elseif ($selector == 'Ярмарки, фестивали') {
+            $events = Base::getFirstQuery('selector__ярмарки_фестивали');
+        } elseif ($selector == 'Другое ...') {
+            $events = Base::getFirstQuery('selector__другое');
         } else {
-            // если ничего не выбрано
-            $events = Base::getFirstQuery('unfiltrated', null, ['city' => $city, 'category' => $category, 'date_start' => $date_start]);
-            $events = Base::eventsFinished($events);
+            $events = Base::getFirstQuery('unfiltrated');
         }
+
+        // обработка выводимых событий
+        $events = Base::eventsFinished($events);
 
         return view('listEvents', [
             'localstorage' => $localstorage,

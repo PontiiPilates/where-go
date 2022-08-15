@@ -1,11 +1,8 @@
-<p class="card-text">
-    <small class="text-muted">
-
-        @foreach( $item->category as $category )
-            {{-- <a href="" class="text-reset">{{ $category }}</a> --}}
-            <small>{{ $category }}</small>
-            @unless($loop->last) | @endunless
-        @endforeach
-
-    </small>
+{{-- {{ dd($item) }} --}}
+<p class="card-text">
+    <a href="/?selector={{ $item->category}}" class="text-reset">
+        <small class="text-muted">
+            {{ $item->category}}
+        </small>
+    </a>
 </p>

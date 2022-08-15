@@ -31,18 +31,15 @@
     <h5 class="mb-0">{{ $event->title }}</h5>
 
     {{-- Категория --}}
-    @foreach( $event->category as $category )
-
-    {{-- <p><small class="text-muted"><a href="" class="text-reset">{{ $category }}</a></small></p> --}}
-    <p><small class="text-muted">{{ $category }}</small></p>
-
-        @unless($loop->last) | @endunless
-
-    @endforeach
+    <a href="/?selector={{ $event->category}}" class="text-reset">
+        <small class="text-muted">
+            {{ $event->category}}
+        </small>
+    </a>
     
     {{-- Изображение --}}
     @if($event->preview)
-    <img src="/public/img/previews/{{ $event->preview }}" class="img-fluid rounded w-100 mb-3" alt="event-image">
+    <img src="/public/img/previews/{{ $event->preview }}" class="img-fluid rounded w-100 mt-3 mb-3" alt="event-image">
     @endif
 
     {{-- Информация --}}
@@ -97,16 +94,16 @@
         <span class="card-icon bi bi-eye-fill"> {{ $event->counter }}</span>
 
         {{-- Счетчик участников для автора события --}}
-        @auth
+        @if (Auth::id() == $event->user_id)
         <a href="/run/{{ $event->id }}/users" class="text-reset text-decoration-none">
             <span class="card-icon bi bi-people-fill"> {{ $event->count_goes }}</span>
         </a>
-        @endauth
+        @endif
 
         {{-- Счетчик участников для любого другого пользователя --}}
-        @guest
+        {{-- @guest
         <span class="card-icon bi bi-people-fill"> {{ $event->count_goes }}</span>
-        @endguest
+        @endguest --}}
 
     </div>
 

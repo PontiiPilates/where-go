@@ -221,3 +221,13 @@
     /* box-shadow   : 1px 1px 2px #ddd; */
     /* background   : #fff; */
 }
+
+/* Фасеты */
+.facets {
+    border: 1px solid #dee2e6 !important;
+}
+
+.facets .badge {
+    background-color: #ffc107;
+    color           : rgba(0, 0, 0, .9);
+}

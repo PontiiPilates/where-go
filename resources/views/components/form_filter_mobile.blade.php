@@ -1,24 +1,23 @@
-    {{-- Фильтр событий на главной --}}
-    <div class="mb-5 pb-3 d-lg-none">
-        <form method="get" action="">
+{{-- Фильтр событий на главной --}}
 
-            {{-- Фильтр по городу --}}
-            {{-- <div class="mb-3"> --}}
-                {{-- <x-field_city_filter :localstorage="$localstorage"></x-field_city_filter> --}}
-            {{-- </div> --}}
+<div class="mb-5 pb-3 d-lg-none d-flex flex-wrap gap-2 mb-3 flex-column flex-sm-row">
 
-            <div class="mb-3">
-                {{-- Фильтр по категории --}}
-                <x-field_category_filter :localstorage="$localstorage"></x-field_category_filter>
-            </div>
-            
-            <div class="mb-4">
-                {{-- Фильтр по дате --}}
-                <x-field_data_filter></x-field_data_filter>
-            </div>
+    @foreach ($localstorage['selectors']['row_first'] as $k => $v)
+        @if ($v > 0)
+            <a href="/?selector={{ $k }}" class="facets btn btn-lg btn-outline-dark rounded-pill text-start">
+                <span class="badge text-bg-secondary me-2">{{ $v }}</span>
+                <span>{{ $k }}</span>
+            </a>
+        @endif
+    @endforeach
 
-            <button name="filter" value="true" type="submit" class="btn btn-warning w-100 text-start"><i
-                    class="bi bi-search me-2"></i>{{ __('Искать') }}</button>
+    @foreach ($localstorage['selectors']['row_second'] as $k => $v)
+        @if ($v > 0)
+            <a href="/?selector={{ $k }}" class="facets btn btn-lg btn-outline-dark rounded-pill text-start">
+                <span class="badge text-bg-secondary me-2">{{ $v }}</span>
+                <span>{{ $k }}</span>
+            </a>
+        @endif
+    @endforeach
 
-        </form>
-    </div>
+</div>

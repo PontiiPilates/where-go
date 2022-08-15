@@ -40,4 +40,4 @@ $event_id = explode('/', Request::path());
 <link rel="icon" href="/favicon.svg">
 
 {{-- Main styles --}}
-<link rel="stylesheet" href="/resources/css/style.css">
+<link rel="stylesheet" href="/resources/css/style.css?v-1">

@@ -84,6 +84,8 @@ class EventController extends Controller
                 $event->description     = $r->description;
                 $event->city            = $r->city;
                 $event->category        = $r->category;
+                $event->facet_child     = NULL;
+                $event->facet_weekends  = NULL;
                 $event->adress          = $r->adress;
                 $event->date_start      = $r->date_start;
                 $event->date_end        = $r->date_end;
@@ -116,9 +118,17 @@ class EventController extends Controller
                         break;
                 }
 
+                // если пользователь указал, что на событие можно с детьми
+                if ($r->facet_child) {
+                    $event->facet_child = 1;
+                }
+                // если пользователь указал, что событие произойдет в эти выходные
+                if ($r->facet_weekends) {
+                    $event->facet_weekends = 1;
+                }
                 // если пользователь указал себя свидетелем
                 if ($r->witness) {
-                    $event->witness     = 1;
+                    $event->witness = 1;
                 }
 
                 // если сохранение модели прошло успешно
@@ -179,6 +189,8 @@ class EventController extends Controller
                 $event->description     = $r->description;
                 $event->city            = $r->city;
                 $event->category        = $r->category;
+                $event->facet_child     = NULL;
+                $event->facet_weekends  = NULL;
                 $event->adress          = $r->adress;
                 $event->date_start      = $r->date_start;
                 $event->date_end        = $r->date_end;
@@ -209,11 +221,18 @@ class EventController extends Controller
                         break;
                 }
 
+                // если пользователь указал, что на событие можно с детьми
+                if ($r->facet_child) {
+                    $event->facet_child = 1;
+                }
+                // если пользователь указал, что событие произойдет в эти выходные
+                if ($r->facet_weekends) {
+                    $event->facet_weekends = 1;
+                }
                 // если пользователь указал себя свидетелем
                 if ($r->witness) {
                     $event->witness     = 1;
                 }
-
                 // если пользователь загрузил новое изображение
                 if ($r->preview) {
                     $event->preview     = Images::image(700, 700, 'preview', '../public/img/previews/');
