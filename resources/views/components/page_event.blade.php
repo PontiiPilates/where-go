@@ -91,7 +91,7 @@
     <div class="mb-3">
 
         {{-- Счетчик просмотров --}}
-        <span class="card-icon bi bi-eye-fill"> {{ $event->counter }}</span>
+        <span class="card-icon bi bi-eye-fill"> {{ $event->counter + $event->counter_fake }}</span>
 
         {{-- Счетчик участников для автора события --}}
         @if (Auth::id() == $event->user_id)
@@ -113,20 +113,20 @@
             @if( $event->run)
                 {{-- Отменить участие --}}
                 <button id="run" class="btn btn-light border tools-bw-btn flex-fill">Отменить участие</button>
-                <x-button_share id="{{ $event->user_id }}"></x-button_share>
+                <x-button_share id="{{ $event->id }}"></x-button_share>
             @elseif(!$event->my)
                 {{-- Принять участие --}}
                 <button id="run" class="btn btn-warning tools-bw-btn flex-fill">Принять участие</button>
-                <x-button_share id="{{ $event->user_id }}"></x-button_share>
+                <x-button_share id="{{ $event->id }}"></x-button_share>
             @elseif($event->my)
                 {{-- Редактировать --}}
                 <a href="/event/{{ $event->id }}/edit" class="btn btn-light border tools-bw-btn flex-fill">Редактировать</a>
-                <x-button_share id="{{ $event->user_id }}"></x-button_share>
+                <x-button_share id="{{ $event->id }}"></x-button_share>
             @endif
         @endauth
 
         @guest
-            <x-button_share class="share-link btn btn-light border tools-bw-btn" id="{{ $event->user_id }}"></x-button_share>
+            <x-button_share class="share-link btn btn-light border tools-bw-btn" id="{{ $event->id }}"></x-button_share>
         @endguest
 
     </div>

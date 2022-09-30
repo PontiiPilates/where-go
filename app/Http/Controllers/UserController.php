@@ -53,7 +53,7 @@ class UserController extends Controller
         $description = mb_substr($user[0]->about, 0, 170);
         $description = mb_strtolower($description);
         $description = preg_replace("/[^А-Яа-яA-Za-z0-9 ]/u", '', $description);
-        $localstorage['meta']['title'] = session('name');
+        $localstorage['meta']['title'] = $user[0]->name;
         $localstorage['meta']['description'] = $description;
 
         return view('pageUser', [
