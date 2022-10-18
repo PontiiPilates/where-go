@@ -34,7 +34,7 @@
                 @if ($v > 0)
                     <a href="/?selector={{ $k }}" class="facets btn btn-outline-dark flex-fill d-flex align-items-center">
                         <span class="badge text-bg-secondary me-2">{{ $v }}</span>
-                        <span>{{ Str::limit($k, 18) }}</span>
+                        <span>{{ Str::limit($k, 17) }}</span>
                     </a>
                 @endif
             @endforeach
@@ -43,7 +43,7 @@
                 @if ($v > 0)
                     <a href="/?selector={{ $k }}" class="facets btn btn-outline-dark flex-fill d-flex align-items-center">
                         <span class="badge text-bg-secondary me-2">{{ $v }}</span>
-                        <span>{{ Str::limit($k, 18) }}</span>
+                        <span>{{ Str::limit($k, 17) }}</span>
                     </a>
                 @endif
             @endforeach

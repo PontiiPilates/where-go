@@ -13,6 +13,8 @@ use App\Models\Event;
 use App\Models\library\Images;
 // подключение помощника Auth
 use Illuminate\Support\Facades\Auth;
+// подключение модели
+use App\Models\EventComments;
 
 class EventController extends Controller
 {
@@ -21,7 +23,7 @@ class EventController extends Controller
      * @param $event_id string идентификатор события
      * @return mixed передача данных в представление
      */
-    public function getEvent($event_id)
+    public function getEvent(Request $r, $event_id)
     {
         if (Auth::id()) {
             // если пользователь авторизован, то формирование сессии из его данных
@@ -48,8 +50,96 @@ class EventController extends Controller
         $localstorage['meta']['title'] = $event->title;
         $localstorage['meta']['description'] = $description;
 
+
+
+
+
+
+        $comments = EventComments::where('event_id', $event_id)->get();
+
+        // dd($event_id);
+
+        // dd($comments[2]->comment);
+
+
+
+
+
+        if($r->method('POST') === 'POST') {
+
+
+
+            // $comment = $r->comment;
+
+
+
+
+
+            // Валидация комментария
+            $r->validate([
+                'comment' => 'required|min:3'
+            ]);
+
+            // $comment['user_id'] = Auth::id();
+
+            EventComments::create([
+                'user_id' => Auth::id(),
+                'event_id' => $event_id,
+                'parent' => null,
+                'comment' => $r->comment
+            ]);
+
+
+            // dd(EventComments::id());
+
+
+
+
+
+
+
+            // dd($r->validate());
+            // dd($event);
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return view('pageEvent', [
             'localstorage' => $localstorage,
+            'comments' =>$comments,
             'event' => $event,
         ]);
     }
