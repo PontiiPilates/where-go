@@ -153,10 +153,19 @@ use App\Http\Controllers\TgWebhookController;
 Route::get('/tgsm/{chat_id}/{message}', [TgBotController::class, 'sendMessage']);
 
 // отправить сообщение с кнопкой
-Route::get('/tgsb/{chat_id}/{message}', [TgBotController::class, 'sendMessage']);
+Route::get('/tgsb/{chat_id}/{message}', [TgBotController::class, 'sendButton']);
+
+
+
+
+
+
 
 // установка вебхук (осуществляется единажды)
-Route::get('/tgwebhook', [TgWebhookController::class, 'setWebhook']);
+Route::get('/set', [TgWebhookController::class, 'set']);
 
-// управление вебхуком
-Route::get('/tgwebhook', [TgWebhookController::class, 'index']);
+// получение информации о работе вебхука
+Route::get('/info', [TgWebhookController::class, 'info']);
+
+// some
+Route::post('/tgwebhook', [TgWebhookController::class, 'tgwebhook']);
