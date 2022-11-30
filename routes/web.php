@@ -58,7 +58,7 @@ use App\Http\Controllers\DevelopmentController;
 use App\Http\Controllers\GeneralController;
 // главная 
 // Route::get('/', [GeneralController::class, 'getEvents'])->name('general');
-Route::get('/', function(){
+Route::get('/', function () {
     return redirect('https://poidu.org/events');
     // return view('redirect');
 });
@@ -145,27 +145,20 @@ use App\Models\Event;
 //     echo '</ul>';
 // });
 
+/**
+ ** Telegram-бот WgBot
+ */
 
-use App\Http\Controllers\TgBotController;
-use App\Http\Controllers\TgWebhookController;
+// вебхук
+Route::post('/tgwebhook', [App\Http\Controllers\TelegramController::class, 'tgWebhook']);
+// установка вебхука
+Route::get('/tg/setwebhook', [App\Http\Controllers\TelegramController::class, 'setWebhook']);
+// получение информации о вебхуке
+Route::get('/tg/infowebhook', [App\Http\Controllers\TelegramController::class, 'infoWebhook']);
 
-// отправить сообщение
-Route::get('/tgsm/{chat_id}/{message}', [TgBotController::class, 'sendMessage']);
-
-// отправить сообщение с кнопкой
-Route::get('/tgsb/{chat_id}/{message}', [TgBotController::class, 'sendButton']);
-
-
-
-
-
-
-
-// установка вебхук (осуществляется единажды)
-Route::get('/set', [TgWebhookController::class, 'set']);
-
-// получение информации о работе вебхука
-Route::get('/info', [TgWebhookController::class, 'info']);
-
-// some
-Route::post('/tgwebhook', [TgWebhookController::class, 'tgwebhook']);
+// отправка сообщения
+Route::get('/tg/sendmessage/{chat_id}/{message_body}', [App\Http\Controllers\TelegramController::class, 'sendMessage']);
+// отправка сообщения с кнопками
+Route::get('/tg/sendbuttons/{chat_id}/{message_body}', [App\Http\Controllers\TelegramController::class, 'sendButtons']);
+// редактирование сообщения с кнопками
+Route::get('/tg/editbuttons/{chat_id}/{message_body}/{message_id}', [App\Http\Controllers\TelegramController::class, 'editButtons']);

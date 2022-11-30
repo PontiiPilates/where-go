@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
+        // исключение маршрута вебхука из тех, на которые laravel отправляет csrf-token
         '/tgwebhook'
     ];
 }

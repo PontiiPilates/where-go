@@ -7,7 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
 use App\Models\Event;
-
+use App\Services\TelegramService;
 
 class AppServiceProvider extends ServiceProvider
 
@@ -19,7 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Регистрация класса, реализующего функционал Telegram-бота
+        $this->app->bind(TelegramService::class, function ($app) {
+            return new TelegramService();
+        });
     }
 
     /**
